@@ -34,6 +34,41 @@
   .serchabar-container {
     width: 80%;
   }
+
+  .favorites-panel {
+    width: 80%;
+    margin-top: 1.5rem;
+    padding: 1.2rem 1.5rem;
+    border-radius: 1.25rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e8def8;
+  }
+
+  .favorites-panel h2 {
+    margin: 0 0 0.75rem;
+    color: #d6b4ff;
+    font-size: 1rem;
+  }
+
+  .favorites-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .favorites-list li {
+    font-size: 0.95rem;
+  }
+
+  .favorites-note,
+  .favorites-error {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.95rem;
+  }
 }
 
 

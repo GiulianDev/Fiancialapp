@@ -8,6 +8,14 @@
   backdrop-filter: blur(16px);
 }
 
+.etf-details__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 .etf-details__title {
   color: #d6b4ff;
   margin-top: 0;
@@ -21,9 +29,41 @@
   font-size: 0.98rem;
 }
 
+.etf-details__favorite-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: rgba(214, 92, 255, 0.12);
+  color: #d65cff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.etf-details__favorite-btn:hover {
+  background: rgba(214, 92, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.etf-details__favorite-btn.active {
+  color: #ff4081;
+  background: rgba(255, 64, 129, 0.2);
+}
+
 .etf-details__grid {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
   margin-top: 2rem;
+}
+
+.etf-details__favorite-hint {
+  margin-top: 0.75rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.9rem;
 }
