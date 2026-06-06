@@ -2,6 +2,7 @@ import './App.css';
 import { SearchBar } from './components/SearchBar';
 import { EtfDetails } from './components/EtfDetails/EtfDetails';
 import { useEtfSearch } from './hooks/useEtfSearch';
+import { useFirebaseAuth } from './hooks/useFirebaseAuth';
 
 function App() {
   const {
@@ -17,8 +18,20 @@ function App() {
     cercaEtf,
   } = useEtfSearch();
 
+  const { user, authLoading, signIn, signOut } = useFirebaseAuth();
+
   return (
     <div id="container">
+      <div className="auth-container">
+        <button
+          className="auth-button"
+          onClick={user ? signOut : signIn}
+          disabled={authLoading}
+        >
+          {authLoading ? 'Caricamento...' : user ? 'Esci da Google' : 'Login con Google'}
+        </button>
+      </div>
+        
       
       <div className="title-container">
         <h1>Ricerca Asset per ISIN</h1>
