@@ -31,8 +31,105 @@
     gap: 1rem;
   }
   
+  .page-selector {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .page-selector button {
+    padding: 0.75rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    color: #e8def8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .page-selector button.active,
+  .page-selector button:hover {
+    border-color: #a78bfa;
+    background: rgba(167, 139, 250, 0.16);
+    color: #fff;
+  }
+
   .serchabar-container {
     width: 80%;
+  }
+
+  .favorites-portfolio {
+    width: 80%;
+    margin-top: 1rem;
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e8def8;
+  }
+
+  .favorites-portfolio__grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .favorites-portfolio__list {
+    list-style: none;
+    margin: 0.8rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .favorites-portfolio__list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  .favorites-portfolio__compute {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    border: none;
+    border-radius: 999px;
+    background: #8b5cf6;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .favorites-error,
+  .favorites-info {
+    margin-top: 0.75rem;
+    color: #fda4af;
+  }
+
+  .favorites-portfolio__result {
+    padding: 1rem 1.2rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .favorites-portfolio__section {
+    margin-top: 1rem;
+  }
+
+  .favorites-portfolio__section ul {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .favorites-portfolio__section li {
+    font-size: 0.95rem;
   }
 
   .favorites-panel {
