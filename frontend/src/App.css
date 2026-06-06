@@ -5,11 +5,42 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-
+  
+  .auth-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    /* padding-bottom: 1rem; */
+    .auth-button {
+      padding: 0.8rem 1.2rem;
+      border-radius: 9999px;
+      border: none;
+      background: #d65cff;
+      color: #ffffff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .auth-button:hover:not(:disabled) {
+      background: #c143ff;
+    }
+    .auth-button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+  
   .title-container {
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
   }
+  
   .serchabar-container {
     width: 80%;
   }
 }
+
+
