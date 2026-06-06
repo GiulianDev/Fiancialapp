@@ -1,6 +1,6 @@
 import './App.css';
 import { SearchBar } from './components/SearchBar';
-import { EtfDetails } from './components/EtfDetails';
+import { EtfDetails } from './components/EtfDetails/EtfDetails';
 import { useEtfSearch } from './hooks/useEtfSearch';
 
 function App() {

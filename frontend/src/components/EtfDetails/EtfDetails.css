@@ -1,0 +1,29 @@
+.etf-details {
+  text-align: left;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.18);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  backdrop-filter: blur(16px);
+}
+
+.etf-details__title {
+  color: #d6b4ff;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.75rem;
+}
+
+.etf-details__meta {
+  margin: 0.3rem 0;
+  color: #e8def8;
+  font-size: 0.98rem;
+}
+
+.etf-details__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+}
