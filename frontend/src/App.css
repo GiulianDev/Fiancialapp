@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+#container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .title-container {
+    width: 100%;
+  }
+  .serchabar-container {
+    width: 80%;
+  }
+}

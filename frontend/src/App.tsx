@@ -18,10 +18,15 @@ function App() {
   } = useEtfSearch();
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1>Ricerca Asset per ISIN</h1>
+    <div id="container">
+      
+      <div className="title-container">
+        <h1>Ricerca Asset per ISIN</h1>
+      </div>
 
-      <SearchBar isin={isin} onIsinChange={setIsin} onSearch={cercaEtf} isLoading={caricando} />
+      <div className="serchabar-container">
+        <SearchBar isin={isin} onIsinChange={setIsin} onSearch={cercaEtf} isLoading={caricando} />
+      </div>
 
       {errore && <p style={{ color: 'red', fontWeight: 'bold' }}>{errore}</p>}
 
