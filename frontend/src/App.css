@@ -20,6 +20,10 @@
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s ease;
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 9999;
     }
     .auth-button:hover:not(:disabled) {
       background: #c143ff;
@@ -42,5 +46,6 @@
     width: 80%;
   }
 }
+
 
 
