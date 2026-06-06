@@ -1,0 +1,13 @@
+# Frontend (React / Node)
+node_modules/
+dist/
+build/
+.env
+
+# Backend (Python)
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+.env
