@@ -1,7 +1,7 @@
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 import { type AggregatedResult } from '../../types/portfolio';
 import { Card } from '../ui/Card/Card';
-import './EtfFavorites.css';
+import './EtfCharts.css';
 
 const COLORS = [
   '#0066cc',
@@ -37,7 +37,7 @@ export function EtfCharts({ combined }: EtfChartsProps) {
   ];
 
   return (
-    <Card className="etf-favorites--container">
+    <Card className="etf-charts--container">
       <div className="header--container">
         <div className="info--container">
           <h3 className="title">Risultato Aggregato ({combined.count} ETF)</h3>
@@ -47,8 +47,8 @@ export function EtfCharts({ combined }: EtfChartsProps) {
         </div>
       </div>
 
-      <div className="etf-favorites__grid">
-        <div className="etf-favorites__chart">
+      <div className="etf-charts__grid">
+        <div className="etf-charts__chart">
           <h4>Composizione Aziende</h4>
           <ResponsiveContainer width="100%" height={320}>
             <PieChart>
@@ -71,7 +71,7 @@ export function EtfCharts({ combined }: EtfChartsProps) {
           </ResponsiveContainer>
         </div>
 
-        <div className="etf-favorites__chart">
+        <div className="etf-charts__chart">
           <h4>Esposizione Geografica</h4>
           <ResponsiveContainer width="100%" height={320}>
             <PieChart>
@@ -95,8 +95,8 @@ export function EtfCharts({ combined }: EtfChartsProps) {
         </div>
       </div>
 
-      <div className="etf-favorites__details">
-        <div className="etf-favorites__section">
+      <div className="etf-charts__details">
+        <div className="etf-charts__section">
           <h4>Dettagli Aziende</h4>
           <ul>
             {combined.holdings.slice(0, 15).map((holding) => (
@@ -112,7 +112,7 @@ export function EtfCharts({ combined }: EtfChartsProps) {
           </ul>
         </div>
 
-        <div className="etf-favorites__section">
+        <div className="etf-charts__section">
           <h4>Dettagli Paesi</h4>
           <ul>
             {combined.countries.slice(0, 15).map((country) => (

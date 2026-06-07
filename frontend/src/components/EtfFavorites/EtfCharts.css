@@ -1,4 +1,4 @@
-.etf-favorites--container {
+.etf-charts--container {
   text-align: left;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -8,7 +8,7 @@
   backdrop-filter: blur(16px);
 }
 
-.etf-favorites--container .header--container {
+.etf-charts--container .header--container {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -16,27 +16,27 @@
   margin-bottom: 1.25rem;
 }
 
-.etf-favorites--container .info--container .title {
+.etf-charts--container .info--container .title {
   color: #d6b4ff;
   margin: 0;
   margin-bottom: 0.5rem;
   font-size: 1.75rem;
 }
 
-.etf-favorites--container .info--container .subtitle {
+.etf-charts--container .info--container .subtitle {
   margin: 0.25rem 0;
   color: #e8def8;
   font-size: 0.98rem;
 }
 
-.etf-favorites__grid {
+.etf-charts__grid {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
   margin-top: 1rem;
 }
 
-.etf-favorites__chart {
+.etf-charts__chart {
   flex: 1;
   min-width: 300px;
   display: flex;
@@ -44,8 +44,8 @@
   align-items: center;
 }
 
-.etf-favorites__chart h4,
-.etf-favorites__section h4 {
+.etf-charts__chart h4,
+.etf-charts__section h4 {
   width: 100%;
   border-bottom: 2px solid #0066cc;
   padding-bottom: 0.5rem;
@@ -53,19 +53,19 @@
   font-size: 1rem;
 }
 
-.etf-favorites__details {
+.etf-charts__details {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
   margin-top: 2rem;
 }
 
-.etf-favorites__section {
+.etf-charts__section {
   flex: 1;
   min-width: 250px;
 }
 
-.etf-favorites__section ul {
+.etf-charts__section ul {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -73,11 +73,11 @@
   color: #e8def8;
 }
 
-.etf-favorites__section li {
+.etf-charts__section li {
   margin-bottom: 0.6rem;
 }
 
-.etf-favorites__section .residual-row {
+.etf-charts__section .residual-row {
   margin-top: 1rem;
   padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
@@ -85,8 +85,8 @@
 }
 
 @media (max-width: 920px) {
-  .etf-favorites__grid,
-  .etf-favorites__details {
+  .etf-charts__grid,
+  .etf-charts__details {
     flex-direction: column;
   }
 }
