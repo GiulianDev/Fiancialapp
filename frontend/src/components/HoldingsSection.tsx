@@ -1,4 +1,5 @@
 import { type Holding } from '../types/etf';
+import { Button } from './ui/Button';
 
 interface HoldingsSectionProps {
   holdings: Holding[];
@@ -38,20 +39,11 @@ export function HoldingsSection({
           </ul>
 
           {limite < holdingsSorted.length && (
-            <button
-              onClick={onLoadMore}
-              style={{
-                marginTop: '10px',
-                padding: '6px 12px',
-                cursor: 'pointer',
-                background: '#fff',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-              }}
-            >
+            <Button onClick={onLoadMore}>
               Mostra altri 5 ({holdingsSorted.length - limite} rimanenti in anteprima)
-            </button>
+            </Button>
           )}
+
         </>
       ) : (
         <p>Dati partecipazioni non disponibili per questo asset.</p>
