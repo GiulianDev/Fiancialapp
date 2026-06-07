@@ -57,7 +57,8 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
                 />
                 <span style={{ fontSize: '0.9rem' }}>
                     {favorite.name ? `${favorite.name} ` : ''}
-                    <code style={{ background: '#eee', padding: '2px 4px', borderRadius: '4px' }}>{favorite.isin}</code>
+                    <code style={{ padding: '2px 4px', borderRadius: '4px' }}>{favorite.isin}</code>
+                    {/* <code style={{ background: '#eee', padding: '2px 4px', borderRadius: '4px' }}>{favorite.isin}</code> */}
                 </span>
               </label>
               
