@@ -45,6 +45,7 @@ function App() {
         </button>
       </div>
 
+      {/* PAGE 1 - Search */}
       {page === 'search' && (
         <>
           <div className="serchabar-container">
@@ -68,6 +69,7 @@ function App() {
         </>
       )}
 
+      {/* PAGE 2 - Favorites */}
       {page === 'portfolio' && (
         <FavoritesPortfolio user={user} favorites={favorites} />
       )}
