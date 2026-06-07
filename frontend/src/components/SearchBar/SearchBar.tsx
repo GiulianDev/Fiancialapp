@@ -12,7 +12,7 @@ interface SearchBarProps {
 export function SearchBar({ isin, onIsinChange, onSearch, isLoading }: SearchBarProps) {
   return (
 
-     <Card className="search-bar--container">
+     <Card className="search-bar--container mx-auto w-11/12 md:max-w-xl">
 
       <label htmlFor="isin-search" className="sr-only">
         Ricerca ISIN
