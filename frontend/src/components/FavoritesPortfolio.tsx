@@ -1,20 +1,14 @@
 import { useState } from 'react';
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 import { Button } from './ui/Button';
+import { Card } from './ui/Card/Card';
+import { EtfFavorites } from './EtfFavorites/EtfFavorites';
 import { type Favorite, type FirebaseUser } from '../firebase';
-import { type EtfData, type Country, type Holding } from '../types/etf';
+import { type EtfData } from '../types/etf';
+import { type AggregatedResult } from '../types/portfolio';
 
 interface FavoritesPortfolioProps {
   user: FirebaseUser | null;
   favorites: Favorite[];
-}
-
-interface AggregatedResult {
-  holdings: Holding[];
-  countries: Country[];
-  count: number;
-  residualHolding: number;
-  residualCountry: number;
 }
 
 // Nuova logica di combinazione con gestione del residuo e pesi personalizzati
@@ -159,7 +153,7 @@ export function FavoritesPortfolio({ user, favorites }: FavoritesPortfolioProps)
             <div className="favorites-portfolio__grid">
               
               {/* --- COLONNA DI SELEZIONE E PESI --- */}
-              <div className="favorites-portfolio__list">
+              <Card className="favorites-portfolio__list">
                 <p>Seleziona i preferiti e assegna un peso (es. quote o capitale investito):</p>
                 <ul style={{ listStyle: 'none', padding: 0 }}>
                   {favorites.map((favorite) => {
@@ -196,116 +190,10 @@ export function FavoritesPortfolio({ user, favorites }: FavoritesPortfolioProps)
                   {loading ? 'Calcolo in corso…' : 'Analizza Portafoglio'}
                 </Button>
                 {error && <p className="favorites-error" style={{ color: 'red' }}>{error}</p>}
-              </div>
+              </Card>
 
               {/* --- COLONNA DEI RISULTATI AGGREGATI --- */}
-              {combined && (
-                <div className="favorites-portfolio__result" style={{ background: '#f9f9f9', padding: '20px', borderRadius: '8px' }}>
-                  <h3 style={{ color: '#0066cc', marginTop: 0 }}>Risultato Aggregato ({combined.count} ETF)</h3>
-                  
-                  <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', marginTop: '20px' }}>
-                    
-                    {/* GRAFICO A TORTA - HOLDINGS */}
-                    <div className="favorites-portfolio__chart" style={{ flex: '1', minWidth: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <h4 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '5px', width: '100%' }}>Composizione Aziende</h4>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie
-                            data={[
-                              ...combined.holdings.slice(0, 10),
-                              ...(combined.residualHolding > 0 ? [{ nome: 'Altre aziende', peso_percentuale: combined.residualHolding }] : [])
-                            ]}
-                            dataKey="peso_percentuale"
-                            nameKey="nome"
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={80}
-                            label={({ nome, peso_percentuale }) => `${nome.slice(0, 10)}: ${peso_percentuale.toFixed(1)}%`}
-                          >
-                            {[
-                              '#0066cc', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f7b731',
-                              '#5f27cd', '#00d2d3', '#ff9ff3', '#54a0ff', '#48dbfb', '#aaa'
-                            ].map((color, index) => (
-                              <Cell key={`cell-${index}`} fill={color} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(value) => `${(value as number).toFixed(2)}%`} />
-                          <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                    {/* GRAFICO A TORTA - PAESI */}
-                    <div className="favorites-portfolio__chart" style={{ flex: '1', minWidth: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <h4 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '5px', width: '100%' }}>Esposizione Geografica</h4>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie
-                            data={[
-                              ...combined.countries.slice(0, 10),
-                              ...(combined.residualCountry > 0 ? [{ nome: 'Altri paesi', peso: combined.residualCountry }] : [])
-                            ]}
-                            dataKey="peso"
-                            nameKey="nome"
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={80}
-                            label={({ nome, peso }) => `${nome.slice(0, 10)}: ${(peso as number).toFixed(1)}%`}
-                          >
-                            {[
-                              '#0066cc', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f7b731',
-                              '#5f27cd', '#00d2d3', '#ff9ff3', '#54a0ff', '#48dbfb', '#aaa'
-                            ].map((color, index) => (
-                              <Cell key={`cell-${index}`} fill={color} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(value) => `${(value as number).toFixed(2)}%`} />
-                          <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                  </div>
-
-                  {/* LISTA DETTAGLIATA - HOLDINGS */}
-                  <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', marginTop: '30px' }}>
-                    <div className="favorites-portfolio__section" style={{ flex: '1', minWidth: '250px' }}>
-                      <h4 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '5px' }}>Dettagli Aziende</h4>
-                      <ul style={{ listStyle: 'none', padding: 0, lineHeight: '1.8', fontSize: '0.9em' }}>
-                        {combined.holdings.slice(0, 15).map((holding) => (
-                          <li key={holding.nome}>
-                            {holding.nome}: <strong>{holding.peso_percentuale.toFixed(2)}%</strong>
-                          </li>
-                        ))}
-                        
-                        {combined.residualHolding > 0 && (
-                          <li style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #ddd', color: '#555' }}>
-                            📦 <em>Altre aziende minori (Residuo)</em>: <strong>{combined.residualHolding.toFixed(2)}%</strong>
-                          </li>
-                        )}
-                      </ul>
-                    </div>
-
-                    {/* LISTA DETTAGLIATA - PAESI */}
-                    <div className="favorites-portfolio__section" style={{ flex: '1', minWidth: '250px' }}>
-                      <h4 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '5px' }}>Dettagli Paesi</h4>
-                      <ul style={{ listStyle: 'none', padding: 0, lineHeight: '1.8', fontSize: '0.9em' }}>
-                        {combined.countries.slice(0, 15).map((country) => (
-                          <li key={country.nome}>
-                            {country.nome}: <strong>{country.peso.toFixed(2)}%</strong>
-                          </li>
-                        ))}
-                        
-                        {combined.residualCountry > 0 && (
-                          <li style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #ddd', color: '#555' }}>
-                            🌍 <em>Altri paesi minori (Residuo)</em>: <strong>{combined.residualCountry.toFixed(2)}%</strong>
-                          </li>
-                        )}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {combined && <EtfFavorites combined={combined} />}
             </div>
           )}
         </>

@@ -1,0 +1,92 @@
+.etf-favorites--container {
+  text-align: left;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.18);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  backdrop-filter: blur(16px);
+}
+
+.etf-favorites--container .header--container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.etf-favorites--container .info--container .title {
+  color: #d6b4ff;
+  margin: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.75rem;
+}
+
+.etf-favorites--container .info--container .subtitle {
+  margin: 0.25rem 0;
+  color: #e8def8;
+  font-size: 0.98rem;
+}
+
+.etf-favorites__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.etf-favorites__chart {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.etf-favorites__chart h4,
+.etf-favorites__section h4 {
+  width: 100%;
+  border-bottom: 2px solid #0066cc;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.etf-favorites__details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.etf-favorites__section {
+  flex: 1;
+  min-width: 250px;
+}
+
+.etf-favorites__section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  line-height: 1.8;
+  color: #e8def8;
+}
+
+.etf-favorites__section li {
+  margin-bottom: 0.6rem;
+}
+
+.etf-favorites__section .residual-row {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  color: #b0b0b0;
+}
+
+@media (max-width: 920px) {
+  .etf-favorites__grid,
+  .etf-favorites__details {
+    flex-direction: column;
+  }
+}
