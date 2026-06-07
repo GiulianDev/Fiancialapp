@@ -5,8 +5,6 @@ import { useEtfSearch } from '../hooks/useEtfSearch';
 import { useFavorites } from '../hooks/useFavorites';
 
 interface SearchPageProps {
-  favoriteIsins: Set<string>;
-  onToggleFavorite: (isin: string, name: string) => void;
   user: FirebaseUser | null;
 }
 
