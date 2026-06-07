@@ -35,7 +35,7 @@ export function SearchPage({
 }: SearchPageProps) {
   return (
     <>
-      <div className="serchabar-container">
+      <div style={{width: '80%'}}>
         <SearchBar isin={isin} onIsinChange={onIsinChange} onSearch={cercaEtf} isLoading={caricando} />
       </div>
 
