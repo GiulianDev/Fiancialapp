@@ -10,58 +10,101 @@ interface PortfolioAnalysisProps {
   weights: Record<string, number>;
 }
 
-// Nuova logica di combinazione con gestione del residuo e pesi personalizzati
 function combineEtfData(etfData: EtfData[], weights: Record<string, number>): AggregatedResult {
   const holdingsMap = new Map<string, number>();
+  const regionsMap = new Map<string, number>();
   const countriesMap = new Map<string, number>();
+  const sectorsMap = new Map<string, number>();
 
-  let totalUserWeight = etfData.reduce((sum, etf) => sum + (weights[etf.isin] || 1), 0);
+  // Controlliamo se l'utente ha lasciato tutti i campi vuoti o a 0
+  const allWeightsZero = etfData.every(etf => (weights[etf.isin] ?? 0) === 0);
+
+  // Se tutti i pesi sono zero, l'algoritmo distribuisce pesi uguali (1 ad ogni asset)
+  let totalUserWeight = etfData.reduce((sum, etf) => sum + (allWeightsZero ? 1 : (weights[etf.isin] ?? 0)), 0);
   if (totalUserWeight === 0) totalUserWeight = 1; 
 
   let totalUnknownHoldings = 0;
+  let totalUnknownRegions = 0;
   let totalUnknownCountries = 0;
+  let totalUnknownSectors = 0;
 
   etfData.forEach((etf) => {
-    const etfRelativeWeight = (weights[etf.isin] || 1) / totalUserWeight;
+    const userWeight = allWeightsZero ? 1 : (weights[etf.isin] ?? 0);
+    const etfRelativeWeight = userWeight / totalUserWeight;
 
+    // 1. HOLDINGS
     let knownHoldingsSum = 0;
-    etf.holdings.forEach((holding) => {
-      knownHoldingsSum += holding.peso_percentuale;
-      const currentAggregatedWeight = holdingsMap.get(holding.nome) ?? 0;
-      holdingsMap.set(holding.nome, currentAggregatedWeight + (holding.peso_percentuale * etfRelativeWeight));
-    });
-    
-    const unknownHoldings = Math.max(0, 100 - knownHoldingsSum);
-    totalUnknownHoldings += unknownHoldings * etfRelativeWeight;
+    if (etf.holdings) {
+      etf.holdings.forEach((holding) => {
+        knownHoldingsSum += holding.peso_percentuale;
+        const current = holdingsMap.get(holding.nome) ?? 0;
+        holdingsMap.set(holding.nome, current + (holding.peso_percentuale * etfRelativeWeight));
+      });
+    }
+    totalUnknownHoldings += Math.max(0, 100 - knownHoldingsSum) * etfRelativeWeight;
 
+    // 2. REGIONS
+    let knownRegionsSum = 0;
+    if (etf.regions) {
+      Object.entries(etf.regions).forEach(([region, peso]) => {
+        knownRegionsSum += peso;
+        const current = regionsMap.get(region) ?? 0;
+        regionsMap.set(region, current + (peso * etfRelativeWeight));
+      });
+    }
+    totalUnknownRegions += Math.max(0, 100 - knownRegionsSum) * etfRelativeWeight;
+
+    // 3. COUNTRIES
     let knownCountriesSum = 0;
-    Object.entries(etf.countries).forEach(([country, peso]) => {
-      knownCountriesSum += peso;
-      const currentAggregatedWeight = countriesMap.get(country) ?? 0;
-      countriesMap.set(country, currentAggregatedWeight + (peso * etfRelativeWeight));
-    });
-    
-    const unknownCountries = Math.max(0, 100 - knownCountriesSum);
-    totalUnknownCountries += unknownCountries * etfRelativeWeight;
+    if (etf.countries) {
+      Object.entries(etf.countries).forEach(([country, peso]) => {
+        knownCountriesSum += peso;
+        const current = countriesMap.get(country) ?? 0;
+        countriesMap.set(country, current + (peso * etfRelativeWeight));
+      });
+    }
+    totalUnknownCountries += Math.max(0, 100 - knownCountriesSum) * etfRelativeWeight;
+
+    // 4. SECTORS
+    let knownSectorsSum = 0;
+    if (etf.sectors) {
+      Object.entries(etf.sectors).forEach(([sector, peso]) => {
+        knownSectorsSum += peso;
+        const current = sectorsMap.get(sector) ?? 0;
+        sectorsMap.set(sector, current + (peso * etfRelativeWeight));
+      });
+    }
+    totalUnknownSectors += Math.max(0, 100 - knownSectorsSum) * etfRelativeWeight;
   });
 
   const holdings = Array.from(holdingsMap.entries())
     .map(([nome, peso_percentuale]) => ({ nome, peso_percentuale }))
     .sort((a, b) => b.peso_percentuale - a.peso_percentuale);
 
+  const regions = Array.from(regionsMap.entries())
+    .map(([nome, peso]) => ({ nome, peso }))
+    .sort((a, b) => b.peso - a.peso);
+
   const countries = Array.from(countriesMap.entries())
+    .map(([nome, peso]) => ({ nome, peso }))
+    .sort((a, b) => b.peso - a.peso);
+
+  const sectors = Array.from(sectorsMap.entries())
     .map(([nome, peso]) => ({ nome, peso }))
     .sort((a, b) => b.peso - a.peso);
 
   return { 
     holdings, 
+    regions,
     countries, 
+    sectors,
     count: etfData.length,
     residualHolding: totalUnknownHoldings,
-    residualCountry: totalUnknownCountries
+    residualRegion: totalUnknownRegions,
+    residualCountry: totalUnknownCountries,
+    residualSector: totalUnknownSectors
   };
 }
-
 
 export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAnalysisProps) {
   const [combined, setCombined] = useState<AggregatedResult | null>(null);
@@ -75,6 +118,8 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
       setLoading(true);
       setError(null);
       try {
+        const response = await fetch(`http://127.0.0.1:8000/api/etf/${selectedIsins.join(',')}`); // Nota: se la tua API accetta un ISIN alla volta mantieni il vecchio Promise.all come sotto
+        
         const etfData = await Promise.all(
           selectedIsins.map(async (isin) => {
             const response = await fetch(`http://127.0.0.1:8000/api/etf/${isin}`);

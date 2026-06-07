@@ -48,13 +48,13 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
     onAnalyze(Array.from(selectedIsins), numericWeights);
   };
 
-  // --- CALCOLO IN TEMPO REALE PER L'AVVISO ---
-  const currentTotalWeight = Array.from(selectedIsins).reduce((sum, isin) => {
+  // --- CALCOLO DELLA SOMMA IN TEMPO REALE PER L'AVVISO ---
+  const totalWeight = Array.from(selectedIsins).reduce((sum, isin) => {
     const val = parseFloat(weights[isin] || '0');
     return sum + (isNaN(val) ? 0 : val);
   }, 0);
 
-  const showWarning = unit === '%' && selectedIsins.size > 0 && currentTotalWeight !== 100;
+  const showWarning = unit === '%' && selectedIsins.size > 0 && totalWeight !== 100;
 
   return (
     <Card className="favorites-portfolio__list">
@@ -70,7 +70,6 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
           <option value="%">Percentuale (%)</option>
         </select>
       </div>
-      
       <p>Seleziona gli ETF e inserisci {unit === '%' ? 'la quota' : "l'importo investito"}:</p>
       
       <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0' }}>
@@ -109,7 +108,7 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
         })}
       </ul>
 
-      {/* BANNER DI AVVISO */}
+      {/* BANNER DI AVVISO PERCENTUALE */}
       {showWarning && (
         <div style={{
           padding: '12px',
@@ -118,9 +117,10 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
           border: '1px solid #fde68a',
           borderRadius: '6px',
           color: '#92400e',
-          fontSize: '0.9rem'
+          fontSize: '0.9rem',
+          lineHeight: '1.4'
         }}>
-          <strong>⚠️ Attenzione:</strong> La somma delle percentuali è <strong>{currentTotalWeight}%</strong> invece di 100%. L'analisi riproporzionerà i pesi automaticamente.
+          <strong>⚠️ Attenzione:</strong> La somma delle percentuali inserite è pari a <strong>{totalWeight}%</strong> invece di 100%. L'analisi riproporzionerà i pesi automaticamente.
         </div>
       )}
 
