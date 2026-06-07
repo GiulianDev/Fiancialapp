@@ -6,6 +6,12 @@ cd backend
   - Avvia server
     uv run uvicorn main:app --reload
 
-# FORNTEND
 
-https://ui.shadcn.com/
+## FORNTEND
+
+- Libreria grafica (non usata)
+  https://ui.shadcn.com/
+
+- Libreria per i grafici
+  https://recharts.github.io/en-US/guide/
+
