@@ -34,6 +34,15 @@ export function useEtfSearch() {
     }
   };
 
+  // const fetchEtfData = async (isin: string): Promise<EtfData> => {
+  //   const response = await fetch(`${API_URL}/api/etf/${isin}`);
+  //   const payload = await response.json();
+  //   if (!response.ok || payload?.status === 'error') {
+  //     throw new Error(payload?.message ?? `Errore caricamento ISIN ${isin}`);
+  //   }
+  //   return payload as EtfData;
+  // };
+
   return {
     isin,
     setIsin,
@@ -45,5 +54,6 @@ export function useEtfSearch() {
     limiteCountries,
     setLimiteCountries,
     cercaEtf,
+    // fetchEtfData
   };
 }
