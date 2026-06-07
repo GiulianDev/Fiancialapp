@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
+import { Button } from './ui/Button';
 import { type Favorite, type FirebaseUser } from '../firebase';
 import { type EtfData, type Country, type Holding } from '../types/etf';
 
@@ -191,9 +192,9 @@ export function FavoritesPortfolio({ user, favorites }: FavoritesPortfolioProps)
                     );
                   })}
                 </ul>
-                <button className="favorites-portfolio__compute" onClick={computeCombined} disabled={loading}>
+                <Button onClick={computeCombined} disabled={loading}>
                   {loading ? 'Calcolo in corso…' : 'Analizza Portafoglio'}
-                </button>
+                </Button>
                 {error && <p className="favorites-error" style={{ color: 'red' }}>{error}</p>}
               </div>
 
