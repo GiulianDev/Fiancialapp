@@ -1,5 +1,4 @@
 import { initializeApp } from 'firebase/app';
-// import { getAnalytics } from "firebase/analytics";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -8,6 +7,8 @@ import {
   onAuthStateChanged,
   type User,
 } from 'firebase/auth';
+
+// TUTTE le funzioni di firestore importate insieme
 import {
   getFirestore,
   collection,
@@ -17,6 +18,9 @@ import {
   where,
   getDocs,
   serverTimestamp,
+  doc, // Aggiunto qui
+  getDoc, // Aggiunto qui
+  setDoc, // Aggiunto qui
   type Timestamp,
   type DocumentData,
 } from 'firebase/firestore';
@@ -32,7 +36,6 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
@@ -52,7 +55,7 @@ export function onAuthStateChangedListener(callback: (user: User | null) => void
 
 export type FirebaseUser = User;
 
-// Firestore functions for favorites stored per user
+// --- PREFERITI ---
 export interface Favorite {
   id?: string;
   userId: string;
@@ -121,4 +124,29 @@ export async function isFavorite(userId: string, isin: string): Promise<boolean>
     console.error('Error checking favorite:', error);
     throw error;
   }
+}
+
+// --- PORTAFOGLIO ---
+export interface SavedPortfolio {
+  selectedIsins: string[];
+  weights: Record<string, string>;
+  unit: '€' | '$' | '%';
+}
+
+export async function savePortfolio(uid: string, portfolio: SavedPortfolio): Promise<void> {
+  const docRef = doc(db, 'portfolios', uid);
+  await setDoc(docRef, {
+    ...portfolio,
+    updatedAt: new Date().toISOString(),
+  });
+}
+
+export async function getPortfolio(uid: string): Promise<SavedPortfolio | null> {
+  const docRef = doc(db, 'portfolios', uid);
+  const docSnap = await getDoc(docRef);
+  
+  if (docSnap.exists()) {
+    return docSnap.data() as SavedPortfolio;
+  }
+  return null;
 }
