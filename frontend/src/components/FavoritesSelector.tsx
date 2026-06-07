@@ -21,8 +21,12 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
         next.delete(isin);
       } else {
         next.add(isin);
-        // Inizializziamo a 0 invece di 1 per gli Euro
-        setWeights(w => ({ ...w, [isin]: 0 })); 
+        // Non inizializziamo a 0 per permettere la visualizzazione del placeholder
+        setWeights(w => {
+          const newWeights = { ...w };
+          delete newWeights[isin];
+          return newWeights;
+        }); 
       }
       return next;
     });
@@ -41,7 +45,7 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
   return (
     <Card className="favorites-portfolio__list">
       <h3>Analisi Portafoglio</h3>
-      <p>Seleziona gli ETF e inserisci l'importo investito in <strong>Euro (€)</strong> o in <strong>Dollari ()</strong>:</p>
+      <p>Seleziona gli ETF e inserisci l'importo investito:</p>
       
 
       <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0' }}>
@@ -64,17 +68,15 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
               
               {isSelected && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  {/* Aggiungiamo i simboli €/$ */}
-                  <span style={{ fontSize: '0.9rem', color: '#555' }}>€/$</span>
                   <input 
                     type="number" 
                     min="0"
-                    step="0.01" // Permettiamo l'inserimento di decimali per la valuta
-                    placeholder="1000" // Placeholder più chiaro
-                    value={weights[favorite.isin] ?? ''} // Usa stringa vuota per un input più pulito quando 0
+                    step="0.01"
+                    placeholder="€ / $ 1000" 
+                    value={weights[favorite.isin] || ''}
                     onChange={(e) => handleWeightChange(favorite.isin, e.target.value)}
-                    style={{ width: '100px', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
-                    title="Importo investito in Euro (€) o Dollari ($)" // Titolo per tooltip
+                    style={{ width: '130px', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
+                    title="Importo investito"
                   />
                 </div>
               )}
