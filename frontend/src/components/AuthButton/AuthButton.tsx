@@ -10,7 +10,7 @@ interface AuthButtonProps {
 
 export function AuthButton({ user, authLoading, signIn, signOut }: AuthButtonProps) {
   return (
-    <div className="auth-container">
+    <div className="auth--container">
       <div className="auth-wrapper">
         <button
           className="auth-button"
