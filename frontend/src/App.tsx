@@ -24,7 +24,7 @@ function App() {
   } = useEtfSearch();
 
   const { user, authLoading, signIn, signOut } = useFirebaseAuth();
-  const { favorites, favoriteIsins, toggleFavorite } = useFavorites(user);
+  const { favoriteIsins, toggleFavorite } = useFavorites(user);
 
   return (
     <div id="container">
@@ -66,7 +66,7 @@ function App() {
       )}
 
       {/* PAGE 2 - Favorites */}
-      {page === 'portfolio' && <PortfolioPage user={user} favorites={favorites} />}
+      {page === 'portfolio' && <PortfolioPage user={user} />}
     </div>
   );
 }

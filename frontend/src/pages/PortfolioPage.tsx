@@ -66,7 +66,6 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
       )}
 
       <FavoritesSelector 
-        user={user}
         favorites={favorites}
         isLoading={isGlobalLoading}
         initialData={savedPortfolio}

@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 // Importiamo anche SavedPortfolio da firebase.ts per tipizzare correttamente initialData
-import { type Favorite, type FirebaseUser, type SavedPortfolio } from '../firebase';
+import { type Favorite, type SavedPortfolio } from '../firebase';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card/Card';
 
 interface FavoritesSelectorProps {
-  user: FirebaseUser | null;
   favorites: Favorite[];
   isLoading: boolean;
   initialData: SavedPortfolio | null; // Risolve l'errore ts(2322)
@@ -18,7 +17,6 @@ interface FavoritesSelectorProps {
 }
 
 export function FavoritesSelector({ 
-  user,
   favorites, 
   isLoading, 
   initialData, 

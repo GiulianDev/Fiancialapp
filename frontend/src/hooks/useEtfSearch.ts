@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { type EtfData } from '../types/etf';
 
+// 1. URL base fuori dalla funzione o all'inizio
+const API_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+
 export function useEtfSearch() {
   const [isin, setIsin] = useState('IE00BK5BQT80');
   const [dati, setDati] = useState<EtfData | null>(null);
@@ -16,7 +19,7 @@ export function useEtfSearch() {
     setLimiteCountries(5);
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/etf/${isin}`);
+      const response = await fetch(`${API_URL}/api/etf/${isin}`);
       const data = await response.json();
       
       if (data.status === 'error') {
