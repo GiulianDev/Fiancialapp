@@ -1,19 +1,41 @@
-import { useState } from 'react';
-import { type Favorite, type FirebaseUser } from '../firebase';
+import { useState, useEffect } from 'react';
+// Importiamo anche SavedPortfolio da firebase.ts per tipizzare correttamente initialData
+import { type Favorite, type FirebaseUser, type SavedPortfolio } from '../firebase';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card/Card';
 
 interface FavoritesSelectorProps {
   user: FirebaseUser | null;
   favorites: Favorite[];
-  onAnalyze: (selectedIsins: string[], weights: Record<string, number>) => void;
   isLoading: boolean;
+  initialData: SavedPortfolio | null; // Risolve l'errore ts(2322)
+  onAnalyzeAndSave: (
+    selectedIsins: string[], 
+    rawWeights: Record<string, string>, 
+    numericWeights: Record<string, number>, 
+    unit: '€' | '$' | '%'
+  ) => void;
 }
 
-export function FavoritesSelector({ favorites, onAnalyze, isLoading }: FavoritesSelectorProps) {
+export function FavoritesSelector({ 
+  user,
+  favorites, 
+  isLoading, 
+  initialData, 
+  onAnalyzeAndSave 
+}: FavoritesSelectorProps) {
   const [selectedIsins, setSelectedIsins] = useState<Set<string>>(new Set());
   const [weights, setWeights] = useState<Record<string, string>>({});
   const [unit, setUnit] = useState<'€' | '$' | '%'>('€');
+
+  // Sincronizza lo stato interno quando i dati vengono letti da Firebase
+  useEffect(() => {
+    if (initialData) {
+      setSelectedIsins(new Set(initialData.selectedIsins));
+      setWeights(initialData.weights);
+      setUnit(initialData.unit);
+    }
+  }, [initialData]);
 
   const toggleSelection = (isin: string) => {
     setSelectedIsins((prev) => {
@@ -47,11 +69,15 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
 
   const handleAnalyzeClick = () => {
     const numericWeights: Record<string, number> = {};
-    selectedIsins.forEach(isin => {
+    const selectedIsinsArray = Array.from(selectedIsins);
+    
+    selectedIsinsArray.forEach(isin => {
       const val = parseFloat(weights[isin] || '0');
       numericWeights[isin] = isNaN(val) ? 0 : val;
     });
-    onAnalyze(Array.from(selectedIsins), numericWeights);
+    
+    // Passiamo tutti i dati necessari al componente padre per il salvataggio cloud
+    onAnalyzeAndSave(selectedIsinsArray, weights, numericWeights, unit);
   };
 
   // --- CONTROLLO DI VALIDITÀ PER IL PULSANTE ---
@@ -70,18 +96,29 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
   return (
     <Card className="favorites-portfolio__list">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-        <h3 style={{ margin: 0 }}>Analisi Portafoglio</h3>
+        <h3 style={{ margin: 0, color: 'white' }}>Analisi Portafoglio</h3>
         <select 
           value={unit} 
           onChange={(e) => setUnit(e.target.value as '€' | '$' | '%')}
-          style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'transparent', cursor: 'pointer' }}
+          style={{ 
+            padding: '4px 8px', 
+            borderRadius: '6px', 
+            border: '1px solid rgba(255,255,255,0.2)', 
+            backgroundColor: 'transparent', 
+            cursor: 'pointer',
+            color: 'white',
+            outline: 'none'
+          }}
         >
-          <option value="€">Euro (€)</option>
-          <option value="$">Dollari ($)</option>
-          <option value="%">Percentuale (%)</option>
+          {/* Colore nero forzato sulle opzioni per evitare l'effetto bianco su bianco dei browser su temi dark */}
+          <option value="€" style={{ color: 'black' }}>Euro (€)</option>
+          <option value="$" style={{ color: 'black' }}>Dollari ($)</option>
+          <option value="%" style={{ color: 'black' }}>Percentuale (%)</option>
         </select>
       </div>
-      <p>Seleziona gli ETF e inserisci {unit === '%' ? 'la quota' : "l'importo investito"}:</p>
+      <p style={{ color: 'rgba(255,255,255,0.7)' }}>
+        Seleziona gli ETF e inserisci {unit === '%' ? 'la quota' : "l'importo investito"}:
+      </p>
       
       <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0' }}>
         {favorites.map((favorite) => {
@@ -93,11 +130,12 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
 
           return (
             <li key={favorite.isin} style={{ 
-              marginBottom: '8px', 
+              marginBottom: '12px', 
               display: 'flex', 
               alignItems: 'center', 
               gap: '10px',
-              minHeight: '38px' 
+              minHeight: '38px',
+              color: 'white'
             }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flex: 1, height: '100%' }}>
                 <input
@@ -107,13 +145,19 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
                 />
                 <span style={{ fontSize: '0.9rem' }}>
                     {favorite.name ? `${favorite.name} ` : ''}
-                    <code style={{ padding: '2px 4px', borderRadius: '4px' }}>{favorite.isin}</code>
+                    <code style={{ 
+                      padding: '2px 6px', 
+                      borderRadius: '4px', 
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      color: 'rgba(255,255,255,0.9)',
+                      marginLeft: '4px'
+                    }}>{favorite.isin}</code>
                 </span>
               </label>
               
               {isSelected && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ fontSize: '0.9rem', color: '#666', minWidth: '15px' }}>{unit}</span>
+                  <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', minWidth: '15px' }}>{unit}</span>
                   <input 
                     type="text"
                     inputMode="decimal"
@@ -122,10 +166,11 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
                     onChange={(e) => handleWeightChange(favorite.isin, e.target.value)}
                     style={{ 
                       width: '100px', 
-                      padding: '4px 8px', 
-                      borderRadius: '4px', 
-                      border: isInputInvalid ? '1px solid #dc2626' : '1px solid #ccc',
-                      backgroundColor: 'transparent', // Sempre trasparente, rimosso il feedback di sfondo
+                      padding: '6px 10px', 
+                      borderRadius: '6px', 
+                      border: isInputInvalid ? '1px solid #dc2626' : '1px solid rgba(255,255,255,0.2)',
+                      backgroundColor: 'transparent',
+                      color: 'white',
                       transition: 'all 0.2s',
                       outline: 'none'
                     }}
@@ -139,7 +184,7 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
       </ul>
 
       {isMissingValues && selectedIsins.size > 0 && (
-        <div style={{ fontSize: '0.85rem', color: '#dc2626', marginBottom: '12px', fontWeight: '500' }}>
+        <div style={{ fontSize: '0.85rem', color: '#f87171', marginBottom: '12px', fontWeight: '500' }}>
           * Inserisci un valore maggiore di 0 per tutti gli ETF selezionati.
         </div>
       )}
@@ -148,10 +193,10 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
         <div style={{
           padding: '12px',
           marginBottom: '16px',
-          backgroundColor: '#fffbeb',
-          border: '1px solid #fde68a',
-          borderRadius: '6px',
-          color: '#92400e',
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          border: '1px solid rgba(245, 158, 11, 0.2)',
+          borderRadius: '8px',
+          color: '#fbbf24',
           fontSize: '0.9rem',
           lineHeight: '1.4'
         }}>
@@ -164,7 +209,7 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
         disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
         style={{ width: '100%' }}
       >
-        {isLoading ? 'Analisi in corso...' : 'Analizza Selezione'}
+        {isLoading ? 'Salvataggio...' : 'Analizza e Salva Selezione'}
       </Button>
     </Card>
   );
