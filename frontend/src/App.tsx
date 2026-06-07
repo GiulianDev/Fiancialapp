@@ -29,19 +29,21 @@ function App() {
   return (
     <div id="container">
 
-      <AuthButton user={user} authLoading={authLoading} signIn={signIn} signOut={signOut} />  
-      
-      <div className="title--container">
-        <h1>Ricerca Asset per ISIN</h1>
-      </div>
+      <div className='header'>
+        <AuthButton user={user} authLoading={authLoading} signIn={signIn} signOut={signOut} />  
+        
+        <div className="title">
+          <h1>Ricerca Asset per ISIN</h1>
+        </div>
 
-      <div className="page-selector">
-        <button className={page === 'search' ? 'active' : ''} onClick={() => setPage('search')}>
-          Cerca ETF
-        </button>
-        <button className={page === 'portfolio' ? 'active' : ''} onClick={() => setPage('portfolio')}>
-          Portafoglio preferiti
-        </button>
+        <div className="page-selector">
+          <button className={page === 'search' ? 'active' : ''} onClick={() => setPage('search')}>
+            Cerca ETF
+          </button>
+          <button className={page === 'portfolio' ? 'active' : ''} onClick={() => setPage('portfolio')}>
+            Portafoglio preferiti
+          </button>
+        </div>
       </div>
 
       {/* PAGE 1 - Search */}
