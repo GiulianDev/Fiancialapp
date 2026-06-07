@@ -1,3 +1,5 @@
+import { Button } from './ui/Button';
+
 interface SearchBarProps {
   isin: string;
   onIsinChange: (value: string) => void;
@@ -21,13 +23,9 @@ export function SearchBar({ isin, onIsinChange, onSearch, isLoading }: SearchBar
         className="w-full min-w-[260px] flex-1 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-slate-300 outline-none transition focus:border-white/30 focus:bg-white/15 focus:ring-2 focus:ring-white/10"
       />
 
-      <button
-        onClick={onSearch}
-        className="inline-flex h-12 items-center justify-center rounded-2xl bg-violet-500 px-6 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:bg-violet-300"
-        disabled={isLoading}
-      >
+      <Button onClick={onSearch} disabled={isLoading}>
         {isLoading ? 'Ricerca in corso...' : 'Cerca Dati'}
-      </button>
+      </Button>
     </div>
   );
 }
