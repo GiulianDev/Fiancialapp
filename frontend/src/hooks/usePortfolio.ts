@@ -21,7 +21,7 @@ export function usePortfolio(user: FirebaseUser | null) {
         setError(null);
       } catch (err) {
         console.error('Failed to load portfolio:', err);
-        setError('Errore nel caricamento del portafoglio');
+        setError(err instanceof Error ? err.message : 'Errore nel caricamento del portafoglio');
       } finally {
         setLoading(false);
       }
@@ -42,7 +42,9 @@ export function usePortfolio(user: FirebaseUser | null) {
         setError(null);
       } catch (err) {
         console.error('Failed to update portfolio:', err);
-        setError('Errore nel salvataggio del portafoglio');
+        const message = err instanceof Error ? err.message : 'Errore nel salvataggio del portafoglio';
+        setError(message);
+        throw err;
       } finally {
         setLoading(false);
       }

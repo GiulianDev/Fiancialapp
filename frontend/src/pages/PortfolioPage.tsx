@@ -13,7 +13,7 @@ interface PortfolioPageProps {
 export function PortfolioPage({ user }: PortfolioPageProps) {
   // Sfruttiamo i due hook custom speculari
   const { favorites, loading: favsLoading } = useFavorites(user);
-  const { savedPortfolio, loading: portfolioLoading, updatePortfolio } = usePortfolio(user);
+  const { savedPortfolio, loading: portfolioLoading, error: portfolioError, updatePortfolio } = usePortfolio(user);
 
   // Stato locale per triggerare i grafici a schermo
   const [analysisData, setAnalysisData] = useState<{ isins: string[]; weights: Record<string, number> } | null>(null);
@@ -36,16 +36,20 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
     numericWeights: Record<string, number>, 
     unit: '€' | '$' | '%'
   ) => {
-    // 1. Mostra i grafici a schermo
-    setAnalysisData({ isins: selectedIsins, weights: numericWeights });
-
-    // 2. Salva su Firebase tramite l'hook dedicato
     const newPortfolio: SavedPortfolio = {
       selectedIsins,
       weights: rawWeights,
       unit
     };
-    await updatePortfolio(newPortfolio);
+
+    try {
+      // Salva su Firebase tramite l'hook dedicato
+      await updatePortfolio(newPortfolio);
+      // Mostra i grafici solo se il salvataggio ha avuto successo
+      setAnalysisData({ isins: selectedIsins, weights: numericWeights });
+    } catch (err) {
+      console.error('Portfolio save failed in parent:', err);
+    }
   };
 
   const isGlobalLoading = favsLoading || portfolioLoading;
@@ -57,6 +61,10 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
   return (
     <div className="flex flex-col gap-6">
       
+      {portfolioError && (
+        <div className="text-red-300 text-sm mb-4">Errore portafoglio: {portfolioError}</div>
+      )}
+
       <FavoritesSelector 
         user={user}
         favorites={favorites}

@@ -22,7 +22,6 @@ import {
   getDoc, // Aggiunto qui
   setDoc, // Aggiunto qui
   type Timestamp,
-  type DocumentData,
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -127,26 +126,47 @@ export async function isFavorite(userId: string, isin: string): Promise<boolean>
 }
 
 // --- PORTAFOGLIO ---
+
 export interface SavedPortfolio {
   selectedIsins: string[];
   weights: Record<string, string>;
   unit: '€' | '$' | '%';
+  userId?: string;
 }
 
-export async function savePortfolio(uid: string, portfolio: SavedPortfolio): Promise<void> {
-  const docRef = doc(db, 'portfolios', uid);
-  await setDoc(docRef, {
-    ...portfolio,
-    updatedAt: new Date().toISOString(),
-  });
+// Funzione helper per la sotto-raccolta
+function portfolioCollection(userId: string) {
+  return collection(db, 'users', userId, 'portfolio');
 }
 
-export async function getPortfolio(uid: string): Promise<SavedPortfolio | null> {
-  const docRef = doc(db, 'portfolios', uid);
-  const docSnap = await getDoc(docRef);
-  
-  if (docSnap.exists()) {
-    return docSnap.data() as SavedPortfolio;
+export async function savePortfolio(userId: string, portfolio: SavedPortfolio): Promise<void> {
+  try {
+    // Usiamo l'helper portfolioCollection per creare il riferimento al documento 'current'
+    const docRef = doc(portfolioCollection(userId), 'current');
+    console.debug('Saving portfolio to Firestore', { userId, portfolio });
+    await setDoc(docRef, {
+      userId,
+      ...portfolio,
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error('Error saving portfolio:', error);
+    throw error;
   }
-  return null;
+}
+
+export async function getPortfolio(userId: string): Promise<SavedPortfolio | null> {
+  try {
+    // Usiamo l'helper portfolioCollection anche qui
+    const docRef = doc(portfolioCollection(userId), 'current');
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data() as SavedPortfolio;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching portfolio:', error);
+    throw error;
+  }
 }
