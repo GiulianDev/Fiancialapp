@@ -64,3 +64,19 @@ Agent mode should use tools to inspect the file tree and read source files, whil
 - This rule file is the primary project-specific guidance for Continue agent mode.
 - If more clarity is needed, inspect `README.md`, `frontend/README.md`, and `backend/README.md`.
 - Prefer concise, practical changes that fit the current app's architecture and style.
+
+
+# Regole di Integrità del Codice e Architettura
+
+## 1. Analisi del Contesto Obbligatoria
+- Prima di creare un nuovo componente o modificare una logica esistente, analizza la struttura dei componenti adiacenti tramite la mappa del repository.
+- Identifica lo State Management utilizzato (es. Zustand, Redux, Context API) e conformati rigorosamente ad esso. Non introdurre nuovi paradigmi di stato.
+
+## 2. Stile e Standard di Scrittura
+- Mantieni rigorosamente l'architettura attuale del progetto (es. se i componenti usano Tailwind, usa Tailwind; se usano CSS Modules, usa CSS Modules).
+- Non rimuovere mai funzioni, interfacce TypeScript o commenti esistenti a meno che non sia esplicitamente richiesto per il refactoring.
+- Ogni nuovo componente deve essere guidato dai tipi (Strongly Typed). Non usare mai `any`.
+
+## 3. Preservazione del Codice
+- Quando modifichi un file, riscrivi solo le sezioni necessarie. Mantieni intatta la logica di business circostante.
+- Se una modifica impatta altri file del Workspace, elenca prima i file coinvolti nella chat e chiedi conferma prima di procedere.
