@@ -21,10 +21,12 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
         next.delete(isin);
       } else {
         next.add(isin);
-        setWeights(w => ({ ...w, [isin]: 1 })); 
+        // Inizializziamo a 0 invece di 1 per gli Euro
+        setWeights(w => ({ ...w, [isin]: 0 })); 
       }
       return next;
     });
+
   };
 
   const handleWeightChange = (isin: string, value: string) => {
@@ -38,8 +40,8 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
 
   return (
     <Card className="favorites-portfolio__list">
-      <h3>I tuoi preferiti</h3>
-      <p>Seleziona gli ETF da analizzare e assegna un peso:</p>
+      <h3>Analisi Portafoglio</h3>
+      <p>Seleziona gli ETF e inserisci l'importo investito in <strong>Euro (€)</strong>:</p>
       <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0' }}>
         {favorites.map((favorite) => {
           const isSelected = selectedIsins.has(favorite.isin);
@@ -58,17 +60,20 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
               </label>
               
               {isSelected && (
-                <input 
-                  type="number" 
-                  min="0"
-                  step="any"
-                  placeholder="Peso" 
-                  value={weights[favorite.isin] ?? 1}
-                  onChange={(e) => handleWeightChange(favorite.isin, e.target.value)}
-                  style={{ width: '80px', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
-                  title="Peso (es. capitale investito o quota)"
-                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span>€</span>
+                  <input 
+                    type="number" 
+                    min="0"
+                    step="0.01"
+                    placeholder="Esempio: 500" 
+                    value={weights[favorite.isin] ?? ''}
+                    onChange={(e) => handleWeightChange(favorite.isin, e.target.value)}
+                    style={{ width: '100px', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
+                  />
+                </div>
               )}
+              
             </li>
           );
         })}
@@ -83,3 +88,4 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
     </Card>
   );
 }
+
