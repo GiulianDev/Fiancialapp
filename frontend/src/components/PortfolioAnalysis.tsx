@@ -18,6 +18,9 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  // Da sistemare per usare useEtfSearch
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+
   useEffect(() => {
     const computeCombined = async () => {
       if (!user || selectedIsins.length === 0) return;
@@ -27,7 +30,7 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
       try {
         const etfData = await Promise.all(
           selectedIsins.map(async (isin) => {
-            const response = await fetch(`http://127.0.0.1:8000/api/etf/${isin}`);
+            const response = await fetch(`${API_URL}/api/etf/${isin}`);
             const payload = await response.json();
             if (!response.ok || payload?.status === 'error') {
               throw new Error(payload?.message ?? `Errore caricamento ISIN ${isin}`);
