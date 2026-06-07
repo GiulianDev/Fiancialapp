@@ -2,6 +2,7 @@ import { type EtfData, type Country } from '../../types/etf';
 import { type FirebaseUser } from '../../firebase';
 import { HoldingsSection } from '../HoldingsSection';
 import { CountriesSection } from '../CountriesSection';
+import { Card } from '../ui/Card/Card';
 import './EtfDetails.css';
 
 interface EtfDetailsProps {
@@ -31,7 +32,7 @@ export function EtfDetails({
   }));
 
   return (
-    <div className="etf-details--container">
+    <Card className="etf-details--container">
       
       {/* HEADER */}
       <div className="header--container">
@@ -94,6 +95,7 @@ export function EtfDetails({
           onLoadMore={onLoadMoreCountries}
         />
       </div>
-    </div>
+      
+    </Card>
   );
 }
