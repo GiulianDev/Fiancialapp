@@ -1,4 +1,4 @@
-import { SearchBar } from '../components/SearchBar';
+import { SearchBar } from '../components/SearchBar/SearchBar';
 import { EtfDetails } from '../components/EtfDetails/EtfDetails';
 import { type FirebaseUser } from '../firebase';
 import { useEtfSearch } from '../hooks/useEtfSearch';
@@ -27,9 +27,9 @@ export function SearchPage({user}: SearchPageProps) {
 
   return (
     <>
-      <div style={{width: '80%'}}>
+      {/* <div style={{width: '80%'}}> */}
         <SearchBar isin={isin} onIsinChange={setIsin} onSearch={cercaEtf} isLoading={caricando} />
-      </div>
+      {/* </div> */}
 
       {errore && <p style={{ color: 'red', fontWeight: 'bold' }}>{errore}</p>}
 
