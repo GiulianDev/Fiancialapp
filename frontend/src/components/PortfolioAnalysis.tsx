@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { type FirebaseUser } from '../firebase';
-import type { AggregatedResult } from '../types/portfolio';
 import type { EtfData } from '../types/etf';
 import { EtfFavorites } from './EtfFavorites/EtfFavorites';
+
+// 1. IMPORTIAMO LA NOSTRA NUOVA UTILITY E LA SUA INTERFACCIA
+import { analyzePortfolio, type AdvancedPortfolioAnalysis } from '../utils/portfolioUtils';
 
 interface PortfolioAnalysisProps {
   user: FirebaseUser | null;
@@ -10,120 +12,9 @@ interface PortfolioAnalysisProps {
   weights: Record<string, number>;
 }
 
-function combineEtfData(etfData: EtfData[], weights: Record<string, number>): AggregatedResult {
-  const holdingsMap = new Map<string, number>();
-  const regionsMap = new Map<string, number>();
-  const countriesMap = new Map<string, number>();
-  const sectorsMap = new Map<string, number>();
-
-  // 🛡️ SICUREZZA: Consideriamo SOLO gli ETF che hanno un peso valido e strettamente maggiore di 0
-  const validEtfData = etfData.filter((etf) => (weights[etf.isin] ?? 0) > 0);
-
-  // Calcoliamo la somma totale dei pesi basandoci esclusivamente sugli ETF validi
-  const totalUserWeight = validEtfData.reduce((sum, etf) => sum + (weights[etf.isin] ?? 0), 0);
-
-  // Se dopo il filtro non rimangono ETF validi o il peso totale è zero, restituiamo un aggregato vuoto sicuro
-  if (validEtfData.length === 0 || totalUserWeight === 0) {
-    return { 
-      holdings: [], 
-      regions: [],
-      countries: [], 
-      sectors: [],
-      count: 0,
-      residualHolding: 0,
-      residualRegion: 0,
-      residualCountry: 0,
-      residualSector: 0
-    };
-  }
-
-  let totalUnknownHoldings = 0;
-  let totalUnknownRegions = 0;
-  let totalUnknownCountries = 0;
-  let totalUnknownSectors = 0;
-
-  // Cicliamo solo sugli ETF validi (> 0)
-  validEtfData.forEach((etf) => {
-    const userWeight = weights[etf.isin] ?? 0;
-    const etfRelativeWeight = userWeight / totalUserWeight;
-
-    // 1. HOLDINGS
-    let knownHoldingsSum = 0;
-    if (etf.holdings) {
-      etf.holdings.forEach((holding) => {
-        knownHoldingsSum += holding.peso_percentuale;
-        const current = holdingsMap.get(holding.nome) ?? 0;
-        holdingsMap.set(holding.nome, current + (holding.peso_percentuale * etfRelativeWeight));
-      });
-    }
-    totalUnknownHoldings += Math.max(0, 100 - knownHoldingsSum) * etfRelativeWeight;
-
-    // 2. REGIONS
-    let knownRegionsSum = 0;
-    if (etf.regions) {
-      Object.entries(etf.regions).forEach(([region, peso]) => {
-        knownRegionsSum += peso;
-        const current = regionsMap.get(region) ?? 0;
-        regionsMap.set(region, current + (peso * etfRelativeWeight));
-      });
-    }
-    totalUnknownRegions += Math.max(0, 100 - knownRegionsSum) * etfRelativeWeight;
-
-    // 3. COUNTRIES
-    let knownCountriesSum = 0;
-    if (etf.countries) {
-      Object.entries(etf.countries).forEach(([country, peso]) => {
-        knownCountriesSum += peso;
-        const current = countriesMap.get(country) ?? 0;
-        countriesMap.set(country, current + (peso * etfRelativeWeight));
-      });
-    }
-    totalUnknownCountries += Math.max(0, 100 - knownCountriesSum) * etfRelativeWeight;
-
-    // 4. SECTORS
-    let knownSectorsSum = 0;
-    if (etf.sectors) {
-      Object.entries(etf.sectors).forEach(([sector, peso]) => {
-        knownSectorsSum += peso;
-        const current = sectorsMap.get(sector) ?? 0;
-        sectorsMap.set(sector, current + (peso * etfRelativeWeight));
-      });
-    }
-    totalUnknownSectors += Math.max(0, 100 - knownSectorsSum) * etfRelativeWeight;
-  });
-
-  // Ordinamento dei risultati finali dal più grande al più piccolo
-  const holdings = Array.from(holdingsMap.entries())
-    .map(([nome, peso_percentuale]) => ({ nome, peso_percentuale }))
-    .sort((a, b) => b.peso_percentuale - a.peso_percentuale);
-
-  const regions = Array.from(regionsMap.entries())
-    .map(([nome, peso]) => ({ nome, peso }))
-    .sort((a, b) => b.peso - a.peso);
-
-  const countries = Array.from(countriesMap.entries())
-    .map(([nome, peso]) => ({ nome, peso }))
-    .sort((a, b) => b.peso - a.peso);
-
-  const sectors = Array.from(sectorsMap.entries())
-    .map(([nome, peso]) => ({ nome, peso }))
-    .sort((a, b) => b.peso - a.peso);
-
-  return { 
-    holdings, 
-    regions,
-    countries, 
-    sectors,
-    count: validEtfData.length, // Restituisce il conteggio reale degli ETF effettivamente considerati nell'analisi
-    residualHolding: totalUnknownHoldings,
-    residualRegion: totalUnknownRegions,
-    residualCountry: totalUnknownCountries,
-    residualSector: totalUnknownSectors
-  };
-}
-
 export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAnalysisProps) {
-  const [combined, setCombined] = useState<AggregatedResult | null>(null);
+  // 2. AGGIORNIAMO LO STATO PER USARE IL NUOVO TIPO AVANZATO
+  const [combined, setCombined] = useState<AdvancedPortfolioAnalysis | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -134,6 +25,7 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
       setLoading(true);
       setError(null);
       try {
+        // Scarichiamo i dati di tutti gli ETF selezionati
         const etfData = await Promise.all(
           selectedIsins.map(async (isin) => {
             const response = await fetch(`http://127.0.0.1:8000/api/etf/${isin}`);
@@ -144,7 +36,11 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
             return payload as EtfData;
           })
         );
-        setCombined(combineEtfData(etfData, weights));
+        
+        // 3. ESEGUIAMO L'ANALISI COMPLETA CON UNA SOLA RIGA
+        const analysisResult = analyzePortfolio(etfData, weights);
+        setCombined(analysisResult);
+
       } catch (err) {
         console.error('Combine error:', err);
         setError(err instanceof Error ? err.message : 'Errore durante il calcolo.');
@@ -156,11 +52,12 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
     computeCombined();
   }, [user, selectedIsins, weights]);
 
+  // Gestione degli stati di caricamento ed errore
   if (loading) return <div className="p-4 text-center">Calcolo dell'analisi in corso...</div>;
   if (error) return <div className="p-4 text-red-600">Errore: {error}</div>;
   if (!combined) return <div className="p-4 text-gray-500 text-center">Seleziona degli ETF per vedere l'analisi.</div>;
 
-  // Se l'utente ha selezionato degli ETF ma il motore li ha scartati tutti perché a 0
+  // Se l'utente ha inserito 0 per tutti gli ETF
   if (combined.count === 0) {
     return (
       <div className="p-4 text-amber-600 text-center bg-amber-50 border border-amber-200 rounded-md">
@@ -169,9 +66,58 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
     );
   }
 
+  // 4. PASSIAMO I DATI ARRICCHITI ALLA UI
   return (
-    <div className="portfolio-analysis-results">
-       <EtfFavorites combined={combined} />
+    <div className="portfolio-analysis-results flex flex-col gap-6 mt-4">
+      
+      {/* Qui possiamo già iniziare a stampare i nuovi calcoli finanziari, 
+        prima ancora dei grafici di EtfFavorites!
+      */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        {/* WIDGET COSTI */}
+        <div className="p-4 bg-white border rounded-lg shadow-sm">
+          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Efficienza & Costi</h4>
+          <p className="text-2xl font-bold text-gray-800">{combined.weightedTer}% <span className="text-sm font-normal text-gray-500">TER Medio</span></p>
+          <p className="text-sm text-gray-600 mt-1">Costo annuo stimato: <strong>{combined.totalFeesYearly}</strong></p>
+        </div>
+
+        {/* WIDGET STILE DI INVESTIMENTO */}
+        <div className="p-4 bg-white border rounded-lg shadow-sm">
+          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Orientamento Stile</h4>
+          <div className="flex items-center gap-2 mt-2">
+            <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden flex">
+              <div style={{ width: `${combined.styleAllocation.growth}%` }} className="bg-blue-500 h-full" title="Growth"></div>
+              <div style={{ width: `${combined.styleAllocation.value}%` }} className="bg-emerald-500 h-full" title="Value / Difensivo"></div>
+            </div>
+          </div>
+          <div className="flex justify-between text-xs text-gray-600 mt-1 font-medium">
+            <span className="text-blue-700">{combined.styleAllocation.growth}% Growth</span>
+            <span className="text-emerald-700">{combined.styleAllocation.value}% Value</span>
+          </div>
+        </div>
+
+      </div>
+
+      {/* RENDERIZZAZIONE DEGLI ALLARMI DI SOVRAPPOSIZIONE */}
+      {combined.overlapAlerts.length > 0 && (
+        <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+          <h4 className="text-orange-800 font-bold mb-2 flex items-center gap-2">
+            <span>⚠️</span> Rischio di Concentrazione Rilevato
+          </h4>
+          <ul className="text-sm text-orange-900 list-disc pl-5">
+            {combined.overlapAlerts.map((alert, idx) => (
+              <li key={idx} className="mb-1">
+                <strong>{alert.nome}</strong> pesa ben il <strong>{alert.pesoComplessivo}%</strong> del portafoglio totale (presente in {alert.contribuenti.length} ETF).
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* COMPONENTE GRAFICI STANDARD */}
+      <EtfFavorites combined={combined} />
+      
     </div>
   );
 }
