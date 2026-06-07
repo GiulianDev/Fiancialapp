@@ -33,7 +33,13 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
   };
 
   const handleWeightChange = (isin: string, value: string) => {
-    const normalized = value.replace(',', '.');
+    let normalized = value.replace(',', '.');
+    // Rimuove gli zeri iniziali se è un numero intero (es. "05" diventa "5")
+    // Ma preserva lo "0." se l'utente sta scrivendo un numero decimale (es. "0.5")
+    if (/^0[0-9]/.test(normalized)) {
+      normalized = normalized.replace(/^0+/, '');
+    }
+    // Accettiamo la stringa solo se rispetta il formato numerico decimale
     if (normalized === '' || /^\d*\.?\d*$/.test(normalized)) {
       setWeights(prev => ({ ...prev, [isin]: normalized }));
     }
@@ -48,13 +54,18 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
     onAnalyze(Array.from(selectedIsins), numericWeights);
   };
 
-  // --- CALCOLO DELLA SOMMA IN TEMPO REALE PER L'AVVISO ---
+  // --- CONTROLLO DI VALIDITÀ PER IL PULSANTE ---
+  const isMissingValues = Array.from(selectedIsins).some(isin => {
+    const val = parseFloat(weights[isin] || '');
+    return isNaN(val) || val <= 0;
+  });
+
   const totalWeight = Array.from(selectedIsins).reduce((sum, isin) => {
     const val = parseFloat(weights[isin] || '0');
     return sum + (isNaN(val) ? 0 : val);
   }, 0);
 
-  const showWarning = unit === '%' && selectedIsins.size > 0 && totalWeight !== 100;
+  const showWarning = unit === '%' && !isMissingValues && totalWeight !== 100;
 
   return (
     <Card className="favorites-portfolio__list">
@@ -63,7 +74,7 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
         <select 
           value={unit} 
           onChange={(e) => setUnit(e.target.value as '€' | '$' | '%')}
-          style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc', cursor: 'pointer' }}
+          style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'transparent', cursor: 'pointer' }}
         >
           <option value="€">Euro (€)</option>
           <option value="$">Dollari ($)</option>
@@ -75,9 +86,20 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
       <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0' }}>
         {favorites.map((favorite) => {
           const isSelected = selectedIsins.has(favorite.isin);
+          const weightValue = weights[favorite.isin] || '';
+          const numVal = parseFloat(weightValue);
+          
+          const isInputInvalid = isSelected && weightValue !== '' && (isNaN(numVal) || numVal <= 0);
+
           return (
-            <li key={favorite.isin} style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flex: 1 }}>
+            <li key={favorite.isin} style={{ 
+              marginBottom: '8px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '10px',
+              minHeight: '38px' 
+            }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flex: 1, height: '100%' }}>
                 <input
                   type="checkbox"
                   checked={isSelected}
@@ -96,9 +118,17 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
                     type="text"
                     inputMode="decimal"
                     placeholder={unit === '%' ? "es. 50" : "es. 1000"} 
-                    value={weights[favorite.isin] || ''}
+                    value={weightValue}
                     onChange={(e) => handleWeightChange(favorite.isin, e.target.value)}
-                    style={{ width: '100px', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
+                    style={{ 
+                      width: '100px', 
+                      padding: '4px 8px', 
+                      borderRadius: '4px', 
+                      border: isInputInvalid ? '1px solid #dc2626' : '1px solid #ccc',
+                      backgroundColor: 'transparent', // Sempre trasparente, rimosso il feedback di sfondo
+                      transition: 'all 0.2s',
+                      outline: 'none'
+                    }}
                     title={unit === '%' ? "Percentuale" : "Importo investito"}
                   />
                 </div>
@@ -108,7 +138,12 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
         })}
       </ul>
 
-      {/* BANNER DI AVVISO PERCENTUALE */}
+      {isMissingValues && selectedIsins.size > 0 && (
+        <div style={{ fontSize: '0.85rem', color: '#dc2626', marginBottom: '12px', fontWeight: '500' }}>
+          * Inserisci un valore maggiore di 0 per tutti gli ETF selezionati.
+        </div>
+      )}
+
       {showWarning && (
         <div style={{
           padding: '12px',
@@ -120,13 +155,13 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
           fontSize: '0.9rem',
           lineHeight: '1.4'
         }}>
-          <strong>⚠️ Attenzione:</strong> La somma delle percentuali inserite è pari a <strong>{totalWeight}%</strong> invece di 100%. L'analisi riproporzionerà i pesi automaticamente.
+          <strong>⚠️ Nota:</strong> La somma è pari a <strong>{totalWeight}%</strong> invece di 100%. L'analisi riproporzionerà le quote automaticamente.
         </div>
       )}
 
       <Button 
         onClick={handleAnalyzeClick} 
-        disabled={isLoading || selectedIsins.size === 0}
+        disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
         style={{ width: '100%' }}
       >
         {isLoading ? 'Analisi in corso...' : 'Analizza Selezione'}

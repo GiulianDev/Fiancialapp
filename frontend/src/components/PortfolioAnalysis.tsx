@@ -16,20 +16,35 @@ function combineEtfData(etfData: EtfData[], weights: Record<string, number>): Ag
   const countriesMap = new Map<string, number>();
   const sectorsMap = new Map<string, number>();
 
-  // Controlliamo se l'utente ha lasciato tutti i campi vuoti o a 0
-  const allWeightsZero = etfData.every(etf => (weights[etf.isin] ?? 0) === 0);
+  // 🛡️ SICUREZZA: Consideriamo SOLO gli ETF che hanno un peso valido e strettamente maggiore di 0
+  const validEtfData = etfData.filter((etf) => (weights[etf.isin] ?? 0) > 0);
 
-  // Se tutti i pesi sono zero, l'algoritmo distribuisce pesi uguali (1 ad ogni asset)
-  let totalUserWeight = etfData.reduce((sum, etf) => sum + (allWeightsZero ? 1 : (weights[etf.isin] ?? 0)), 0);
-  if (totalUserWeight === 0) totalUserWeight = 1; 
+  // Calcoliamo la somma totale dei pesi basandoci esclusivamente sugli ETF validi
+  const totalUserWeight = validEtfData.reduce((sum, etf) => sum + (weights[etf.isin] ?? 0), 0);
+
+  // Se dopo il filtro non rimangono ETF validi o il peso totale è zero, restituiamo un aggregato vuoto sicuro
+  if (validEtfData.length === 0 || totalUserWeight === 0) {
+    return { 
+      holdings: [], 
+      regions: [],
+      countries: [], 
+      sectors: [],
+      count: 0,
+      residualHolding: 0,
+      residualRegion: 0,
+      residualCountry: 0,
+      residualSector: 0
+    };
+  }
 
   let totalUnknownHoldings = 0;
   let totalUnknownRegions = 0;
   let totalUnknownCountries = 0;
   let totalUnknownSectors = 0;
 
-  etfData.forEach((etf) => {
-    const userWeight = allWeightsZero ? 1 : (weights[etf.isin] ?? 0);
+  // Cicliamo solo sugli ETF validi (> 0)
+  validEtfData.forEach((etf) => {
+    const userWeight = weights[etf.isin] ?? 0;
     const etfRelativeWeight = userWeight / totalUserWeight;
 
     // 1. HOLDINGS
@@ -77,6 +92,7 @@ function combineEtfData(etfData: EtfData[], weights: Record<string, number>): Ag
     totalUnknownSectors += Math.max(0, 100 - knownSectorsSum) * etfRelativeWeight;
   });
 
+  // Ordinamento dei risultati finali dal più grande al più piccolo
   const holdings = Array.from(holdingsMap.entries())
     .map(([nome, peso_percentuale]) => ({ nome, peso_percentuale }))
     .sort((a, b) => b.peso_percentuale - a.peso_percentuale);
@@ -98,7 +114,7 @@ function combineEtfData(etfData: EtfData[], weights: Record<string, number>): Ag
     regions,
     countries, 
     sectors,
-    count: etfData.length,
+    count: validEtfData.length, // Restituisce il conteggio reale degli ETF effettivamente considerati nell'analisi
     residualHolding: totalUnknownHoldings,
     residualRegion: totalUnknownRegions,
     residualCountry: totalUnknownCountries,
@@ -118,8 +134,6 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/etf/${selectedIsins.join(',')}`); // Nota: se la tua API accetta un ISIN alla volta mantieni il vecchio Promise.all come sotto
-        
         const etfData = await Promise.all(
           selectedIsins.map(async (isin) => {
             const response = await fetch(`http://127.0.0.1:8000/api/etf/${isin}`);
@@ -145,6 +159,15 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
   if (loading) return <div className="p-4 text-center">Calcolo dell'analisi in corso...</div>;
   if (error) return <div className="p-4 text-red-600">Errore: {error}</div>;
   if (!combined) return <div className="p-4 text-gray-500 text-center">Seleziona degli ETF per vedere l'analisi.</div>;
+
+  // Se l'utente ha selezionato degli ETF ma il motore li ha scartati tutti perché a 0
+  if (combined.count === 0) {
+    return (
+      <div className="p-4 text-amber-600 text-center bg-amber-50 border border-amber-200 rounded-md">
+        ⚠️ Nessun ETF valido da analizzare. Assicurati di inserire quote maggiori di 0.
+      </div>
+    );
+  }
 
   return (
     <div className="portfolio-analysis-results">
