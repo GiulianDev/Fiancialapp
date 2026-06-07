@@ -1,60 +1,78 @@
-import { useState } from 'react';
-// import { FavoritesPortfolio } from '../components/FavoritesPortfolio';
-import { PortfolioAnalysis } from '../components/PortfolioAnalysis';
+import { useState, useEffect } from 'react';
+// IMPORT CORRETTO: Prendiamo SavedPortfolio da firebase.ts
+import { type FirebaseUser, type SavedPortfolio } from '../firebase';
+import { useFavorites } from '../hooks/useFavorites';
+import { usePortfolio } from '../hooks/usePortfolio'; // Rimosso SavedPortfolio da qui
 import { FavoritesSelector } from '../components/FavoritesSelector';
-import { type Favorite, type FirebaseUser } from '../firebase';
-
+import { PortfolioAnalysis } from '../components/PortfolioAnalysis';
 
 interface PortfolioPageProps {
   user: FirebaseUser | null;
-  favorites: Favorite[];
 }
 
-export function PortfolioPage({ user, favorites }: PortfolioPageProps) {
-  const [showAnalysis, setShowAnalysis] = useState(false);
+export function PortfolioPage({ user }: PortfolioPageProps) {
+  // Sfruttiamo i due hook custom speculari
+  const { favorites, loading: favsLoading } = useFavorites(user);
+  const { savedPortfolio, loading: portfolioLoading, updatePortfolio } = usePortfolio(user);
+
+  // Stato locale per triggerare i grafici a schermo
   const [analysisData, setAnalysisData] = useState<{ isins: string[]; weights: Record<string, number> } | null>(null);
 
-  const handleAnalyze = (isins: string[], weights: Record<string, number>) => {
-    setAnalysisData({ isins, weights });
-    setShowAnalysis(true);
+  // Se Firebase trova un portafoglio preesistente, avvia l'analisi al caricamento della pagina
+  useEffect(() => {
+    if (savedPortfolio) {
+      const numericWeights: Record<string, number> = {};
+      savedPortfolio.selectedIsins.forEach(isin => {
+        numericWeights[isin] = parseFloat(savedPortfolio.weights[isin] || '0');
+      });
+      setAnalysisData({ isins: savedPortfolio.selectedIsins, weights: numericWeights });
+    }
+  }, [savedPortfolio]);
+
+  // Gestione dell'azione al click del pulsante analizza
+  const handleAnalyzeAndSave = async (
+    selectedIsins: string[], 
+    rawWeights: Record<string, string>, 
+    numericWeights: Record<string, number>, 
+    unit: '€' | '$' | '%'
+  ) => {
+    // 1. Mostra i grafici a schermo
+    setAnalysisData({ isins: selectedIsins, weights: numericWeights });
+
+    // 2. Salva su Firebase tramite l'hook dedicato
+    const newPortfolio: SavedPortfolio = {
+      selectedIsins,
+      weights: rawWeights,
+      unit
+    };
+    await updatePortfolio(newPortfolio);
   };
 
-  if (!user) {
-    return (
-      <div className="container mx-auto p-4 text-center">
-        {/* <h1 className="text-3xl font-bold mb-6">Your Portfolio</h1> */}
-        <p className="text-gray-600 border p-8 rounded-lg bg-gray-50">
-          Effettua il login per visualizzare e analizzare il tuo portafoglio di ETF preferiti.
-        </p>
-      </div>
-    );
+  const isGlobalLoading = favsLoading || portfolioLoading;
+
+  if (isGlobalLoading && !analysisData) {
+    return <div className="text-center p-8 text-white/50">Sincronizzazione dati in corso...</div>;
   }
-  
+
   return (
-    <div className="container mx-auto p-4">
-
-
+    <div className="flex flex-col gap-6">
       
+      <FavoritesSelector 
+        user={user}
+        favorites={favorites}
+        isLoading={isGlobalLoading}
+        initialData={savedPortfolio}
+        onAnalyzeAndSave={handleAnalyzeAndSave}
+      />
 
-       {/* <h1 className="text-3xl font-bold mb-6">Your Portfolio</h1> */}
-
-       <FavoritesSelector 
-         user={user} 
-         favorites={favorites} 
-         onAnalyze={handleAnalyze} 
-         isLoading={false} 
-       />
-
-
-      {showAnalysis && analysisData && (
-        <>
-          <PortfolioAnalysis 
-            user={user} 
-            selectedIsins={analysisData.isins} 
-            weights={analysisData.weights} 
-          />
-        </>
+      {analysisData && (
+        <PortfolioAnalysis 
+          user={user}
+          selectedIsins={analysisData.isins}
+          weights={analysisData.weights}
+        />
       )}
+
     </div>
   );
 }
