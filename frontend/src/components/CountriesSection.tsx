@@ -1,4 +1,5 @@
 import { type Country } from '../types/etf';
+import { Button } from './ui/Button';
 
 interface CountriesSectionProps {
   countries: Country[];
@@ -31,19 +32,9 @@ export function CountriesSection({ countries, limite, onLoadMore }: CountriesSec
           </ul>
 
           {limite < countriesSorted.length && (
-            <button
-              onClick={onLoadMore}
-              style={{
-                marginTop: '10px',
-                padding: '6px 12px',
-                cursor: 'pointer',
-                background: '#fff',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-              }}
-            >
+            <Button onClick={onLoadMore}>
               Mostra altri 5 ({countriesSorted.length - limite} rimanenti)
-            </button>
+            </Button>
           )}
         </>
       ) : (
