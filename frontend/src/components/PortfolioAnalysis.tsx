@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { type FirebaseUser } from '../firebase';
 import type { EtfData } from '../types/etf';
 import { EtfFavorites } from './EtfFavorites/EtfFavorites';
+import { Card } from './ui/Card/Card'; // Importata la tua Card nativa
 
-// 1. IMPORTIAMO LA NOSTRA NUOVA UTILITY E LA SUA INTERFACCIA
+// Importiamo l'utility e la sua interfaccia
 import { analyzePortfolio, type AdvancedPortfolioAnalysis } from '../utils/portfolioUtils';
 
 interface PortfolioAnalysisProps {
@@ -13,7 +14,6 @@ interface PortfolioAnalysisProps {
 }
 
 export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAnalysisProps) {
-  // 2. AGGIORNIAMO LO STATO PER USARE IL NUOVO TIPO AVANZATO
   const [combined, setCombined] = useState<AdvancedPortfolioAnalysis | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +25,6 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
       setLoading(true);
       setError(null);
       try {
-        // Scarichiamo i dati di tutti gli ETF selezionati
         const etfData = await Promise.all(
           selectedIsins.map(async (isin) => {
             const response = await fetch(`http://127.0.0.1:8000/api/etf/${isin}`);
@@ -37,7 +36,6 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
           })
         );
         
-        // 3. ESEGUIAMO L'ANALISI COMPLETA CON UNA SOLA RIGA
         const analysisResult = analyzePortfolio(etfData, weights);
         setCombined(analysisResult);
 
@@ -52,63 +50,81 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
     computeCombined();
   }, [user, selectedIsins, weights]);
 
-  // Gestione degli stati di caricamento ed errore
-  if (loading) return <div className="p-4 text-center">Calcolo dell'analisi in corso...</div>;
-  if (error) return <div className="p-4 text-red-600">Errore: {error}</div>;
-  if (!combined) return <div className="p-4 text-gray-500 text-center">Seleziona degli ETF per vedere l'analisi.</div>;
+  if (loading) return <div className="p-4 text-center text-white/70">Calcolo dell'analisi in corso...</div>;
+  if (error) return <div className="p-4 text-red-400">Errore: {error}</div>;
+  if (!combined) return <div className="p-4 text-white/50 text-center">Seleziona degli ETF per vedere l'analisi.</div>;
 
-  // Se l'utente ha inserito 0 per tutti gli ETF
   if (combined.count === 0) {
     return (
-      <div className="p-4 text-amber-600 text-center bg-amber-50 border border-amber-200 rounded-md">
+      <div className="p-4 text-amber-400 text-center bg-amber-500/10 border border-amber-500/20 rounded-xl backdrop-blur-md">
         ⚠️ Nessun ETF valido da analizzare. Assicurati di inserire quote maggiori di 0.
       </div>
     );
   }
 
-  // 4. PASSIAMO I DATI ARRICCHITI ALLA UI
   return (
     <div className="portfolio-analysis-results flex flex-col gap-6 mt-4">
       
-      {/* Qui possiamo già iniziare a stampare i nuovi calcoli finanziari, 
-        prima ancora dei grafici di EtfFavorites!
-      */}
+      {/* SEZIONE METRICHE AVANZATE AVVOLTE NELLE TUE CARD NATIVE */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         
-        {/* WIDGET COSTI */}
-        <div className="p-4 bg-white border rounded-lg shadow-sm">
-          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Efficienza & Costi</h4>
-          <p className="text-2xl font-bold text-gray-800">{combined.weightedTer}% <span className="text-sm font-normal text-gray-500">TER Medio</span></p>
-          <p className="text-sm text-gray-600 mt-1">Costo annuo stimato: <strong>{combined.totalFeesYearly}</strong></p>
-        </div>
+        {/* CARD EFFICIENZA E COSTI */}
+        <Card>
+          <h4 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-2">
+            Efficienza & Costi
+          </h4>
+          <p className="text-3xl font-bold text-white">
+            {combined.weightedTer}% <span className="text-sm font-normal text-white/60">TER Medio</span>
+          </p>
+          <p className="text-sm text-white/70 mt-2">
+            Costo annuo stimato: <strong className="text-white">{combined.totalFeesYearly}</strong>
+          </p>
+        </Card>
 
-        {/* WIDGET STILE DI INVESTIMENTO */}
-        <div className="p-4 bg-white border rounded-lg shadow-sm">
-          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Orientamento Stile</h4>
-          <div className="flex items-center gap-2 mt-2">
-            <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden flex">
-              <div style={{ width: `${combined.styleAllocation.growth}%` }} className="bg-blue-500 h-full" title="Growth"></div>
-              <div style={{ width: `${combined.styleAllocation.value}%` }} className="bg-emerald-500 h-full" title="Value / Difensivo"></div>
+        {/* CARD ORIENTAMENTO STILE (GROWTH VS VALUE) */}
+        <Card>
+          <h4 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-2">
+            Orientamento Stile
+          </h4>
+          <div className="flex items-center gap-2 mt-4">
+            {/* Barra interna trasparente ed elegante coerente col tema dark/glass */}
+            <div className="w-full bg-white/10 rounded-full h-4 overflow-hidden flex border border-white/5">
+              <div 
+                style={{ width: `${combined.styleAllocation.growth}%` }} 
+                className="bg-blue-500/60 h-full backdrop-blur-sm transition-all duration-500" 
+                title="Growth"
+              ></div>
+              <div 
+                style={{ width: `${combined.styleAllocation.value}%` }} 
+                className="bg-emerald-500/60 h-full backdrop-blur-sm transition-all duration-500" 
+                title="Value / Difensivo"
+              ></div>
             </div>
           </div>
-          <div className="flex justify-between text-xs text-gray-600 mt-1 font-medium">
-            <span className="text-blue-700">{combined.styleAllocation.growth}% Growth</span>
-            <span className="text-emerald-700">{combined.styleAllocation.value}% Value</span>
+          <div className="flex justify-between text-xs text-white/80 mt-2 font-medium">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-blue-500/80"></span>
+              {combined.styleAllocation.growth}% Growth
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500/80"></span>
+              {combined.styleAllocation.value}% Value
+            </span>
           </div>
-        </div>
+        </Card>
 
       </div>
 
-      {/* RENDERIZZAZIONE DEGLI ALLARMI DI SOVRAPPOSIZIONE */}
+      {/* RENDERIZZAZIONE DEGLI ALLARMI DI SOVRAPPOSIZIONE (Stile Glassmorphism Arancione) */}
       {combined.overlapAlerts.length > 0 && (
-        <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
-          <h4 className="text-orange-800 font-bold mb-2 flex items-center gap-2">
+        <div className="p-5 bg-orange-500/10 border border-orange-500/20 rounded-2xl backdrop-blur-md">
+          <h4 className="text-orange-400 font-bold mb-3 flex items-center gap-2 text-base">
             <span>⚠️</span> Rischio di Concentrazione Rilevato
           </h4>
-          <ul className="text-sm text-orange-900 list-disc pl-5">
+          <ul className="text-sm text-white/80 list-disc pl-5 space-y-1">
             {combined.overlapAlerts.map((alert, idx) => (
-              <li key={idx} className="mb-1">
-                <strong>{alert.nome}</strong> pesa ben il <strong>{alert.pesoComplessivo}%</strong> del portafoglio totale (presente in {alert.contribuenti.length} ETF).
+              <li key={idx}>
+                <span className="text-orange-300 font-semibold">{alert.nome}</span> pesa ben il <strong className="text-white font-bold">{alert.pesoComplessivo}%</strong> del tuo intero portafoglio (è presente in {alert.contribuenti.length} ETF diversi).
               </li>
             ))}
           </ul>
