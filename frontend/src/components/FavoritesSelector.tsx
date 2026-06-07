@@ -27,18 +27,13 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
         }); 
       } else {
         next.add(isin);
-        // Non inizializziamo a 0 per permettere la visualizzazione del placeholder
       }
       return next;
     });
-
   };
 
   const handleWeightChange = (isin: string, value: string) => {
-    // Sostituiamo la virgola con il punto per uniformità interna
     const normalized = value.replace(',', '.');
-    
-    // Accettiamo solo numeri con al massimo un punto decimale
     if (normalized === '' || /^\d*\.?\d*$/.test(normalized)) {
       setWeights(prev => ({ ...prev, [isin]: normalized }));
     }
@@ -52,6 +47,14 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
     });
     onAnalyze(Array.from(selectedIsins), numericWeights);
   };
+
+  // --- CALCOLO IN TEMPO REALE PER L'AVVISO ---
+  const currentTotalWeight = Array.from(selectedIsins).reduce((sum, isin) => {
+    const val = parseFloat(weights[isin] || '0');
+    return sum + (isNaN(val) ? 0 : val);
+  }, 0);
+
+  const showWarning = unit === '%' && selectedIsins.size > 0 && currentTotalWeight !== 100;
 
   return (
     <Card className="favorites-portfolio__list">
@@ -67,9 +70,9 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
           <option value="%">Percentuale (%)</option>
         </select>
       </div>
+      
       <p>Seleziona gli ETF e inserisci {unit === '%' ? 'la quota' : "l'importo investito"}:</p>
       
-
       <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0' }}>
         {favorites.map((favorite) => {
           const isSelected = selectedIsins.has(favorite.isin);
@@ -106,6 +109,20 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
         })}
       </ul>
 
+      {/* BANNER DI AVVISO */}
+      {showWarning && (
+        <div style={{
+          padding: '12px',
+          marginBottom: '16px',
+          backgroundColor: '#fffbeb',
+          border: '1px solid #fde68a',
+          borderRadius: '6px',
+          color: '#92400e',
+          fontSize: '0.9rem'
+        }}>
+          <strong>⚠️ Attenzione:</strong> La somma delle percentuali è <strong>{currentTotalWeight}%</strong> invece di 100%. L'analisi riproporzionerà i pesi automaticamente.
+        </div>
+      )}
 
       <Button 
         onClick={handleAnalyzeClick} 
@@ -117,4 +134,3 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
     </Card>
   );
 }
-
