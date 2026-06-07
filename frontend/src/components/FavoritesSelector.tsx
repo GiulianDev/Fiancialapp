@@ -41,45 +41,8 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
   return (
     <Card className="favorites-portfolio__list">
       <h3>Analisi Portafoglio</h3>
-      <p>Seleziona gli ETF e inserisci l'importo investito in <strong>Euro (€)</strong> o in <strong>Dollari ($)</strong>:</p>
+      <p>Seleziona gli ETF e inserisci l'importo investito in <strong>Euro (€)</strong> o in <strong>Dollari ()</strong>:</p>
       
-      
-      {/* <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0' }}>
-        {favorites.map((favorite) => {
-          const isSelected = selectedIsins.has(favorite.isin);
-          return (
-            <li key={favorite.isin} style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flex: 1 }}>
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => toggleSelection(favorite.isin)}
-                />
-                <span style={{ fontSize: '0.9rem' }}>
-                    {favorite.name ? `${favorite.name} ` : ''}
-                    <code style={{ background: '#eee', padding: '2px 4px', borderRadius: '4px' }}>{favorite.isin}</code>
-                </span>
-              </label>
-              
-              {isSelected && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span>€</span>
-                  <input 
-                    type="number" 
-                    min="0"
-                    step="0.01"
-                    placeholder="Esempio: 500" 
-                    value={weights[favorite.isin] ?? ''}
-                    onChange={(e) => handleWeightChange(favorite.isin, e.target.value)}
-                    style={{ width: '100px', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
-                  />
-                </div>
-              )}
-              
-            </li>
-          );
-        })}
-      </ul> */}
 
       <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0' }}>
         {favorites.map((favorite) => {
@@ -106,7 +69,7 @@ export function FavoritesSelector({ favorites, onAnalyze, isLoading }: Favorites
                     type="number" 
                     min="0"
                     step="0.01" // Permettiamo l'inserimento di decimali per la valuta
-                    placeholder="Esempio: 1000" // Placeholder più chiaro
+                    placeholder="1000" // Placeholder più chiaro
                     value={weights[favorite.isin] ?? ''} // Usa stringa vuota per un input più pulito quando 0
                     onChange={(e) => handleWeightChange(favorite.isin, e.target.value)}
                     style={{ width: '100px', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
