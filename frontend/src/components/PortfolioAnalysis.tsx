@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { type FirebaseUser } from '../firebase';
 import type { EtfData } from '../types/etf';
-import { EtfFavorites } from './EtfFavorites/EtfFavorites';
+import { EtfCharts } from './EtfFavorites/EtfCharts';
 import { Card } from './ui/Card/Card'; // Importata la tua Card nativa
 
 // Importiamo l'utility e la sua interfaccia
@@ -132,7 +132,7 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
       )}
 
       {/* COMPONENTE GRAFICI STANDARD */}
-      <EtfFavorites combined={combined} />
+      <EtfCharts combined={combined} />
       
     </div>
   );

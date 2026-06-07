@@ -17,11 +17,11 @@ const COLORS = [
   '#aaa',
 ];
 
-interface EtfFavoritesProps {
+interface EtfChartsProps {
   combined: AggregatedResult;
 }
 
-export function EtfFavorites({ combined }: EtfFavoritesProps) {
+export function EtfCharts({ combined }: EtfChartsProps) {
   const holdingsData = [
     ...combined.holdings.slice(0, 10),
     ...(combined.residualHolding > 0
@@ -52,14 +52,14 @@ export function EtfFavorites({ combined }: EtfFavoritesProps) {
           <h4>Composizione Aziende</h4>
           <ResponsiveContainer width="100%" height={320}>
             <PieChart>
-              <Pie
+              <Pie  
                 data={holdingsData}
                 dataKey="peso_percentuale"
                 nameKey="nome"
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                label={({ nome, peso_percentuale }) => `${nome.slice(0, 16)}: ${peso_percentuale.toFixed(1)}%`}
+                label={(entry) => `${String(entry.name).slice(0, 16)}: ${Number(entry.value).toFixed(1)}%`}
               >
                 {holdingsData.map((_, index) => (
                   <Cell key={`holding-cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -82,7 +82,7 @@ export function EtfFavorites({ combined }: EtfFavoritesProps) {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                label={({ nome, peso }) => `${nome.slice(0, 16)}: ${(peso as number).toFixed(1)}%`}
+                label={(entry) => `${String(entry.name).slice(0, 16)}: ${Number(entry.value).toFixed(1)}%`}
               >
                 {countriesData.map((_, index) => (
                   <Cell key={`country-cell-${index}`} fill={COLORS[index % COLORS.length]} />
