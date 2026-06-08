@@ -84,6 +84,26 @@
   color: #b0b0b0;
 }
 
+/* Stili personalizzati per la scrollbar della legenda */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Larghezza della barra */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05); /* Sfondo della traccia */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2); /* Colore del "pollice" della scrollbar */
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.05); /* Bordo per staccare dal track */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3); /* Colore al passaggio del mouse */
+}
+
 @media (max-width: 920px) {
   .etf-charts__grid,
   .etf-charts__details {
