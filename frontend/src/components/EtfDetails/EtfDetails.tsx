@@ -14,6 +14,7 @@ interface EtfDetailsProps {
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
   user?: FirebaseUser | null;
+  onHoldingClick?: (isin: string, name: string) => void;
 }
 
 export function EtfDetails({
@@ -24,6 +25,7 @@ export function EtfDetails({
   onLoadMoreCountries,
   isFavorite = false,
   onToggleFavorite,
+  onHoldingClick,
   user,
 }: EtfDetailsProps) {
   const countriesArray: Country[] = Object.entries(data.countries).map(([nome, peso]) => ({
@@ -87,6 +89,7 @@ export function EtfDetails({
           totaleHoldings={data.totale_holdings}
           limite={limiteHoldings}
           onLoadMore={onLoadMoreHoldings}
+          onHoldingClick={onHoldingClick}
         />
 
         <CountriesSection
