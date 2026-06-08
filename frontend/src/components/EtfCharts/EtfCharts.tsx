@@ -52,6 +52,41 @@ export function EtfCharts({ combined }: EtfChartsProps) {
       </div>
 
 
+      <div className="etf-charts__details">
+        <div className="etf-charts__section">
+          <h4>Dettagli Aziende</h4>
+          <ul>
+            {combined.holdings.slice(0, 15).map((holding) => (
+              <li key={holding.nome}>
+                {holding.nome}: <strong>{holding.peso_percentuale.toFixed(2)}%</strong>
+              </li>
+            ))}
+            {combined.residualHolding > 0 && (
+              <li className="residual-row">
+                📦 <em>Altre aziende minori</em>: <strong>{combined.residualHolding.toFixed(2)}%</strong>
+              </li>
+            )}
+          </ul>
+        </div>
+
+        <div className="etf-charts__section">
+          <h4>Dettagli Paesi</h4>
+          <ul>
+            {combined.countries.slice(0, 15).map((country) => (
+              <li key={country.nome}>
+                {country.nome}: <strong>{country.peso.toFixed(2)}%</strong>
+              </li>
+            ))}
+            {combined.residualCountry > 0 && (
+              <li className="residual-row">
+                🌍 <em>Altri paesi minori</em>: <strong>{combined.residualCountry.toFixed(2)}%</strong>
+              </li>
+            )}
+          </ul>
+        </div>
+      </div>
+
+
 
     </Card>
   );
