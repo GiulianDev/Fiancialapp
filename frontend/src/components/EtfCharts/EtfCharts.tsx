@@ -1,22 +1,7 @@
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 import { type AggregatedResult } from '../../types/portfolio';
 import { Card } from '../ui/Card/Card';
 import './EtfCharts.css';
 import { PieChartDisplay } from './PieChartDisplay';
-
-const COLORS = [
-  '#0066cc',
-  '#ff6b6b',
-  '#4ecdc4',
-  '#45b7d1',
-  '#f7b731',
-  '#5f27cd',
-  '#00d2d3',
-  '#ff9ff3',
-  '#54a0ff',
-  '#48dbfb',
-  '#aaa',
-];
 
 interface EtfChartsProps {
   combined: AggregatedResult;
