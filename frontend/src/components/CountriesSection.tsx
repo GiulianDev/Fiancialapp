@@ -12,7 +12,7 @@ export function CountriesSection({ countries, limite, onLoadMore }: CountriesSec
   const countriesToShow = countriesSorted.slice(0, limite);
 
   return (
-    <div style={{ flex: '1', minWidth: '300px' }}>
+    <div style={{ flex: '1', minWidth: '200px' }}>
       <h3 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '5px' }}>
         Esposizione Geografica
       </h3>
