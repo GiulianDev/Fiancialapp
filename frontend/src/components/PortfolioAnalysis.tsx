@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { type FirebaseUser } from '../firebase';
 import type { EtfData } from '../types/etf';
-import { EtfCharts } from './EtfFavorites/EtfCharts';
+import { EtfCharts } from './EtfCharts/EtfCharts';
 import { Card } from './ui/Card/Card'; // Importata la tua Card nativa
 
 // Importiamo l'utility e la sua interfaccia
