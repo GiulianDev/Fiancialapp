@@ -26,7 +26,7 @@ export function PieChartDisplay({ data, dataKey, nameKey, title }: PieChartDispl
   return (
     <div className="etf-charts__chart">
       <h4>{title}</h4>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={350}>
         <PieChart>
           <Pie  
             data={data}
@@ -34,8 +34,10 @@ export function PieChartDisplay({ data, dataKey, nameKey, title }: PieChartDispl
             nameKey={nameKey}
             cx="50%"
             cy="50%"
-            outerRadius={90} // Ridotto leggermente il raggio esterno
-            label={(entry) => `${String(entry.name).slice(0, 10)}: ${Number(entry.value).toFixed(1)}%`} // Troncamento aggressivo per i nomi
+            outerRadius={100} 
+            // Rimosse le etichette dirette sul grafico per evitare tagli
+            // labelLine={false} // Non più necessaria senza la prop 'label'
+            // label={(entry) => `${String(entry.name).slice(0, 10)}: ${Number(entry.value).toFixed(1)}%`}
           >
             {data.map((_, index) => (
               <Cell key={`cell-${title}-${index}`} fill={COLORS[index % COLORS.length]} />
