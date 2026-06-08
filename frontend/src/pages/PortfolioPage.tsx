@@ -1,4 +1,3 @@
-// src/pages/PortfolioPage.tsx
 import { useState, useEffect } from 'react';
 import { type FirebaseUser, type SavedPortfolio } from '../firebase';
 import { useFavorites } from '../hooks/useFavorites';
@@ -16,7 +15,6 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
 
   const [analysisData, setAnalysisData] = useState<{ isins: string[]; weights: Record<string, number> } | null>(null);
   
-  // STATO PER CONTROLLARE L'ESECUZIONE DEI GRAFICI
   const [triggerFetch, setTriggerFetch] = useState(false);
 
   useEffect(() => {
@@ -26,11 +24,10 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
         numericWeights[isin] = parseFloat(savedPortfolio.weights[isin] || '0');
       });
       setAnalysisData({ isins: savedPortfolio.selectedIsins, weights: numericWeights });
-      setTriggerFetch(true); // Al caricamento iniziale, avviamo i grafici
+      setTriggerFetch(true); 
     }
   }, [savedPortfolio]);
 
-  // FUNZIONE 1: Fa solo la simulazione senza salvare
   const handleTest = (
     selectedIsins: string[], 
     _rawWeights: Record<string, string>, 
@@ -38,10 +35,9 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
     _unit: '€' | '$' | '%'
   ) => {
     setAnalysisData({ isins: selectedIsins, weights: numericWeights });
-    setTriggerFetch(true); // Scatena l'analisi
+    setTriggerFetch(true); 
   };
 
-  // FUNZIONE 2: Salva sul database e fa la simulazione
   const handleApplica = async (
     selectedIsins: string[], 
     rawWeights: Record<string, string>, 
@@ -57,32 +53,31 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
     try {
       await updatePortfolio(newPortfolio);
       setAnalysisData({ isins: selectedIsins, weights: numericWeights });
-      setTriggerFetch(true); // Scatena l'analisi
+      setTriggerFetch(true); 
     } catch (err) {
       console.error('Portfolio save failed in parent:', err);
     }
   };
 
-  // FUNZIONE 3: Si attiva quando l'utente cambia un peso nel form
   const handleInputsChanged = () => {
-    // Spegniamo l'analisi finché l'utente non riclicca Test o Applica
     setTriggerFetch(false); 
   };
 
   const isGlobalLoading = favsLoading || portfolioLoading;
 
   if (isGlobalLoading && !analysisData) {
-    return <div className="text-center p-8 text-white/50">Sincronizzazione dati in corso...</div>;
+    // Aggiunto w-full qui
+    return <div className="text-center p-8 text-white/50 w-full">Sincronizzazione dati in corso...</div>;
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    // Aggiunto w-full e max-w-full per blindare la larghezza
+    <div className="flex flex-col gap-6 w-full max-w-full">
       
       {portfolioError && (
         <div className="text-red-300 text-sm mb-4">Errore portafoglio: {portfolioError}</div>
       )}
 
-      {/* Passiamo le tre funzioni al selettore usando i commenti corretti per il JSX */}
       <FavoritesSelector 
         favorites={favorites}
         isLoading={isGlobalLoading}
@@ -97,7 +92,7 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
           user={user}
           selectedIsins={analysisData.isins}
           weights={analysisData.weights}
-          triggerFetch={triggerFetch} // Passiamo lo stato
+          triggerFetch={triggerFetch}
         />
       )}
 

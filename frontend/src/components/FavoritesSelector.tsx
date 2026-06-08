@@ -1,4 +1,3 @@
-// src/components/FavoritesSelector.tsx
 import { useState, useEffect } from 'react';
 import { type Favorite, type SavedPortfolio } from '../firebase';
 import { Button } from './ui/Button';
@@ -33,7 +32,6 @@ export function FavoritesSelector({
     }
   }, [initialData]);
 
-  // Funzione di utilità per avvisare il componente padre che stiamo scrivendo
   const triggerChange = () => {
     onInputsChanged();
   };
@@ -72,7 +70,6 @@ export function FavoritesSelector({
     }
   };
 
-  // Prepara i dati numerici puliti da inviare ai bottoni
   const getCleanData = () => {
     const numericWeights: Record<string, number> = {};
     const selectedIsinsArray = Array.from(selectedIsins);
@@ -95,7 +92,6 @@ export function FavoritesSelector({
     onApplica(selectedIsinsArray, weights, numericWeights, unit);
   };
 
-  // Controlli di validità
   const isMissingValues = Array.from(selectedIsins).some(isin => {
     const val = parseFloat(weights[isin] || '');
     return isNaN(val) || val <= 0;
@@ -109,133 +105,142 @@ export function FavoritesSelector({
   const showWarning = unit === '%' && !isMissingValues && totalWeight !== 100;
 
   return (
-    <Card className="favorites-portfolio__list">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-        <h3 style={{ margin: 0, color: 'white' }}>Analisi Portafoglio</h3>
-        <select 
-          value={unit} 
-          onChange={(e) => handleUnitChange(e.target.value as '€' | '$' | '%')}
-          style={{ 
-            padding: '4px 8px', 
-            borderRadius: '6px', 
-            border: '1px solid rgba(255,255,255,0.2)', 
-            backgroundColor: 'transparent', 
-            cursor: 'pointer',
-            color: 'white',
-            outline: 'none'
-          }}
-        >
-          <option value="€" style={{ color: 'black' }}>Euro (€)</option>
-          <option value="$" style={{ color: 'black' }}>Dollari ($)</option>
-          <option value="%" style={{ color: 'black' }}>Percentuale (%)</option>
-        </select>
-      </div>
-      <p style={{ color: 'rgba(255,255,255,0.7)' }}>
-        Seleziona gli ETF e inserisci {unit === '%' ? 'la quota' : "l'importo investito"}:
-      </p>
-      
-      <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0' }}>
-        {favorites.map((favorite) => {
-          const isSelected = selectedIsins.has(favorite.isin);
-          const weightValue = weights[favorite.isin] || '';
-          const numVal = parseFloat(weightValue);
-          
-          const isInputInvalid = isSelected && weightValue !== '' && (isNaN(numVal) || numVal <= 0);
+    // AGGIUNTO w-full PER FORZARE L'ESPANISIONE AL 100%
+    <div className="w-full">
+      <Card className="favorites-portfolio__list w-full">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', width: '100%' }}>
+          <h3 style={{ margin: 0, color: 'white' }}>Analisi Portafoglio</h3>
+          <select 
+            value={unit} 
+            onChange={(e) => handleUnitChange(e.target.value as '€' | '$' | '%')}
+            style={{ 
+              padding: '4px 8px', 
+              borderRadius: '6px', 
+              border: '1px solid rgba(255,255,255,0.2)', 
+              backgroundColor: 'transparent', 
+              cursor: 'pointer',
+              color: 'white',
+              outline: 'none'
+            }}
+          >
+            <option value="€" style={{ color: 'black' }}>Euro (€)</option>
+            <option value="$" style={{ color: 'black' }}>Dollari ($)</option>
+            <option value="%" style={{ color: 'black' }}>Percentuale (%)</option>
+          </select>
+        </div>
+        
+        <p style={{ color: 'rgba(255,255,255,0.7)', width: '100%' }}>
+          Seleziona gli ETF e inserisci {unit === '%' ? 'la quota' : "l'importo investito"}:
+        </p>
+        
+        {/* AGGIUNTO width: 100% */}
+        <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0', width: '100%' }}>
+          {favorites.map((favorite) => {
+            const isSelected = selectedIsins.has(favorite.isin);
+            const weightValue = weights[favorite.isin] || '';
+            const numVal = parseFloat(weightValue);
+            const isInputInvalid = isSelected && weightValue !== '' && (isNaN(numVal) || numVal <= 0);
 
-          return (
-            <li key={favorite.isin} style={{ 
-              marginBottom: '12px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '10px',
-              minHeight: '38px',
-              color: 'white'
-            }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flex: 1, height: '100%' }}>
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => toggleSelection(favorite.isin)}
-                />
-                <span style={{ fontSize: '0.9rem' }}>
-                    {favorite.name ? `${favorite.name} ` : ''}
-                    <code style={{ 
-                      padding: '2px 6px', 
-                      borderRadius: '4px', 
-                      backgroundColor: 'rgba(255,255,255,0.1)',
-                      color: 'rgba(255,255,255,0.9)',
-                      marginLeft: '4px'
-                    }}>{favorite.isin}</code>
-                </span>
-              </label>
-              
-              {isSelected && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', minWidth: '15px' }}>{unit}</span>
-                  <input 
-                    type="text"
-                    inputMode="decimal"
-                    placeholder={unit === '%' ? "es. 50" : "es. 1000"} 
-                    value={weightValue}
-                    onChange={(e) => handleWeightChange(favorite.isin, e.target.value)}
-                    style={{ 
-                      width: '100px', 
-                      padding: '6px 10px', 
-                      borderRadius: '6px', 
-                      border: isInputInvalid ? '1px solid #dc2626' : '1px solid rgba(255,255,255,0.2)',
-                      backgroundColor: 'transparent',
-                      color: 'white',
-                      transition: 'all 0.2s',
-                      outline: 'none'
-                    }}
-                    title={unit === '%' ? "Percentuale" : "Importo investito"}
+            return (
+              // AGGIUNTO width: 100% E flex-wrap per sicurezza
+              <li key={favorite.isin} style={{ 
+                marginBottom: '12px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '10px',
+                minHeight: '38px',
+                width: '100%',
+                color: 'white',
+                flexWrap: 'wrap'
+              }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flex: '1 1 auto', minWidth: '0', height: '100%' }}>
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleSelection(favorite.isin)}
+                    className="flex-shrink-0"
                   />
-                </div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+                  <span style={{ fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {favorite.name ? `${favorite.name} ` : ''}
+                      <code style={{ 
+                        padding: '2px 6px', 
+                        borderRadius: '4px', 
+                        backgroundColor: 'rgba(255,255,255,0.1)',
+                        color: 'rgba(255,255,255,0.9)',
+                        marginLeft: '4px'
+                      }}>{favorite.isin}</code>
+                  </span>
+                </label>
+                
+                {isSelected && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                    <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', minWidth: '15px' }}>{unit}</span>
+                    <input 
+                      type="text"
+                      inputMode="decimal"
+                      placeholder={unit === '%' ? "es. 50" : "es. 1000"} 
+                      value={weightValue}
+                      onChange={(e) => handleWeightChange(favorite.isin, e.target.value)}
+                      style={{ 
+                        width: '100px', 
+                        padding: '6px 10px', 
+                        borderRadius: '6px', 
+                        border: isInputInvalid ? '1px solid #dc2626' : '1px solid rgba(255,255,255,0.2)',
+                        backgroundColor: 'transparent',
+                        color: 'white',
+                        transition: 'all 0.2s',
+                        outline: 'none'
+                      }}
+                      title={unit === '%' ? "Percentuale" : "Importo investito"}
+                    />
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
 
-      {isMissingValues && selectedIsins.size > 0 && (
-        <div style={{ fontSize: '0.85rem', color: '#f87171', marginBottom: '12px', fontWeight: '500' }}>
-          * Inserisci un valore maggiore di 0 per tutti gli ETF selezionati.
+        {isMissingValues && selectedIsins.size > 0 && (
+          <div style={{ fontSize: '0.85rem', color: '#f87171', marginBottom: '12px', fontWeight: '500', width: '100%' }}>
+            * Inserisci un valore maggiore di 0 per tutti gli ETF selezionati.
+          </div>
+        )}
+
+        {showWarning && (
+          <div style={{
+            padding: '12px',
+            marginBottom: '16px',
+            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+            border: '1px solid rgba(245, 158, 11, 0.2)',
+            borderRadius: '8px',
+            color: '#fbbf24',
+            fontSize: '0.9rem',
+            lineHeight: '1.4',
+            width: '100%'
+          }}>
+            <strong>⚠️ Nota:</strong> La somma è pari a <strong>{totalWeight}%</strong> invece di 100%. L'analisi riproporzionerà le quote automaticamente.
+          </div>
+        )}
+
+        {/* AGGIUNTO width: 100% */}
+        <div style={{ display: 'flex', gap: '12px', marginTop: '8px', width: '100%' }}>
+          <Button 
+            onClick={handleTestClick} 
+            disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
+            style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
+          >
+            🔬 Test
+          </Button>
+
+          <Button 
+            onClick={handleApplicaClick} 
+            disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
+            style={{ flex: 1, backgroundColor: '#10b981', color: 'white' }}
+          >
+            {isLoading ? 'Salvataggio...' : '💾 Applica e Salva'}
+          </Button>
         </div>
-      )}
-
-      {showWarning && (
-        <div style={{
-          padding: '12px',
-          marginBottom: '16px',
-          backgroundColor: 'rgba(245, 158, 11, 0.1)',
-          border: '1px solid rgba(245, 158, 11, 0.2)',
-          borderRadius: '8px',
-          color: '#fbbf24',
-          fontSize: '0.9rem',
-          lineHeight: '1.4'
-        }}>
-          <strong>⚠️ Nota:</strong> La somma è pari a <strong>{totalWeight}%</strong> invece di 100%. L'analisi riproporzionerà le quote automaticamente.
-        </div>
-      )}
-
-      {/* NUOVA STRUTTURA A DUE BOTTONI */}
-      <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-        <Button 
-          onClick={handleTestClick} 
-          disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
-          style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
-        >
-          🔬 Test
-        </Button>
-
-        <Button 
-          onClick={handleApplicaClick} 
-          disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
-          style={{ flex: 1, backgroundColor: '#10b981', color: 'white' }}
-        >
-          {isLoading ? 'Salvataggio...' : '💾 Applica e Salva'}
-        </Button>
-      </div>
-    </Card>
+      </Card>
+    </div>
   );
 }
