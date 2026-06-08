@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+// src/components/PortfolioAnalysis.tsx
+import { useMemo } from 'react';
 import { type FirebaseUser } from '../firebase';
-import type { EtfData } from '../types/etf';
 import { EtfCharts } from './EtfCharts/EtfCharts';
-import { Card } from './ui/Card/Card'; // Importata la tua Card nativa
+import { Card } from './ui/Card/Card'; 
 
-// Importiamo l'utility e la sua interfaccia
-import { analyzePortfolio, type AdvancedPortfolioAnalysis } from '../utils/portfolioUtils';
+// Importiamo l'utility di calcolo
+import { analyzePortfolio } from '../utils/portfolioUtils';
+// Importiamo il tuo nuovo custom hook!
+import { useFetchedEtfData } from '../hooks/useFetchedEtfData';
 
 interface PortfolioAnalysisProps {
   user: FirebaseUser | null;
@@ -14,45 +16,23 @@ interface PortfolioAnalysisProps {
 }
 
 export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAnalysisProps) {
-  const [combined, setCombined] = useState<AdvancedPortfolioAnalysis | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   
-  // Da sistemare per usare useEtfSearch
-  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+  // 1. Chiamiamo il nuovo hook. Niente URL piantati qui, se lo smazza l'hook!
+  const { etfData, loading, error } = useFetchedEtfData(user, selectedIsins);
 
-  useEffect(() => {
-    const computeCombined = async () => {
-      if (!user || selectedIsins.length === 0) return;
+  // 2. Eseguiamo il calcolo matematico combinato sfruttando useMemo.
+  // Si attiva solo quando cambiano i dati degli ETF scaricati o i pesi impostati.
+  const combined = useMemo(() => {
+    if (etfData.length === 0) return null;
+    try {
+      return analyzePortfolio(etfData, weights);
+    } catch (err) {
+      console.error('Errore durante l\'analisi combinata:', err);
+      return null;
+    }
+  }, [etfData, weights]);
 
-      setLoading(true);
-      setError(null);
-      try {
-        const etfData = await Promise.all(
-          selectedIsins.map(async (isin) => {
-            const response = await fetch(`${API_URL}/api/v2/etf/${isin}`);
-            const payload = await response.json();
-            if (!response.ok || payload?.status === 'error') {
-              throw new Error(payload?.message ?? `Errore caricamento ISIN ${isin}`);
-            }
-            return payload as EtfData;
-          })
-        );
-        
-        const analysisResult = analyzePortfolio(etfData, weights);
-        setCombined(analysisResult);
-
-      } catch (err) {
-        console.error('Combine error:', err);
-        setError(err instanceof Error ? err.message : 'Errore durante il calcolo.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    computeCombined();
-  }, [user, selectedIsins, weights]);
-
+  // Gestione degli stati nativi della UI basati sull'hook
   if (loading) return <div className="p-4 text-center text-white/70">Calcolo dell'analisi in corso...</div>;
   if (error) return <div className="p-4 text-red-400">Errore: {error}</div>;
   if (!combined) return <div className="p-4 text-white/50 text-center">Seleziona degli ETF per vedere l'analisi.</div>;
@@ -90,7 +70,6 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
             Orientamento Stile
           </h4>
           <div className="flex items-center gap-2 mt-4">
-            {/* Barra interna trasparente ed elegante coerente col tema dark/glass */}
             <div className="w-full bg-white/10 rounded-full h-4 overflow-hidden flex border border-white/5">
               <div 
                 style={{ width: `${combined.styleAllocation.growth}%` }} 
@@ -118,7 +97,7 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
 
       </div>
 
-      {/* RENDERIZZAZIONE DEGLI ALLARMI DI SOVRAPPOSIZIONE (Stile Glassmorphism Arancione) */}
+      {/* RENDERIZZAZIONE DEGLI ALLARMI DI SOVRAPPOSIZIONE */}
       {combined.overlapAlerts.length > 0 && (
         <div className="p-5 bg-orange-500/10 border border-orange-500/20 rounded-2xl backdrop-blur-md">
           <h4 className="text-orange-400 font-bold mb-3 flex items-center gap-2 text-base">

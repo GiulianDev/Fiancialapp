@@ -1,7 +1,7 @@
 export interface Holding {
   nome: string;
   peso_percentuale: number;
-  isin: string;
+  isin?: string;
 }
 
 export interface EtfData {
