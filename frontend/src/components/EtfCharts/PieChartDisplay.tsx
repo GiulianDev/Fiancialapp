@@ -1,5 +1,4 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import React from 'react';
 import { CustomScrollableLegend } from './CustomScrollableLegend'; // Importa la tua componente customizzata
 
 interface PieChartDisplayProps {
