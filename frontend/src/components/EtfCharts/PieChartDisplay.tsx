@@ -44,7 +44,15 @@ export function PieChartDisplay({ data, dataKey, nameKey, title }: PieChartDispl
             ))}
           </Pie>
           <Tooltip formatter={(value) => `${(value as number).toFixed(2)}%`} />
-          <Legend wrapperStyle={{ paddingTop: '16px' }} />
+          {/* Wrapper per la legenda con altezza fissa e scrollbar */}
+          <Legend 
+            wrapperStyle={{ 
+              // paddingTop: '18px', 
+              maxHeight: '120px', // Altezza massima fissa per la legenda
+              overflowY: 'auto',   // Abilita lo scroll verticale se il contenuto è maggiore
+              width: '100%'        // Assicura che occupi la larghezza disponibile
+            }} 
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>
