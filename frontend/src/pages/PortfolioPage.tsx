@@ -1,8 +1,8 @@
+// src/pages/PortfolioPage.tsx
 import { useState, useEffect } from 'react';
-// IMPORT CORRETTO: Prendiamo SavedPortfolio da firebase.ts
 import { type FirebaseUser, type SavedPortfolio } from '../firebase';
 import { useFavorites } from '../hooks/useFavorites';
-import { usePortfolio } from '../hooks/usePortfolio'; // Rimosso SavedPortfolio da qui
+import { usePortfolio } from '../hooks/usePortfolio'; 
 import { FavoritesSelector } from '../components/FavoritesSelector';
 import { PortfolioAnalysis } from '../components/PortfolioAnalysis';
 
@@ -11,14 +11,14 @@ interface PortfolioPageProps {
 }
 
 export function PortfolioPage({ user }: PortfolioPageProps) {
-  // Sfruttiamo i due hook custom speculari
   const { favorites, loading: favsLoading } = useFavorites(user);
   const { savedPortfolio, loading: portfolioLoading, error: portfolioError, updatePortfolio } = usePortfolio(user);
 
-  // Stato locale per triggerare i grafici a schermo
   const [analysisData, setAnalysisData] = useState<{ isins: string[]; weights: Record<string, number> } | null>(null);
+  
+  // STATO PER CONTROLLARE L'ESECUZIONE DEI GRAFICI
+  const [triggerFetch, setTriggerFetch] = useState(false);
 
-  // Se Firebase trova un portafoglio preesistente, avvia l'analisi al caricamento della pagina
   useEffect(() => {
     if (savedPortfolio) {
       const numericWeights: Record<string, number> = {};
@@ -26,11 +26,23 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
         numericWeights[isin] = parseFloat(savedPortfolio.weights[isin] || '0');
       });
       setAnalysisData({ isins: savedPortfolio.selectedIsins, weights: numericWeights });
+      setTriggerFetch(true); // Al caricamento iniziale, avviamo i grafici
     }
   }, [savedPortfolio]);
 
-  // Gestione dell'azione al click del pulsante analizza
-  const handleAnalyzeAndSave = async (
+  // FUNZIONE 1: Fa solo la simulazione senza salvare
+  const handleTest = (
+    selectedIsins: string[], 
+    _rawWeights: Record<string, string>, 
+    numericWeights: Record<string, number>, 
+    _unit: '€' | '$' | '%'
+  ) => {
+    setAnalysisData({ isins: selectedIsins, weights: numericWeights });
+    setTriggerFetch(true); // Scatena l'analisi
+  };
+
+  // FUNZIONE 2: Salva sul database e fa la simulazione
+  const handleApplica = async (
     selectedIsins: string[], 
     rawWeights: Record<string, string>, 
     numericWeights: Record<string, number>, 
@@ -43,13 +55,18 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
     };
 
     try {
-      // Salva su Firebase tramite l'hook dedicato
       await updatePortfolio(newPortfolio);
-      // Mostra i grafici solo se il salvataggio ha avuto successo
       setAnalysisData({ isins: selectedIsins, weights: numericWeights });
+      setTriggerFetch(true); // Scatena l'analisi
     } catch (err) {
       console.error('Portfolio save failed in parent:', err);
     }
+  };
+
+  // FUNZIONE 3: Si attiva quando l'utente cambia un peso nel form
+  const handleInputsChanged = () => {
+    // Spegniamo l'analisi finché l'utente non riclicca Test o Applica
+    setTriggerFetch(false); 
   };
 
   const isGlobalLoading = favsLoading || portfolioLoading;
@@ -65,11 +82,14 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
         <div className="text-red-300 text-sm mb-4">Errore portafoglio: {portfolioError}</div>
       )}
 
+      {/* Passiamo le tre funzioni al selettore usando i commenti corretti per il JSX */}
       <FavoritesSelector 
         favorites={favorites}
         isLoading={isGlobalLoading}
         initialData={savedPortfolio}
-        onAnalyzeAndSave={handleAnalyzeAndSave}
+        onTest={handleTest}
+        onApplica={handleApplica}
+        onInputsChanged={handleInputsChanged}
       />
 
       {analysisData && (
@@ -77,6 +97,7 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
           user={user}
           selectedIsins={analysisData.isins}
           weights={analysisData.weights}
+          triggerFetch={triggerFetch} // Passiamo lo stato
         />
       )}
 

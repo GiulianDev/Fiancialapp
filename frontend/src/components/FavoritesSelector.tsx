@@ -1,5 +1,5 @@
+// src/components/FavoritesSelector.tsx
 import { useState, useEffect } from 'react';
-// Importiamo anche SavedPortfolio da firebase.ts per tipizzare correttamente initialData
 import { type Favorite, type SavedPortfolio } from '../firebase';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card/Card';
@@ -7,26 +7,24 @@ import { Card } from './ui/Card/Card';
 interface FavoritesSelectorProps {
   favorites: Favorite[];
   isLoading: boolean;
-  initialData: SavedPortfolio | null; // Risolve l'errore ts(2322)
-  onAnalyzeAndSave: (
-    selectedIsins: string[], 
-    rawWeights: Record<string, string>, 
-    numericWeights: Record<string, number>, 
-    unit: '€' | '$' | '%'
-  ) => void;
+  initialData: SavedPortfolio | null;
+  onTest: (isins: string[], raw: Record<string, string>, num: Record<string, number>, unit: '€' | '$' | '%') => void;
+  onApplica: (isins: string[], raw: Record<string, string>, num: Record<string, number>, unit: '€' | '$' | '%') => void;
+  onInputsChanged: () => void;
 }
 
 export function FavoritesSelector({ 
   favorites, 
   isLoading, 
   initialData, 
-  onAnalyzeAndSave 
+  onTest,
+  onApplica,
+  onInputsChanged
 }: FavoritesSelectorProps) {
   const [selectedIsins, setSelectedIsins] = useState<Set<string>>(new Set());
   const [weights, setWeights] = useState<Record<string, string>>({});
   const [unit, setUnit] = useState<'€' | '$' | '%'>('€');
 
-  // Sincronizza lo stato interno quando i dati vengono letti da Firebase
   useEffect(() => {
     if (initialData) {
       setSelectedIsins(new Set(initialData.selectedIsins));
@@ -35,7 +33,18 @@ export function FavoritesSelector({
     }
   }, [initialData]);
 
+  // Funzione di utilità per avvisare il componente padre che stiamo scrivendo
+  const triggerChange = () => {
+    onInputsChanged();
+  };
+
+  const handleUnitChange = (newUnit: '€' | '$' | '%') => {
+    setUnit(newUnit);
+    triggerChange();
+  };
+
   const toggleSelection = (isin: string) => {
+    triggerChange();
     setSelectedIsins((prev) => {
       const next = new Set(prev);
       if (next.has(isin)) {
@@ -53,19 +62,18 @@ export function FavoritesSelector({
   };
 
   const handleWeightChange = (isin: string, value: string) => {
+    triggerChange();
     let normalized = value.replace(',', '.');
-    // Rimuove gli zeri iniziali se è un numero intero (es. "05" diventa "5")
-    // Ma preserva lo "0." se l'utente sta scrivendo un numero decimale (es. "0.5")
     if (/^0[0-9]/.test(normalized)) {
       normalized = normalized.replace(/^0+/, '');
     }
-    // Accettiamo la stringa solo se rispetta il formato numerico decimale
     if (normalized === '' || /^\d*\.?\d*$/.test(normalized)) {
       setWeights(prev => ({ ...prev, [isin]: normalized }));
     }
   };
 
-  const handleAnalyzeClick = () => {
+  // Prepara i dati numerici puliti da inviare ai bottoni
+  const getCleanData = () => {
     const numericWeights: Record<string, number> = {};
     const selectedIsinsArray = Array.from(selectedIsins);
     
@@ -73,12 +81,21 @@ export function FavoritesSelector({
       const val = parseFloat(weights[isin] || '0');
       numericWeights[isin] = isNaN(val) ? 0 : val;
     });
-    
-    // Passiamo tutti i dati necessari al componente padre per il salvataggio cloud
-    onAnalyzeAndSave(selectedIsinsArray, weights, numericWeights, unit);
+
+    return { selectedIsinsArray, numericWeights };
   };
 
-  // --- CONTROLLO DI VALIDITÀ PER IL PULSANTE ---
+  const handleTestClick = () => {
+    const { selectedIsinsArray, numericWeights } = getCleanData();
+    onTest(selectedIsinsArray, weights, numericWeights, unit);
+  };
+
+  const handleApplicaClick = () => {
+    const { selectedIsinsArray, numericWeights } = getCleanData();
+    onApplica(selectedIsinsArray, weights, numericWeights, unit);
+  };
+
+  // Controlli di validità
   const isMissingValues = Array.from(selectedIsins).some(isin => {
     const val = parseFloat(weights[isin] || '');
     return isNaN(val) || val <= 0;
@@ -97,7 +114,7 @@ export function FavoritesSelector({
         <h3 style={{ margin: 0, color: 'white' }}>Analisi Portafoglio</h3>
         <select 
           value={unit} 
-          onChange={(e) => setUnit(e.target.value as '€' | '$' | '%')}
+          onChange={(e) => handleUnitChange(e.target.value as '€' | '$' | '%')}
           style={{ 
             padding: '4px 8px', 
             borderRadius: '6px', 
@@ -108,7 +125,6 @@ export function FavoritesSelector({
             outline: 'none'
           }}
         >
-          {/* Colore nero forzato sulle opzioni per evitare l'effetto bianco su bianco dei browser su temi dark */}
           <option value="€" style={{ color: 'black' }}>Euro (€)</option>
           <option value="$" style={{ color: 'black' }}>Dollari ($)</option>
           <option value="%" style={{ color: 'black' }}>Percentuale (%)</option>
@@ -202,13 +218,24 @@ export function FavoritesSelector({
         </div>
       )}
 
-      <Button 
-        onClick={handleAnalyzeClick} 
-        disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
-        style={{ width: '100%' }}
-      >
-        {isLoading ? 'Salvataggio...' : 'Analizza e Salva Selezione'}
-      </Button>
+      {/* NUOVA STRUTTURA A DUE BOTTONI */}
+      <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+        <Button 
+          onClick={handleTestClick} 
+          disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
+          style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
+        >
+          🔬 Test
+        </Button>
+
+        <Button 
+          onClick={handleApplicaClick} 
+          disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
+          style={{ flex: 1, backgroundColor: '#10b981', color: 'white' }}
+        >
+          {isLoading ? 'Salvataggio...' : '💾 Applica e Salva'}
+        </Button>
+      </div>
     </Card>
   );
 }
