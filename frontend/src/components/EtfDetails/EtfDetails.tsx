@@ -32,7 +32,7 @@ export function EtfDetails({
   }));
 
   return (
-    <Card className="etf-details--container">
+    <Card className="etf-details--container mx-auto w-12/12 md:max-w-xl">
       
       {/* HEADER */}
       <div className="header--container">
