@@ -2,15 +2,13 @@ import './App.css';
 import { useState } from 'react';
 import { SearchPage } from './pages/SearchPage';
 import { PortfolioPage } from './pages/PortfolioPage';
-import { HoldingDetailPage } from './pages/HoldingDetailPage'; // 1. Importiamo la pagina di dettaglio qui
+import { HoldingDetailPage } from './pages/HoldingDetailPage';
 import { AuthButton } from './components/AuthButton/AuthButton';
 import { useFirebaseAuth } from './hooks/useFirebaseAuth';
 
 function App() {
   const [page, setPage] = useState<'search' | 'portfolio'>('search');
   const { user, authLoading, signIn, signOut } = useFirebaseAuth();
-
-  // 2. Spostato qui lo stato della holding selezionata
   const [selectedHolding, setSelectedHolding] = useState<{ isin: string; name: string } | null>(null);
 
   return (
@@ -24,7 +22,7 @@ function App() {
           <h1>Ricerca Asset per ISIN</h1>
         </div>
 
-        {/* Mostriamo il selettore di pagine SOLO se l'utente NON sta guardando il dettaglio di una holding */}
+        {/* Nascondiamo il selettore se siamo nel dettaglio */}
         {!selectedHolding && (
           <div className="page-selector">
             <button className={page === 'search' ? 'active' : ''} onClick={() => setPage('search')}>
@@ -37,30 +35,31 @@ function App() {
         )}
       </div>
 
-      {/* 4. GESTIONE DELLE PAGINE PRINCIPALI */}
-      {selectedHolding ? (
-        // Se c'è una holding selezionata, mostriamo la pagina di dettaglio a schermo intero (sotto il titolo)
+      {/* 1. PAGINA DI DETTAGLIO: Viene renderizzata sopra se c'è una holding selezionata */}
+      {selectedHolding && (
         <HoldingDetailPage
           isin={selectedHolding.isin}
           name={selectedHolding.name}
-          onBack={() => setSelectedHolding(null)} // Resetta lo stato per tornare indietro
+          onBack={() => setSelectedHolding(null)}
         />
-      ) : (
-        // Altrimenti mostriamo il normale comportamento a due schede della tua app
-        <>
-          {/* PAGE 1 - Search */}
-          {page === 'search' && (
-            <SearchPage 
-              user={user} 
-              // Passiamo la funzione a SearchPage affinché possa dirci quale holding è stata cliccata
-              onHoldingClick={(isin, name) => setSelectedHolding({ isin, name })} 
-            /> 
-          )}
-
-          {/* PAGE 2 - Favorites */}
-          {page === 'portfolio' && <PortfolioPage user={user} />}
-        </>
       )}
+
+      {/* 2. PAGINE PRINCIPALI: Rimangono SEMPRE montate. 
+             Se c'è un dettaglio attivo, applichiamo 'display: none' per nasconderle senza distruggerle */}
+      <div style={{ display: selectedHolding ? 'none' : 'block' }}>
+        
+        {/* PAGE 1 - Search */}
+        {page === 'search' && (
+          <SearchPage 
+            user={user} 
+            onHoldingClick={(isin, name) => setSelectedHolding({ isin, name })} 
+          /> 
+        )}
+
+        {/* PAGE 2 - Favorites */}
+        {page === 'portfolio' && <PortfolioPage user={user} />}
+        
+      </div>
     </div>
   );
 }
