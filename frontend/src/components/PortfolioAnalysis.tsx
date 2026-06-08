@@ -30,7 +30,7 @@ export function PortfolioAnalysis({ user, selectedIsins, weights }: PortfolioAna
       try {
         const etfData = await Promise.all(
           selectedIsins.map(async (isin) => {
-            const response = await fetch(`${API_URL}/api/etf/${isin}`);
+            const response = await fetch(`${API_URL}/api/v2/etf/${isin}`);
             const payload = await response.json();
             if (!response.ok || payload?.status === 'error') {
               throw new Error(payload?.message ?? `Errore caricamento ISIN ${isin}`);

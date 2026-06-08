@@ -19,7 +19,7 @@ export function useEtfSearch() {
     setLimiteCountries(5);
 
     try {
-      const response = await fetch(`${API_URL}/api/etf/${isin}`);
+      const response = await fetch(`${API_URL}/api/v2/etf/${isin}`);
       const data = await response.json();
       
       if (data.status === 'error') {
@@ -34,15 +34,6 @@ export function useEtfSearch() {
     }
   };
 
-  // const fetchEtfData = async (isin: string): Promise<EtfData> => {
-  //   const response = await fetch(`${API_URL}/api/etf/${isin}`);
-  //   const payload = await response.json();
-  //   if (!response.ok || payload?.status === 'error') {
-  //     throw new Error(payload?.message ?? `Errore caricamento ISIN ${isin}`);
-  //   }
-  //   return payload as EtfData;
-  // };
-
   return {
     isin,
     setIsin,
@@ -54,6 +45,5 @@ export function useEtfSearch() {
     limiteCountries,
     setLimiteCountries,
     cercaEtf,
-    // fetchEtfData
   };
 }
