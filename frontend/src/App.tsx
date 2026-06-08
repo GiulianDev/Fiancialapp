@@ -46,7 +46,7 @@ function App() {
 
       {/* 2. PAGINE PRINCIPALI: Rimangono SEMPRE montate. 
              Se c'è un dettaglio attivo, applichiamo 'display: none' per nasconderle senza distruggerle */}
-      <div style={{ display: selectedHolding ? 'none' : 'block' }}>
+      <div style={{ width: '100%', display: selectedHolding ? 'none' : 'block' }}>
         
         {/* PAGE 1 - Search */}
         {page === 'search' && (
