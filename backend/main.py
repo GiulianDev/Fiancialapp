@@ -98,3 +98,33 @@ def get_etf_data(isin: str):
         return fetch_data_from_extraetf(isin.strip().upper())
     except Exception as e:
         return {"status": "error", "message": f"Errore interno: {str(e)}"}
+    
+
+@app.get("/api/etf/{isin}/debug-holdings")
+def debug_etf_holdings(isin: str):
+    try:
+        # Facciamo la stessa chiamata a ExtraETF per sicurezza
+        url = f"https://extraetf.com/api-v2/detail/?isin={isin.strip().upper()}&extraetf_locale=it"
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+        response = requests.get(url, headers=headers)
+
+        if response.status_code != 200:
+            return {"status": "error", "message": f"Errore ExtraETF: {response.status_code}"}
+
+        data = response.json()
+        if not data.get("results"):
+            return {"status": "error", "message": "Nessun asset trovato."}
+
+        etf_data = data["results"][0]
+        portfolio = etf_data.get("portfolio_breakdown", {})
+        holdings_raw = portfolio.get("items", [])
+
+        # Prendiamo solo le prime 3 aziende per non intasare lo schermo
+        # e vedere tutte le chiavi disponibili (ISIN, Ticker, ID, ecc.)
+        return {
+            "status": "success",
+            "isin_analizzato": isin,
+            "struttura_grezza_prime_3_holdings": holdings_raw[:3] 
+        }
+    except Exception as e:
+        return {"status": "error", "message": f"Errore nel debug: {str(e)}"}
