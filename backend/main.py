@@ -175,7 +175,8 @@ def fetch_data_from_extraetf_v2(isin: str):
         "sectors": sectors
     }
 
-# NUOVO ENDPOINT V2: Il vecchio resta intatto, chi vuole i codici azionari interroga questo
+# NUOVO ENDPOINT V2: Il vecchio resta intatto, 
+# chi vuole i codici ISIN delle singole holding interroga questo
 @app.get("/api/v2/etf/{isin}")
 def get_etf_data_v2(isin: str):
     try:
@@ -183,6 +184,16 @@ def get_etf_data_v2(isin: str):
     except Exception as e:
         return {"status": "error", "message": f"Errore interno V2: {str(e)}"}
     
+# Recupera i dati per una SINGOLA HOLDING (azione/obbligazione)
+@app.get("/api/holding/{isin_holding}")
+def get_holding_data(isin_holding: str):
+    try:
+        # Riutilizziamo la stessa funzione che sa come interrogare ExtraETF per un ISIN
+        # ExtraETF restituisce dettagli sia per ETF che per azioni/obbligazioni singole
+        return fetch_data_from_extraetf_v2(isin_holding.strip().upper())
+    except Exception as e:
+        return {"status": "error", "message": f"Errore nel recupero holding {isin_holding}: {str(e)}"}
+
 
 # Only for debug
 @app.get("/api/etf/{isin}/debug-holdings")
