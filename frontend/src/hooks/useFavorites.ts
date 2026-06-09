@@ -9,7 +9,7 @@ import { useFavorites as useFavoritesContext } from '../contexts/FavoritesContex
  * @param user - (DEPRECATED) Ignorato, il contesto fornisce l'utente
  * @returns oggetto con favorites, loading, error e metodi
  */
-export function useFavorites(user?: any) {
+export function useFavorites() {
   const context = useFavoritesContext();
 
   const toggleFavorite = useCallback(

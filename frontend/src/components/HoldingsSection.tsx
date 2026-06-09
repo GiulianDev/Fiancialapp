@@ -7,10 +7,12 @@ interface HoldingsSectionProps {
   limite: number;
   onLoadMore: () => void;
   onHoldingClick?: (isin: string, name: string) => void;
+  isLoading?: boolean;
 }
 
 export function HoldingsSection({
   holdings, totaleHoldings, limite, onLoadMore, onHoldingClick,
+  isLoading = false,
 }: HoldingsSectionProps) {
   const holdingsSorted = [...holdings].sort((a, b) => b.peso_percentuale - a.peso_percentuale);
   const holdingsToShow = holdingsSorted.slice(0, limite);
@@ -26,7 +28,15 @@ export function HoldingsSection({
         (Aziende totali: <strong>{totaleHoldings}</strong>)
       </p>
 
-      {holdingsSorted.length > 0 ? (
+      {isLoading ? (
+        <>
+          <ul style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
+            {[...Array(5)].map((_, i) => (
+              <li key={i} className="skeleton" style={{ height: '18px', margin: '6px 0', width: `${80 - i * 8}%` }} />
+            ))}
+          </ul>
+        </>
+      ) : holdingsSorted.length > 0 ? (
         <>
           <ul style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
             {holdingsToShow.map((h, i) => (

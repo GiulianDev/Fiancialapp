@@ -28,7 +28,8 @@ export function SearchPage({ onHoldingClick }: SearchPageProps) {
   const { 
     data: dati, 
     isLoading: caricando, 
-    error: errore 
+    isFetching: fetching,
+    error: errore
   } = useEtfSearch(activeIsin);
 
   // 3. Funzione di ricerca al click del pulsante o all'invio del form
@@ -64,16 +65,18 @@ export function SearchPage({ onHoldingClick }: SearchPageProps) {
       {/* Mostra l'errore solo se la query fallisce */}
       {errore && <p style={{ color: 'red', fontWeight: 'bold' }}>{(errore as Error).message}</p>}
 
-      {/* Mostra i dettagli dell'ETF se presenti in cache o appena scaricati */}
-      {dati && (
+      {/* Mostra i dettagli dell'ETF: la card rimane visibile anche durante nuovi fetch
+          (sostituendo i testi con uno skeleton quando `fetching` è true) */}
+      {(activeIsin.trim().length >= 12) && (
         <EtfDetails
           data={dati}
+          isFetching={fetching}
           limiteHoldings={limiteHoldings}
           limiteCountries={limiteCountries}
           onLoadMoreHoldings={() => setLimiteHoldings((prev) => prev + 5)}
           onLoadMoreCountries={() => setLimiteCountries((prev) => prev + 5)}
           isFavorite={isFavorite(activeIsin)}
-          onToggleFavorite={() => toggleFavorite(activeIsin, dati.nome)}
+          onToggleFavorite={() => toggleFavorite(activeIsin, dati?.nome)}
           onHoldingClick={onHoldingClick}
         />
       )}
