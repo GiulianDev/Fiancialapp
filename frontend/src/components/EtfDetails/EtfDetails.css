@@ -6,14 +6,14 @@
 .etf-details--container {
   overflow: hidden;
   height: 100%;
-  position: relative; /* Necessario per ancorare la barra di caricamento */
+  position: relative; 
   transition: opacity 0.3s ease, filter 0.3s ease;
   
-  /* 👇 EFFETTO STAND-BY: Quando stiamo caricando il nuovo ETF in background */
+  /* EFFETTO CARICAMENTO IN BACKGROUND */
   &.is-fetching {
-    opacity: 0.6;
-    filter: blur(0.2px);
-    pointer-events: none; /* Impedisce click accidentali sui pulsanti o "Mostra altri" */
+    opacity: 0.55;
+    filter: blur(0.5px);
+    pointer-events: none; 
   }
 
   /* HEADER */
@@ -68,7 +68,7 @@
   }
 }
 
-/* 👇 SQUISITEZZA VISIVA: Barra orizzontale animata che indica il caricamento */
+/* Sottile linea di caricamento orizzontale animata */
 .etf-details__loading-bar {
   position: absolute;
   top: 0;
