@@ -58,7 +58,6 @@ export function SearchPage({ onHoldingClick }: SearchPageProps) {
         onIsinChange={setIsinInput} 
         onSearch={cercaEtf} 
         isLoading={caricando} 
-        // Passiamo un placeholder esplicito che verrà mostrato finché isinInput è ''
         placeholder="Inserisci l'ISIN dell'ETF (es. IE00BK5BQT80)..." 
       />
 
