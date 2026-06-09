@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import type { EtfData } from '../types/etf';
-import { API_URL } from '../constants';
+import { SEARCH_ETF_API_URL } from '../constants';
 
 interface SearchContextType {
   isin: string;
@@ -18,6 +18,7 @@ interface SearchContextType {
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
+  
   const [isin, setIsin] = useState('IE00BK5BQT80');
   const [dati, setDati] = useState<EtfData | null>(null);
   const [caricando, setCaricando] = useState(false);
@@ -32,7 +33,8 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     setLimiteCountries(5);
 
     try {
-      const response = await fetch(`${API_URL}/api/v2/etf/${isin}`);
+      // const response = await fetch(`${API_URL}/api/v2/etf/${isin}`);
+      const response = await fetch(`${SEARCH_ETF_API_URL}/${isin}`);
       const data = await response.json();
 
       if (data.status === 'error') {
