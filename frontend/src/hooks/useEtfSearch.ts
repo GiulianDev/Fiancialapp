@@ -22,8 +22,8 @@ export function useEtfSearch(isin: string) {
     
     staleTime: 1000 * 60 * 5, // I dati rimangono validi in cache per 5 minuti
 
-    // 👇 CONTROLLO SENIOR: Se l'isin è vuoto (primo avvio), la query è disabilitata.
+    // CONTROLLO: Se l'isin è vuoto (primo avvio), la query è disabilitata.
     // Non fa chiamate a vuoto e non mostra errori.
-    enabled: isin.trim().length >= 12, 
+    enabled: isin.trim().length >= 0, 
   });
 }

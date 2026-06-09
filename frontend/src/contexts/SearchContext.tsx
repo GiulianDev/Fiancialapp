@@ -15,6 +15,7 @@ interface SearchContextType {
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
+  
   // 1. Inizializziamo a stringa vuota: la barra mostrerà il placeholder all'avvio
   const [isinInput, setIsinInput] = useState('');
   const [activeIsin, setActiveIsin] = useState('');
