@@ -57,6 +57,7 @@
   flex-wrap: wrap;
   gap: 2rem;
   margin-top: 2rem;
+  min-height: 350px;
 }
 
 .etf-details__favorite-hint {
