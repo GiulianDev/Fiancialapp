@@ -5,14 +5,10 @@ import { PortfolioPage } from './pages/PortfolioPage';
 import { HoldingDetailPage } from './pages/HoldingDetailPage';
 // AUTH
 import { AuthButton } from './components/AuthButton/AuthButton';
-import { useAuth } from './contexts/AuthContext';
 
 function App() {
   const [page, setPage] = useState<'search' | 'portfolio'>('search');
   
-  // Recupera i dati di auth dal contesto invece dell'hook eliminato
-  const { user } = useAuth(); 
-
   const [selectedHolding, setSelectedHolding] = useState<{ isin: string; name: string } | null>(null);
 
   return (
@@ -57,13 +53,12 @@ function App() {
         {/* PAGE 1 - Search */}
         {page === 'search' && (
           <SearchPage 
-            user={user} 
             onHoldingClick={(isin, name) => setSelectedHolding({ isin, name })} 
           /> 
         )}
 
         {/* PAGE 2 - Favorites */}
-        {page === 'portfolio' && <PortfolioPage user={user} />}
+        {page === 'portfolio' && <PortfolioPage />}
         
       </div>
     </div>

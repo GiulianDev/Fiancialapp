@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react';
-import { type FirebaseUser, type SavedPortfolio } from '../firebase';
 import { useFavorites } from '../hooks/useFavorites';
 import { usePortfolio } from '../hooks/usePortfolio'; 
 import { FavoritesSelector } from '../components/FavoritesSelector';
 import { PortfolioAnalysis } from '../components/PortfolioAnalysis';
+import type { SavedPortfolio } from '../services/portfolioService';
 
-interface PortfolioPageProps {
-  user: FirebaseUser | null;
-}
-
-export function PortfolioPage({ user }: PortfolioPageProps) {
+export function PortfolioPage() {
+  
   const { favorites, loading: favsLoading } = useFavorites();
   const { savedPortfolio, loading: portfolioLoading, error: portfolioError, updatePortfolio } = usePortfolio();
 
@@ -89,7 +86,6 @@ export function PortfolioPage({ user }: PortfolioPageProps) {
 
       {analysisData && (
         <PortfolioAnalysis 
-          user={user}
           selectedIsins={analysisData.isins}
           weights={analysisData.weights}
           triggerFetch={triggerFetch}

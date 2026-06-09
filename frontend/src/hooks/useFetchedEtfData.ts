@@ -1,8 +1,7 @@
-// src/hooks/useFetchedEtfData.ts
 import { useState, useEffect } from 'react';
 import type { EtfData } from '../types/etf';
-import type { FirebaseUser } from '../firebase';
 import { API_URL } from '../constants';
+import { useAuth } from '../contexts/AuthContext';
 
 interface UseFetchedEtfDataResult {
   etfData: EtfData[];
@@ -11,10 +10,12 @@ interface UseFetchedEtfDataResult {
 }
 
 export function useFetchedEtfData(
-  user: FirebaseUser | null,
   selectedIsins: string[],
   triggerFetch: boolean = true // <- Di default è true per caricare in automatico, ma puoi pilotarlo
 ): UseFetchedEtfDataResult {
+  
+  const { user } = useAuth(); 
+  
   const [etfData, setEtfData] = useState<EtfData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -1,22 +1,20 @@
 // src/components/PortfolioAnalysis.tsx
 import { useMemo } from 'react';
-import { type FirebaseUser } from '../firebase';
 import { EtfCharts } from './EtfCharts/EtfCharts';
 import { Card } from './ui/Card/Card'; 
 import { analyzePortfolio } from '../utils/portfolioUtils';
 import { useFetchedEtfData } from '../hooks/useFetchedEtfData';
 
 interface PortfolioAnalysisProps {
-  user: FirebaseUser | null;
   selectedIsins: string[];
   weights: Record<string, number>;
   triggerFetch: boolean; // <-- NUOVA PROP
 }
 
-export function PortfolioAnalysis({ user, selectedIsins, weights, triggerFetch }: PortfolioAnalysisProps) {
+export function PortfolioAnalysis({ selectedIsins, weights, triggerFetch }: PortfolioAnalysisProps) {
   
   // Passiamo il triggerFetch all'hook
-  const { etfData, loading, error } = useFetchedEtfData(user, selectedIsins, triggerFetch);
+  const { etfData, loading, error } = useFetchedEtfData( selectedIsins, triggerFetch);
 
   const combined = useMemo(() => {
     if (etfData.length === 0) return null;

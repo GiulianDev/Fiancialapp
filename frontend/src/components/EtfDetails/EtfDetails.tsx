@@ -1,9 +1,9 @@
 import { type EtfData, type Country } from '../../types/etf';
-import { type FirebaseUser } from '../../firebase';
 import { HoldingsSection } from '../HoldingsSection';
 import { CountriesSection } from '../CountriesSection';
 import { Card } from '../ui/Card/Card';
 import './EtfDetails.css';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface EtfDetailsProps {
   data: EtfData;
@@ -13,7 +13,6 @@ interface EtfDetailsProps {
   onLoadMoreCountries: () => void;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
-  user?: FirebaseUser | null;
   onHoldingClick?: (isin: string, name: string) => void;
 }
 
@@ -26,8 +25,9 @@ export function EtfDetails({
   isFavorite = false,
   onToggleFavorite,
   onHoldingClick,
-  user,
 }: EtfDetailsProps) {
+  
+  const { user } = useAuth(); 
   const countriesArray: Country[] = Object.entries(data.countries).map(([nome, peso]) => ({
     nome,
     peso,
@@ -52,7 +52,7 @@ export function EtfDetails({
           )}
         </div>
 
-        {/* FAVORITES */}
+        {/* ADD TO FAVORITES BUTTON */}
         <div className='favorite--container'>
           {user && onToggleFavorite && (
             <button

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { type Favorite, type SavedPortfolio } from '../firebase';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card/Card';
+import type { Favorite } from '../types/favorite';
+import type { SavedPortfolio } from '../services/portfolioService';
 
 interface FavoritesSelectorProps {
   favorites: Favorite[];
@@ -20,6 +21,7 @@ export function FavoritesSelector({
   onApplica,
   onInputsChanged
 }: FavoritesSelectorProps) {
+  
   const [selectedIsins, setSelectedIsins] = useState<Set<string>>(new Set());
   const [weights, setWeights] = useState<Record<string, string>>({});
   const [unit, setUnit] = useState<'€' | '$' | '%'>('€');
