@@ -6,8 +6,6 @@ import {
 } from 'firebase/auth';
 import { auth, provider } from '../firebase';
 
-export type FirebaseUser = User;
-
 export function signInWithGoogle() {
   return signInWithPopup(auth, provider);
 }

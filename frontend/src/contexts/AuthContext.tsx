@@ -1,12 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { signInWithGoogle, logout, onAuthStateChangedListener, type FirebaseUser } from '../services/authService';
+import { signInWithGoogle, logout, onAuthStateChangedListener } from '../services/authService';
+import type { AuthContextType, FirebaseUser } from '../types/auth';
 
-interface AuthContextType {
-  user: FirebaseUser | null;
-  authLoading: boolean;
-  signIn: () => Promise<void>;
-  signOut: () => Promise<void>;
-}
+
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

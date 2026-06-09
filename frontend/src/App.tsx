@@ -6,12 +6,10 @@ import { HoldingDetailPage } from './pages/HoldingDetailPage';
 // AUTH
 import { AuthButton } from './components/AuthButton/AuthButton';
 import { useAuth } from './contexts/AuthContext';
-// import { useFirebaseAuth } from './hooks/useFirebaseAuth';
 
 function App() {
   const [page, setPage] = useState<'search' | 'portfolio'>('search');
   
-  // const { user, authLoading, signIn, signOut } = useFirebaseAuth();
   // Recupera i dati di auth dal contesto invece dell'hook eliminato
   const { user } = useAuth(); 
 
