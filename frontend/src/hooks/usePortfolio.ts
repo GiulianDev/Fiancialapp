@@ -8,7 +8,7 @@ import { usePortfolio as usePortfolioContext } from '../contexts/PortfolioContex
  * @param user - (DEPRECATED) Ignorato, il contesto fornisce l'utente
  * @returns oggetto con savedPortfolio, loading, error e updatePortfolio
  */
-export function usePortfolio(user?: any) {
+export function usePortfolio() {
   const context = usePortfolioContext();
 
   return {
