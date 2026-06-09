@@ -1,7 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { signInWithGoogle, logout, onAuthStateChangedListener } from '../services/authService';
-import type { AuthContextType, FirebaseUser } from '../types/auth';
+// import type { AuthContextType, FirebaseUser } from '../types/auth';
+import { type User } from 'firebase/auth';
 
+export interface AuthContextType {
+  user: User | null;
+  authLoading: boolean;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
+}
 
 // Qui stai dicendo a React: "Crea un canale radio chiamato AuthContext". 
 // Tramite l'interfaccia AuthContextType, specifichi che su questo canale viaggeranno sempre quattro cose: 
