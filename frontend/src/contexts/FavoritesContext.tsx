@@ -4,7 +4,6 @@ import {
   addFavorite as addFavoriteService,
   removeFavorite as removeFavoriteService,
   getFavorites as getFavoritesService,
-  isFavorite as isFavoriteService
 } from '../services/favoriteService';
 import type { Favorite } from '../types/favorite';
 
@@ -15,7 +14,7 @@ interface FavoritesContextType {
   error: string | null;
   addFavorite: (isin: string, name?: string) => Promise<void>;
   removeFavorite: (isin: string) => Promise<void>;
-  isFavorite: (isin: string) => Promise<boolean>;
+  isFavorite: (isin: string) => boolean;
   refreshFavorites: () => Promise<void>;
 }
 
@@ -80,17 +79,8 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const isFavorite = async (isin: string) => {
-    if (!user?.uid) return false;
-    
-    try {
-      setError(null);
-      return await isFavoriteService(user.uid, isin);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error checking favorite';
-      setError(message);
-      throw err;
-    }
+  const isFavorite = (isin: string): boolean => {
+    return favorites.some(f => f.isin === isin);
   };
 
   return (
