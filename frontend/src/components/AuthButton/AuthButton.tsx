@@ -1,4 +1,3 @@
-import { type FirebaseUser } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import './AuthButton.css';
 
