@@ -27,7 +27,7 @@ export interface EtfData {
   costo_annuo?: number;
   totale_holdings: number;
   holdings: Holding[];
-  regions: Region[]; // Record<string, number>;
+  regions: Region; // Record<string, number>;
   countries: Country; // Record<string, number>;
-  sectors: Sector[]; // Record<string, number>;
+  sectors: Sector; // Record<string, number>;
 }
