@@ -6,7 +6,7 @@ import { useFavorites } from '../hooks/useFavorites';
 
 interface SearchPageProps {
   user: FirebaseUser | null;
-  onHoldingClick: (isin: string, name: string) => void; // 1. Nuova prop ricevuta da App.tsx
+  onHoldingClick: (isin: string, name: string) => void;
 }
 
 export function SearchPage({ user, onHoldingClick }: SearchPageProps) {
@@ -24,7 +24,7 @@ export function SearchPage({ user, onHoldingClick }: SearchPageProps) {
     setLimiteCountries,
   } = useEtfSearch();
 
-  const { favoriteIsins, toggleFavorite } = useFavorites(user);
+  const { favoriteIsins, toggleFavorite } = useFavorites();
 
   return (
     <>

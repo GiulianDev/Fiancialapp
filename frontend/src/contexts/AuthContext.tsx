@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { signInWithGoogle, logout, onAuthStateChangedListener, type FirebaseUser } from '../firebase';
+import { signInWithGoogle, logout, onAuthStateChangedListener, type FirebaseUser } from '../services/authService';
 
 interface AuthContextType {
   user: FirebaseUser | null;
@@ -19,7 +19,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(firebaseUser);
       setAuthLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 

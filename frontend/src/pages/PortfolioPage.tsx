@@ -10,8 +10,8 @@ interface PortfolioPageProps {
 }
 
 export function PortfolioPage({ user }: PortfolioPageProps) {
-  const { favorites, loading: favsLoading } = useFavorites(user);
-  const { savedPortfolio, loading: portfolioLoading, error: portfolioError, updatePortfolio } = usePortfolio(user);
+  const { favorites, loading: favsLoading } = useFavorites();
+  const { savedPortfolio, loading: portfolioLoading, error: portfolioError, updatePortfolio } = usePortfolio();
 
   const [analysisData, setAnalysisData] = useState<{ isins: string[]; weights: Record<string, number> } | null>(null);
   
