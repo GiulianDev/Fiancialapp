@@ -1,6 +1,6 @@
 import { SearchBar } from '../components/SearchBar/SearchBar';
 import { EtfDetails } from '../components/EtfDetails/EtfDetails';
-import { useEtfSearch } from '../hooks/useEtfSearch';
+import { useSearch } from '../contexts/SearchContext';
 import { useFavorites } from '../hooks/useFavorites';
 
 interface SearchPageProps {
@@ -20,7 +20,7 @@ export function SearchPage({ onHoldingClick }: SearchPageProps) {
     setLimiteHoldings,
     limiteCountries,
     setLimiteCountries,
-  } = useEtfSearch();
+  } = useSearch();
 
   const { favoriteIsins, toggleFavorite } = useFavorites();
 
