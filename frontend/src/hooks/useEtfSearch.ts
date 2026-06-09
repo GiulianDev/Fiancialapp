@@ -1,4 +1,5 @@
 // src/hooks/useEtfSearch.ts
+// Chiama l'API di ricerca ETF e gestisce lo stato di caricamento, errori e dati con React Query.
 import { useQuery } from '@tanstack/react-query';
 import { type EtfData } from '../types/etf';
 import { SEARCH_ETF_API_URL } from '../constants';
