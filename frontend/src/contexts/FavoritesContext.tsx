@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import {
-  addFavorite as addFavoriteService,
-  removeFavorite as removeFavoriteService,
-  getFavorites as getFavoritesService,
-} from '../services/favoriteService';
+// import {
+//   addFavorite as addFavoriteService,
+//   removeFavorite as removeFavoriteService,
+//   getFavorites as getFavoritesService,
+// } from '../services/favoriteService';
+import * as favoriteDb from '../services/favoriteService';
 import type { Favorite } from '../types/favorite';
 
 
@@ -41,7 +42,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       setError(null);
-      const data = await getFavoritesService(user.uid);
+      const data = await favoriteDb.getFavorites(user.uid);
       setFavorites(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error loading favorites');
@@ -56,7 +57,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     
     try {
       setError(null);
-      await addFavoriteService(user.uid, isin, name);
+      await favoriteDb.addFavorite(user.uid, isin, name);
       await refreshFavorites();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error adding favorite';
@@ -70,7 +71,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     
     try {
       setError(null);
-      await removeFavoriteService(user.uid, isin);
+      await favoriteDb.removeFavorite(user.uid, isin);
       await refreshFavorites();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error removing favorite';
