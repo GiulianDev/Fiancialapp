@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   
-  const [user, setUser] = useState<FirebaseUser | null>(null); // contiene i dati dell'utente Google se è loggato, altrimenti è null
+  const [user, setUser] = useState<User | null>(null); // contiene i dati dell'utente Google se è loggato, altrimenti è null
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
