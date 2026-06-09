@@ -1,3 +1,4 @@
+// Menage favorites in Firestore for a user, including adding, removing, fetching, and checking if an ETF is a favorite.
 import {
   collection,
   addDoc,
