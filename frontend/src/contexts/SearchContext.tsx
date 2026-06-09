@@ -1,67 +1,38 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import type { EtfData } from '../types/etf';
-import { SEARCH_ETF_API_URL } from '../constants';
+// src/contexts/SearchContext.tsx
+import React, { createContext, useContext, useState } from 'react';
 
 interface SearchContextType {
-  isin: string;
-  setIsin: (isin: string) => void;
-  dati: EtfData | null;
-  caricando: boolean;
-  errore: string | null;
+  isinInput: string;
+  setIsinInput: (val: string) => void;
+  activeIsin: string;
+  setActiveIsin: (val: string) => void;
   limiteHoldings: number;
-  setLimiteHoldings: (limit: number | ((prev: number) => number)) => void;
+  setLimiteHoldings: React.Dispatch<React.SetStateAction<number>>;
   limiteCountries: number;
-  setLimiteCountries: (limit: number | ((prev: number) => number)) => void;
-  cercaEtf: () => Promise<void>;
+  setLimiteCountries: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
+  // 1. Inizializziamo a stringa vuota: la barra mostrerà il placeholder all'avvio
+  const [isinInput, setIsinInput] = useState('');
+  const [activeIsin, setActiveIsin] = useState('');
   
-  const [isin, setIsin] = useState('IE00BK5BQT80');
-  const [dati, setDati] = useState<EtfData | null>(null);
-  const [caricando, setCaricando] = useState(false);
-  const [errore, setErrore] = useState<string | null>(null);
   const [limiteHoldings, setLimiteHoldings] = useState(5);
   const [limiteCountries, setLimiteCountries] = useState(5);
-
-  const cercaEtf = useCallback(async () => {
-    setCaricando(true);
-    setErrore(null);
-    setLimiteHoldings(5);
-    setLimiteCountries(5);
-
-    try {
-      // const response = await fetch(`${API_URL}/api/v2/etf/${isin}`);
-      const response = await fetch(`${SEARCH_ETF_API_URL}/${isin}`);
-      const data = await response.json();
-
-      if (data.status === 'error') {
-        setErrore(data.message);
-      } else {
-        setDati(data);
-      }
-    } catch (error) {
-      setErrore('Errore di connessione al server Python.');
-    } finally {
-      setCaricando(false);
-    }
-  }, [isin]);
 
   return (
     <SearchContext.Provider
       value={{
-        isin,
-        setIsin,
-        dati,
-        caricando,
-        errore,
+        isinInput,
+        setIsinInput,
+        activeIsin,
+        setActiveIsin,
         limiteHoldings,
         setLimiteHoldings,
         limiteCountries,
         setLimiteCountries,
-        cercaEtf,
       }}
     >
       {children}
@@ -72,7 +43,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
 export function useSearch() {
   const context = useContext(SearchContext);
   if (context === undefined) {
-    throw new Error('useSearch must be used within a SearchProvider');
+    throw new Error('useSearch deve essere usato all\'interno di un SearchProvider');
   }
   return context;
 }
