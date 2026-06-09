@@ -16,7 +16,9 @@ function App() {
 
       {/* HEADER */}
       <div className='header'>
-        <AuthButton user={user} authLoading={authLoading} signIn={signIn} signOut={signOut} />  
+
+        {/* LOGIN BUTTON */}
+        <AuthButton/>  
         
         <div className="title">
           <h1>Ricerca Asset per ISIN</h1>

@@ -1,14 +1,16 @@
 import { type FirebaseUser } from '../../firebase';
+import { useAuth } from '../../contexts/AuthContext';
 import './AuthButton.css';
 
-interface AuthButtonProps {
-  user: FirebaseUser | null;
-  authLoading: boolean;
-  signIn: () => Promise<void>;
-  signOut: () => Promise<void>;
-}
+// interface AuthButtonProps {
+//   // user: FirebaseUser | null;
+//   // authLoading: boolean;
+//   // signIn: () => Promise<void>;
+//   // signOut: () => Promise<void>;
+// }
 
-export function AuthButton({ user, authLoading, signIn, signOut }: AuthButtonProps) {
+export function AuthButton() {
+  const { user, authLoading, signIn, signOut } = useAuth();
   return (
     <div className="auth--container">
       <div className="auth-wrapper">
