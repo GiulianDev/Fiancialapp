@@ -1,4 +1,21 @@
+.etf-details__wrapper {
+  border-radius: 16px;
+  will-change: transform, height;
+}
+
 .etf-details--container {
+  overflow: hidden;
+  height: 100%;
+  position: relative; /* Necessario per ancorare la barra di caricamento */
+  transition: opacity 0.3s ease, filter 0.3s ease;
+  
+  /* 👇 EFFETTO STAND-BY: Quando stiamo caricando il nuovo ETF in background */
+  &.is-fetching {
+    opacity: 0.6;
+    filter: blur(0.2px);
+    pointer-events: none; /* Impedisce click accidentali sui pulsanti o "Mostra altri" */
+  }
+
   /* HEADER */
   >.header--container {
     display: flex;
@@ -6,6 +23,7 @@
     align-items: flex-start;
     gap: 1rem;
     margin-bottom: 1rem;
+    
     /* INFO */
     .info--container {
       .title {
@@ -20,6 +38,7 @@
         font-size: 0.98rem;
       }
     }
+    
     /* FAVORITES */
     .favorite--container {
       .favorite-btn {
@@ -36,7 +55,8 @@
         cursor: pointer;
         transition: all 0.2s ease;
         flex-shrink: 0;
-      }.active {
+      }
+      .active {
         color: #ff4081;
         background: rgba(255, 64, 129, 0.2);
       }
@@ -48,16 +68,30 @@
   }
 }
 
+/* 👇 SQUISITEZZA VISIVA: Barra orizzontale animata che indica il caricamento */
+.etf-details__loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #d65cff, #ff4081, #d65cff);
+  background-size: 200% 100%;
+  animation: loading-bar-shimmer 1.5s infinite linear;
+  z-index: 10;
+}
 
-
-
+@keyframes loading-bar-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
 .etf-details__grid {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
   margin-top: 2rem;
-  /* min-height: 350px; */
+  overflow: hidden;
 }
 
 .etf-details__favorite-hint {
