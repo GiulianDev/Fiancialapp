@@ -1,7 +1,7 @@
 import { SearchBar } from '../components/SearchBar/SearchBar';
 import { EtfDetails } from '../components/EtfDetails/EtfDetails';
 import { useSearch } from '../contexts/SearchContext';
-import { useFavorites } from '../hooks/useFavorites';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 interface SearchPageProps {
   onHoldingClick: (isin: string, name: string) => void;
@@ -22,7 +22,15 @@ export function SearchPage({ onHoldingClick }: SearchPageProps) {
     setLimiteCountries,
   } = useSearch();
 
-  const { favoriteIsins, toggleFavorite } = useFavorites();
+  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+
+  const toggleFavorite = async (isin: string, name?: string) => {
+    if (isFavorite(isin)) {
+      await removeFavorite(isin);
+    } else {
+      await addFavorite(isin, name);
+    }
+  };
 
   return (
     <>
@@ -37,7 +45,7 @@ export function SearchPage({ onHoldingClick }: SearchPageProps) {
           limiteCountries={limiteCountries}
           onLoadMoreHoldings={() => setLimiteHoldings((prev) => prev + 5)}
           onLoadMoreCountries={() => setLimiteCountries((prev) => prev + 5)}
-          isFavorite={favoriteIsins.has(isin)}
+          isFavorite={isFavorite(isin)}
           onToggleFavorite={() => toggleFavorite(isin, dati.nome)}
           // 2. Passiamo direttamente la prop a EtfDetails senza logiche locali intermedie
           onHoldingClick={onHoldingClick}
