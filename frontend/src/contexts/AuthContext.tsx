@@ -3,11 +3,16 @@ import { signInWithGoogle, logout, onAuthStateChangedListener } from '../service
 import type { AuthContextType, FirebaseUser } from '../types/auth';
 
 
-
+// Qui stai dicendo a React: "Crea un canale radio chiamato AuthContext". 
+// Tramite l'interfaccia AuthContextType, specifichi che su questo canale viaggeranno sempre quattro cose: 
+// 1. l'oggetto dell'utente (user), 
+// 2. lo stato di caricamento (authLoading), 
+// 3. e 4. le le due funzioni per entrare ed uscire (signIn, signOut).
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<FirebaseUser | null>(null);
+  
+  const [user, setUser] = useState<FirebaseUser | null>(null); // contiene i dati dell'utente Google se è loggato, altrimenti è null
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
@@ -47,6 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Custom Hook
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
