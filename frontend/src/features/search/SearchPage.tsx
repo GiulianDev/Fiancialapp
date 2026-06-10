@@ -32,6 +32,25 @@ export function SearchPage() {
     setDraftIsin(activeIsin);
   }, [activeIsin]);
 
+  // Restore last searched ISIN when user returns to the Search page via tab navigation.
+  // We persist the last confirmed ISIN in sessionStorage so that switching tabs
+  // (which may navigate away and then back without preserving query params)
+  // can restore the detail view automatically.
+  useEffect(() => {
+    if (!activeIsin) {
+      const last = sessionStorage.getItem('lastIsin');
+      if (last) {
+        // Ripristiniamo sia l'URL (per triggerare la fetch) sia il draft input
+        setSearchParams((prev) => {
+          prev.set('isin', last);
+          return prev;
+        });
+        setDraftIsin(last);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // 4. React Query pesca i dati in base all'ISIN confermato nell'URL
   const { 
     data: dati, 
@@ -45,6 +64,14 @@ export function SearchPage() {
     const querySana = draftIsin.trim().toUpperCase();
     if (querySana.length < 12) return;
     
+    // Salviamo l'ultimo ISIN confermato per poterlo ripristinare
+    // quando l'utente torna alla pagina tramite i tab.
+    try {
+      sessionStorage.setItem('lastIsin', querySana);
+    } catch (e) {
+      /* sessionStorage non disponibile: non bloccante */
+    }
+
     // Aggiorniamo l'URL. Questo triggera in automatico React Query e aggiorna la UI
     setSearchParams((prev) => {
       prev.set('isin', querySana);
