@@ -1,8 +1,10 @@
 // src/pages/SearchPage.tsx
+import { useState, useEffect } from 'react';
+// IMPORT AGGIORNATO SECONDO LA DOCS V7
+import { useSearchParams } from 'react-router'; 
 import { SearchBar } from '../components/SearchBar/SearchBar';
 import { EtfDetails } from '../components/EtfDetails/EtfDetails';
 import { useFavorites } from '../contexts/FavoritesContext';
-import { useSearch } from '../contexts/SearchContext';
 import { useEtfSearch } from '../hooks/useEtfSearch';
 
 interface SearchPageProps {
@@ -10,21 +12,26 @@ interface SearchPageProps {
 }
 
 export function SearchPage({ onHoldingClick }: SearchPageProps) {
-  // 1. Consumiamo lo stato della UI che sopravvive ai cambi di tab e alle pagine di dettaglio
-  const {
-    isinInput,
-    setIsinInput,
-    activeIsin,
-    setActiveIsin,
-    limiteHoldings,
-    setLimiteHoldings,
-    limiteCountries,
-    setLimiteCountries,
-  } = useSearch();
-
+  // 1. Inizializziamo il router per leggere e scrivere l'URL
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
-  // 2. Passiamo l'isin attivo (l'ultima ricerca confermata) a React Query
+  // 2. Leggiamo lo stato REALE dall'URL (Source of Truth)
+  // Se non ci sono parametri, usiamo i valori di default (5 per le liste)
+  const activeIsin = searchParams.get('isin') || '';
+  const limiteHoldings = parseInt(searchParams.get('hLimit') || '5', 10);
+  const limiteCountries = parseInt(searchParams.get('cLimit') || '5', 10);
+
+  // 3. Stato locale (Draft) per l'input mentre l'utente digita
+  const [draftIsin, setDraftIsin] = useState(activeIsin);
+
+  // Se l'utente usa il tasto "Indietro" del browser, l'activeIsin cambia.
+  // Sincronizziamo la searchbar per riflettere l'URL attuale.
+  useEffect(() => {
+    setDraftIsin(activeIsin);
+  }, [activeIsin]);
+
+  // 4. React Query pesca i dati in base all'ISIN confermato nell'URL
   const { 
     data: dati, 
     isLoading: caricando, 
@@ -32,15 +39,33 @@ export function SearchPage({ onHoldingClick }: SearchPageProps) {
     error: errore
   } = useEtfSearch(activeIsin);
 
-  // 3. Funzione di ricerca al click del pulsante o all'invio del form
+  // 5. Azioni che modificano l'URL
   const cercaEtf = () => {
-    const querySana = isinInput.trim();
-    if (querySana.length < 12) return; // Evitiamo ricerche se l'ISIN non è formattato correttamente
+    const querySana = draftIsin.trim().toUpperCase();
+    if (querySana.length < 12) return;
     
-    // Aggiornando l'isin attivo, React Query capisce se deve pescare dalla cache o fare la fetch
-    setActiveIsin(querySana);
-    setLimiteHoldings(5);
-    setLimiteCountries(5);
+    // Aggiorniamo l'URL. Questo triggera in automatico React Query e aggiorna la UI
+    setSearchParams((prev) => {
+      prev.set('isin', querySana);
+      // Nuova ricerca -> Resettiamo le espansioni cancellando i parametri
+      prev.delete('hLimit');
+      prev.delete('cLimit');
+      return prev;
+    });
+  };
+
+  const handleLoadMoreHoldings = () => {
+    setSearchParams((prev) => {
+      prev.set('hLimit', (limiteHoldings + 5).toString());
+      return prev;
+    });
+  };
+
+  const handleLoadMoreCountries = () => {
+    setSearchParams((prev) => {
+      prev.set('cLimit', (limiteCountries + 5).toString());
+      return prev;
+    });
   };
 
   const toggleFavorite = async (isin: string, name?: string) => {
@@ -54,26 +79,23 @@ export function SearchPage({ onHoldingClick }: SearchPageProps) {
   return (
     <>
       <SearchBar 
-        isin={isinInput} 
-        onIsinChange={setIsinInput} 
+        isin={draftIsin} 
+        onIsinChange={setDraftIsin} 
         onSearch={cercaEtf} 
         isLoading={caricando} 
         placeholder="Inserisci l'ISIN dell'ETF (es. IE00BK5BQT80)..." 
       />
 
-      {/* Mostra l'errore solo se la query fallisce */}
       {errore && <p style={{ color: 'red', fontWeight: 'bold' }}>{(errore as Error).message}</p>}
 
-      {/* Mostra i dettagli dell'ETF: la card rimane visibile anche durante nuovi fetch
-          (sostituendo i testi con uno skeleton quando `fetching` è true) */}
-      {(activeIsin.trim().length >= 12) && (
+      {(activeIsin.length >= 12) && (
         <EtfDetails
           data={dati}
           isFetching={fetching}
           limiteHoldings={limiteHoldings}
           limiteCountries={limiteCountries}
-          onLoadMoreHoldings={() => setLimiteHoldings((prev) => prev + 5)}
-          onLoadMoreCountries={() => setLimiteCountries((prev) => prev + 5)}
+          onLoadMoreHoldings={handleLoadMoreHoldings}
+          onLoadMoreCountries={handleLoadMoreCountries}
           isFavorite={isFavorite(activeIsin)}
           onToggleFavorite={() => toggleFavorite(activeIsin, dati?.nome)}
           onHoldingClick={onHoldingClick}
