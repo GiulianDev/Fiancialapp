@@ -1,26 +1,27 @@
+import { useParams, useLocation, useNavigate } from 'react-router';
 import { Card } from '../components/ui/Card/Card';
-import { Button } from '../components/ui/Button'; // Assicurati che il path sia corretto in base alle tue cartelle
 
-interface HoldingDetailPageProps {
-  isin: string;
-  name: string;
-  onBack: () => void; // Funzione per tornare indietro
-}
+export function HoldingDetailPage() {
+  const { isin } = useParams<{ isin: string }>(); // Legge l'ISIN dall'URL
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Recupera il nome che avevamo passato tramite lo "state" nella funzione handleHoldingClick
+  const name = location.state?.name || 'Dettaglio Holding'; 
 
-export function HoldingDetailPage({ isin, name, onBack }: HoldingDetailPageProps) {
+  const handleBack = () => {
+    // Questo è il VERO tasto indietro: ti riporta alla SearchPage 
+    // ripristinando esattamente l'URL precedente (es: /?isin=IE123&hLimit=10)
+    navigate(-1); 
+  };
+
   return (
-    <div className="container mx-auto p-4">
-      
-      {/* Wrapper per distanziare il bottone dalla card sottostante */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        {/* Usiamo il tuo Button con la variante 'secondary' (grigio ardesia). 
-            Se lo vuoi viola come quello principale, ti basta togliere variant="secondary" */}
-        <Button onClick={onBack}>
-          ← Torna all'Analisi Portafoglio
-        </Button>
-      </div>
+    <div>
 
       <Card className="p-6">
+  
+        {/* <button onClick={handleBack}>Torna Indietro</button> */}
+  
         <h2 className="text-2xl font-bold mb-4">Dettagli Holding</h2>
         <p className="text-lg"><strong>Nome:</strong> {name}</p>
         <p className="text-lg"><strong>ISIN:</strong> {isin}</p>
@@ -30,6 +31,8 @@ export function HoldingDetailPage({ isin, name, onBack }: HoldingDetailPageProps
           In futuro, qui verranno mostrati dati aggiuntivi sulla singola holding recuperati tramite API.
         </p>
       </Card>
+
+
     </div>
   );
 }
