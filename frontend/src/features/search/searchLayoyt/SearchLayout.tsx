@@ -26,7 +26,7 @@ export function SearchLayout() {
           Cerca ETF
         </NavLink>
         <NavLink
-          to="/portfolio"
+          to={`/portfolio${location.search}`}
           className={({ isActive }) => (isActive ? 'active' : '')}
         >
           Portafoglio preferiti
