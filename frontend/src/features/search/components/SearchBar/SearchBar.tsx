@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button } from '../../index';
-import { Card } from '../../index';
+import { Button } from '@ui';
+import { Card } from '@ui';
 import './SearchBar.css';
 
 interface SearchBarProps {

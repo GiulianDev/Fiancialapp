@@ -2,9 +2,11 @@
 export { SearchBar } from './components/SearchBar/SearchBar';
 // Hook
 export { useEtfSearch } from './hooks/useEtfSearch';
+
 // Shared UI
-export { Button } from '../../shared/ui/Button';
-export { Card } from '../../shared/ui/Card/Card';
+// export { Button } from '../../shared/ui/Button';
+// export { Card } from '../../shared/ui/Card/Card';
+
 // types
 export { type EtfData } from '../../shared/types/etf';
 // Constants

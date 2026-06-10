@@ -9,7 +9,10 @@
     "paths": {
       "@/*": ["./src/*"],
       "@shared/*": ["./src/shared/*"],
-      "@ui/*": ["./src/shared/ui/*"]
+      "@context/*": ["./src/shared/contexts/*"],
+      "@context": ["./src/shared/contexts"],     // per gli import diretti
+      "@ui/*": ["./src/shared/ui/*"],
+      "@ui": ["./src/shared/ui"],     // per gli import diretti
     },
 
     /* Bundler mode */

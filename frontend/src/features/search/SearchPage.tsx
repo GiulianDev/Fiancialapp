@@ -5,7 +5,8 @@ import { useSearchParams } from 'react-router';
 import { SearchBar } from '.';
 import { EtfDetails } from './components/EtfDetails/EtfDetails';
 import { useEtfSearch } from '.';
-import { useFavorites } from '../../shared/contexts/FavoritesContext';
+// import { useFavorites } from '../../shared/contexts/FavoritesContext';
+import { useFavorites } from '@context';
 
 export function SearchPage() {
  
