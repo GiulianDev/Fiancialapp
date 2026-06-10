@@ -12,6 +12,7 @@ interface SearchPageProps {
 }
 
 export function SearchPage({ onHoldingClick }: SearchPageProps) {
+ 
   // 1. Inizializziamo il router per leggere e scrivere l'URL
   const [searchParams, setSearchParams] = useSearchParams();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
