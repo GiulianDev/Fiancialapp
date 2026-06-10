@@ -13,6 +13,8 @@
       "@context": ["./src/shared/contexts"],     // per gli import diretti
       "@ui/*": ["./src/shared/ui/*"],
       "@ui": ["./src/shared/ui"],     // per gli import diretti
+      "@config/*": ["./src/shared/config/*"],
+      "@type": ["./src/shared/types"],     // per gli import diretti
     },
 
     /* Bundler mode */
