@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { type EtfData, type Country } from '../../../../shared/types/etf';
+import { motion } from 'framer-motion';
+import type { Country, EtfData } from '@/shared/types';
+import { useAuth } from '@/shared/contexts';
+import { Card } from '@/shared/ui';
 import { HoldingsSection } from '../HoldingsSection';
 import { CountriesSection } from '../CountriesSection';
-import { Card } from '../../../../shared/ui/Card/Card';
 import './EtfDetails.css';
-import { useAuth } from '../../../../shared/contexts/AuthContext';
-import { motion } from 'framer-motion';
 
 interface EtfDetailsProps {
   data?: EtfData;

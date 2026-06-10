@@ -1,12 +1,9 @@
-// src/pages/SearchPage.tsx
 import { useState, useEffect } from 'react';
-// IMPORT AGGIORNATO SECONDO LA DOCS V7
 import { useSearchParams } from 'react-router'; 
-import { SearchBar } from '.';
-import { EtfDetails } from './components/EtfDetails/EtfDetails';
-import { useEtfSearch } from '.';
-// import { useFavorites } from '../../shared/contexts/FavoritesContext';
 import { useFavorites } from '@context';
+import { SearchBar } from '.';
+import { EtfDetails } from '.';
+import { useEtfSearch } from '.';
 
 export function SearchPage() {
  
