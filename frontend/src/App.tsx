@@ -32,7 +32,7 @@ function App() {
           <h1>Ricerca Asset per ISIN</h1>
         </div>
 
-        {/* I tab appaiono solo se NON siamo in un dettaglio */}
+        {/* TAB di navigazione - appaiono solo se NON siamo in un dettaglio */}
         {!isDetailPage && (
           <div className="page-selector">
             {/* Sfruttiamo la funzione className integrata di NavLink */}
