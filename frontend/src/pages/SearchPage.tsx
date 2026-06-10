@@ -7,11 +7,7 @@ import { EtfDetails } from '../components/EtfDetails/EtfDetails';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { useEtfSearch } from '../hooks/useEtfSearch';
 
-interface SearchPageProps {
-  onHoldingClick: (isin: string, name: string) => void;
-}
-
-export function SearchPage({ onHoldingClick }: SearchPageProps) {
+export function SearchPage() {
  
   // 1. Inizializziamo il router per leggere e scrivere l'URL
   const [searchParams, setSearchParams] = useSearchParams();
@@ -99,7 +95,6 @@ export function SearchPage({ onHoldingClick }: SearchPageProps) {
           onLoadMoreCountries={handleLoadMoreCountries}
           isFavorite={isFavorite(activeIsin)}
           onToggleFavorite={() => toggleFavorite(activeIsin, dati?.nome)}
-          onHoldingClick={onHoldingClick}
         />
       )}
     </>

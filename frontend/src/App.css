@@ -12,40 +12,6 @@
       justify-content: center;
       gap: 1rem;
     }
-    .page-selector {
-      display: flex;
-      justify-content: center;
-      gap: 0.75rem;
-      margin: 1.5rem 0;
-    }
-  
-    /* MODIFICATO: Ora intercetta sia i vecchi bottoni sia i tag 'a' di NavLink */
-    .page-selector button,
-    .page-selector a {
-      padding: 0.75rem 1rem;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      background: rgba(255, 255, 255, 0.06);
-      color: #e8def8;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      
-      /* RESET AGGIUNTIVI PER IL TAG <a> */
-      text-decoration: none;   /* Rimuove la sottolineatura blu dei link */
-      display: inline-flex;    /* Permette al padding di comportarsi come un bottone */
-      align-items: center;
-      justify-content: center;
-      font-size: inherit;      /* Eredita la dimensione del font corretta */
-    }
-
-    /* MODIFICATO: Gestione dello stato hover e active per entrambi i tag */
-    .page-selector button.active,
-    .page-selector a.active,
-    .page-selector button:hover,
-    .page-selector a:hover {
-      border-color: #a78bfa;
-      background: rgba(167, 139, 250, 0.16);
-      color: #fff;
-    }
+    
   }
 }

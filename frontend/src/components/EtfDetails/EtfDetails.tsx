@@ -15,7 +15,6 @@ interface EtfDetailsProps {
   onLoadMoreCountries: () => void;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
-  onHoldingClick?: (isin: string, name: string) => void;
   isFetching?: boolean;
 }
 
@@ -27,7 +26,6 @@ export function EtfDetails({
   onLoadMoreCountries,
   isFavorite = false,
   onToggleFavorite,
-  onHoldingClick,
   isFetching = false,
 }: EtfDetailsProps) {
   
@@ -151,7 +149,6 @@ export function EtfDetails({
             totaleHoldings={activeData?.totale_holdings ?? 0}
             limite={activeLimiteHoldings}
             onLoadMore={onLoadMoreHoldings}
-            onHoldingClick={onHoldingClick}
             isLoading={showSkeleton}
           />
 

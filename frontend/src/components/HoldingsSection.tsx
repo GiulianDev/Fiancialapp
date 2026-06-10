@@ -1,19 +1,32 @@
 import { type Holding } from '../types/etf';
 import { Button } from './ui/Button';
+import { useNavigate } from 'react-router';
 
 interface HoldingsSectionProps {
   holdings: Holding[];
   totaleHoldings: number;
   limite: number;
   onLoadMore: () => void;
-  onHoldingClick?: (isin: string, name: string) => void;
   isLoading?: boolean;
 }
 
+/**
+ * COMPONENTE SELF-CONTAINED
+ * 
+ * Pattern senior: il componente usa useNavigate direttamente invece di
+ * aspettare un callback dall'alto. Questo rende il componente autonomo
+ * e riduce il prop drilling.
+ */
 export function HoldingsSection({
-  holdings, totaleHoldings, limite, onLoadMore, onHoldingClick,
+  holdings, totaleHoldings, limite, onLoadMore,
   isLoading = false,
 }: HoldingsSectionProps) {
+  const navigate = useNavigate();
+  
+  const handleHoldingClick = (isin: string, name: string) => {
+    navigate(`/holding/${isin}`, { state: { name } });
+  };
+
   const holdingsSorted = [...holdings].sort((a, b) => b.peso_percentuale - a.peso_percentuale);
   const holdingsToShow = holdingsSorted.slice(0, limite);
 
@@ -42,10 +55,9 @@ export function HoldingsSection({
             {holdingsToShow.map((h, i) => (
               <li 
                 key={i}
-                // Il click e l'hover si attivano SOLO se c'è un ISIN valido
-                className={h.isin && onHoldingClick ? "cursor-pointer hover:bg-gray-700 p-1 rounded transition-colors" : ""}
-                onClick={() => h.isin && onHoldingClick && onHoldingClick(h.isin, h.nome)}
-                style={h.isin && onHoldingClick ? { cursor: 'pointer' } : {}}
+                className={h.isin ? "cursor-pointer hover:bg-gray-700 p-1 rounded transition-colors" : ""}
+                onClick={() => h.isin && handleHoldingClick(h.isin, h.nome)}
+                style={h.isin ? { cursor: 'pointer' } : {}}
               >
                 {h.nome}: <strong>{h.peso_percentuale.toFixed(2)}%</strong>
               </li>
