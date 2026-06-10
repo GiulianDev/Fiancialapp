@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useFavorites as useFavoritesContext } from '../contexts/FavoritesContext';
+import { useFavorites as useFavoritesContext } from '../shared/contexts/FavoritesContext';
 
 /**
  * Hook personalizzato per gestire i preferiti

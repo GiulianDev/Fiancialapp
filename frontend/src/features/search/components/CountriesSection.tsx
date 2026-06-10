@@ -1,5 +1,5 @@
-import { type Country } from '../types/etf';
-import { Button } from './ui/Button';
+import { type Country } from '../../../shared/types/etf';
+import { Button } from '../../../shared/ui/Button';
 
 interface CountriesSectionProps {
   countries: Country[];

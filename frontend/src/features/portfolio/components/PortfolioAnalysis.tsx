@@ -1,9 +1,9 @@
 // src/components/PortfolioAnalysis.tsx
 import { useMemo } from 'react';
 import { EtfCharts } from './EtfCharts/EtfCharts';
-import { Card } from './ui/Card/Card'; 
-import { analyzePortfolio } from '../utils/portfolioUtils';
-import { useFetchedEtfData } from '../hooks/useFetchedEtfData';
+import { Card } from '../../../shared/ui/Card/Card'; 
+import { analyzePortfolio } from '.././../../utils/portfolioUtils';
+import { useFetchedEtfData } from '.././../../hooks/useFetchedEtfData';
 
 interface PortfolioAnalysisProps {
   selectedIsins: string[];

@@ -1,5 +1,5 @@
 import { useParams, useLocation, useNavigate } from 'react-router';
-import { Card } from '../components/ui/Card/Card';
+import { Card } from '../../shared/ui/Card/Card';
 
 export function HoldingDetailPage() {
   const { isin } = useParams<{ isin: string }>(); // Legge l'ISIN dall'URL

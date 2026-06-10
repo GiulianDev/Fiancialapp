@@ -1,5 +1,5 @@
-import { type AggregatedResult } from '../../types/portfolio';
-import { Card } from '../ui/Card/Card';
+import { type AggregatedResult } from '../../index';
+import { Card } from '../../index';
 import './EtfCharts.css';
 import { PieChartDisplay } from './PieChartDisplay';
 

@@ -1,4 +1,4 @@
-import { usePortfolio as usePortfolioContext } from '../contexts/PortfolioContext';
+import { usePortfolio as usePortfolioContext } from '../../../shared/contexts/PortfolioContext';
 
 /**
  * Hook personalizzato per gestire il portafoglio

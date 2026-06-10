@@ -8,7 +8,7 @@ import {
   getDocs,
   serverTimestamp,
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../config/firebase';
 import type { Favorite } from '../types/favorite';
 
 function favoritesCollection(userId: string) {

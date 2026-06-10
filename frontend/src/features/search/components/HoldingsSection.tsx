@@ -1,5 +1,5 @@
-import { type Holding } from '../types/etf';
-import { Button } from './ui/Button';
+import { type Holding } from '../../../shared/types/etf';
+import { Button } from '../../../shared/ui/Button';
 import { useNavigate } from 'react-router';
 
 interface HoldingsSectionProps {

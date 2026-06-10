@@ -1,8 +1,8 @@
 import App from './App';
-import { SearchLayout } from './layouts/SearchLayout';
-import { SearchPage } from './pages/SearchPage';
-import { PortfolioPage } from './pages/PortfolioPage';
-import { HoldingDetailPage } from './pages/HoldingDetailPage';
+import { SearchLayout } from '../features/search/searchLayoyt/SearchLayout';
+import { SearchPage } from '../features/search/SearchPage';
+import { PortfolioPage } from '../features/portfolio/PortfolioPage';
+import { HoldingDetailPage } from '../features/holding/HoldingDetailPage';
 
 /**
  * DEFINIZIONE CENTRALIZZATA DELLE ROUTE

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Button } from './ui/Button';
-import { Card } from './ui/Card/Card';
-import type { Favorite } from '../types/favorite';
+import { Button } from '../../../shared/ui/Button';
+import { Card } from '../../../shared/ui/Card/Card';
+import type { Favorite } from '../../../shared/types/favorite';
 import type { SavedPortfolio } from '../services/portfolioService';
 
 interface FavoritesSelectorProps {

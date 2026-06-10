@@ -2,10 +2,10 @@
 import { useState, useEffect } from 'react';
 // IMPORT AGGIORNATO SECONDO LA DOCS V7
 import { useSearchParams } from 'react-router'; 
-import { SearchBar } from '../components/SearchBar/SearchBar';
-import { EtfDetails } from '../components/EtfDetails/EtfDetails';
-import { useFavorites } from '../contexts/FavoritesContext';
-import { useEtfSearch } from '../hooks/useEtfSearch';
+import { SearchBar } from '.';
+import { EtfDetails } from './components/EtfDetails/EtfDetails';
+import { useEtfSearch } from '.';
+import { useFavorites } from '../../shared/contexts/FavoritesContext';
 
 export function SearchPage() {
  

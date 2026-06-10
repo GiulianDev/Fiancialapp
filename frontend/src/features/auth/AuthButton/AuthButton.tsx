@@ -1,12 +1,5 @@
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../../shared/contexts/AuthContext';
 import './AuthButton.css';
-
-// interface AuthButtonProps {
-//   // user: FirebaseUser | null;
-//   // authLoading: boolean;
-//   // signIn: () => Promise<void>;
-//   // signOut: () => Promise<void>;
-// }
 
 export function AuthButton() {
   const { user, authLoading, signIn, signOut } = useAuth();

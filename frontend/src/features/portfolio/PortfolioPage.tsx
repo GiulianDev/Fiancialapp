@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useFavorites } from '../hooks/useFavorites';
-import { usePortfolio } from '../hooks/usePortfolio'; 
-import { FavoritesSelector } from '../components/FavoritesSelector';
-import { PortfolioAnalysis } from '../components/PortfolioAnalysis';
-import type { SavedPortfolio } from '../services/portfolioService';
+import { useFavorites } from '../../hooks/useFavorites';
+import { usePortfolio } from './hook/usePortfolio'; 
+import { FavoritesSelector } from '.';
+import { PortfolioAnalysis } from '.';
+import type { SavedPortfolio } from '.';
 
 export function PortfolioPage() {
   
@@ -17,7 +17,7 @@ export function PortfolioPage() {
   useEffect(() => {
     if (savedPortfolio) {
       const numericWeights: Record<string, number> = {};
-      savedPortfolio.selectedIsins.forEach(isin => {
+      savedPortfolio.selectedIsins.forEach((isin: string | number) => {
         numericWeights[isin] = parseFloat(savedPortfolio.weights[isin] || '0');
       });
       setAnalysisData({ isins: savedPortfolio.selectedIsins, weights: numericWeights });

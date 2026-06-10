@@ -1,6 +1,6 @@
 import './App.css';
 import { Outlet } from 'react-router';
-import { AuthButton } from './features/auth/AuthButton/AuthButton';
+import { AuthButton } from '../features/auth/AuthButton/AuthButton';
 
 /**
  * APP ROOT LAYOUT
@@ -19,6 +19,7 @@ import { AuthButton } from './features/auth/AuthButton/AuthButton';
 function App() {
   return (
     <div id="container">
+
       {/* HEADER - SEMPRE VISIBILE */}
       <div className='header'>
         <AuthButton />

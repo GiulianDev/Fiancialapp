@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import type { EtfData } from '../types/etf';
-import { API_URL } from '../constants';
-import { useAuth } from '../contexts/AuthContext';
+import type { EtfData } from '../shared/types/etf';
+import { API_URL } from '../shared/config/constants';
+import { useAuth } from '../shared/contexts/AuthContext';
 
 interface UseFetchedEtfDataResult {
   etfData: EtfData[];
