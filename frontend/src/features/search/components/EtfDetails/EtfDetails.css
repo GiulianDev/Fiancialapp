@@ -26,13 +26,17 @@
     
     /* INFO */
     .info--container {
+      flex: 1 1 0%;  
+      min-width: 0px;    
       .title {
+        display:flex;
         color: #d6b4ff;
         margin-top: 0;
         margin-bottom: 0.5rem;
         font-size: 1.75rem;
       }
       .subtitle {
+        display: flex;
         margin: 0.3rem 0;
         color: #e8def8;
         font-size: 0.98rem;
@@ -73,9 +77,9 @@
   position: absolute;
   top: 0;
   left: 0;
-  height: 3px;
+  height: 1px;
   width: 100%;
-  background: linear-gradient(90deg, #d65cff, #ff4081, #d65cff);
+  /* background: linear-gradient(90deg, #d65cff, #ff4081, #d65cff); */
   background-size: 200% 100%;
   animation: loading-bar-shimmer 1.5s infinite linear;
   z-index: 10;
@@ -106,8 +110,14 @@
   background-size: 200% 100%;
   animation: shimmer 1.2s linear infinite;
   border-radius: 4px;
+  margin-top: 0.5rem;
 }
-.skeleton-title { border-radius: 6px; }
+.skeleton-title { 
+  border-radius: 6px; 
+  width: '60%'; 
+  height: '28px'; 
+  margin-bottom: '8px' 
+}
 .skeleton-sub { border-radius: 4px; }
 
 @keyframes shimmer {

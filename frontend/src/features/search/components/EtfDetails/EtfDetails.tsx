@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import type { Country, EtfData } from '@/shared/types';
-import { Card } from '@/shared/ui';
+// import { Card } from '@/shared/ui';,
 import { HoldingsSection } from '../HoldingsSection';
 import { CountriesSection } from '../CountriesSection';
 import './EtfDetails.css';
@@ -46,59 +46,52 @@ export function EtfDetails({
   return (
     <motion.div 
       layout 
+      style={{ transformOrigin: 'top' }} // <-- 1. Ancora l'animazione in alto
       transition={{ 
-        layout: { 
-          type: "tween",
-          ease: "easeInOut",
-          duration: 0.35
-        } 
+        layout: { type: 'spring', bounce: 0, duration: 0.4 } // <-- 2. Molla senza rimbalzo
       }}
-      className="etf-details__wrapper mx-auto w-12/12 md:max-w-3xl"
+      className="etf-details__wrapper bg-slate-900 border border-slate-800 p-6 shadow-xl w-full"
     >
-      <Card className={`etf-details--container w-full ${isFetching ? 'is-fetching' : ''}`}>
+      <div className={`etf-details--container ${isFetching ? 'is-fetching' : ''}`}>
         
-        {/* Barra di caricamento visibile se stiamo facendo fetching dei dati */}
-        {isFetching && (
-          <div className="etf-details__loading-bar" />
-        )}
+        {/* Barra di caricamento orizzontale in alto durante il fetching in background */}
+        {isFetching && data && <div className="etf-details__loading-bar" />}
 
-        {/* HEADER */}
-        <motion.div layout="position" className="header--container">
+        {/* HEADER: Titolo, info e bottone preferiti */}
+        <div className="header--container">
           
-          <motion.div layout="position" className="info--container">
+          {/* info--container ottimizzato con flex-1 e min-w-0 per risolvere il bug del Flexbox */}
+          <div className="info--container">
             {showSkeleton ? (
               <>
-                <div className="skeleton" style={{ width: 40, height: 40, borderRadius: '50%' }} />
-
-                <motion.div layout="position" className="skeleton skeleton-title" style={{ width: '60%', height: '28px', marginBottom: '8px' }} />
-                <motion.div layout="position" className="skeleton skeleton-sub" style={{ width: '45%', height: '16px', marginBottom: '6px' }} /> 
-                <motion.div layout="position" className="skeleton skeleton-sub" style={{ width: '35%', height: '16px' }} /> 
+                <div className="skeleton skeleton-title" />
+                <div className="skeleton skeleton-sub" style={{ width: '45%', height: '16px', marginBottom: '6px' }} /> 
+                <div className="skeleton skeleton-sub" style={{ width: '35%', height: '16px' }} /> 
               </>
             ) : (  
               <>
-                <motion.h2 layout="position" className="title">
+                <motion.h2 layout className="title">
                   {data?.nome || 'N/A'}
                 </motion.h2>
-                <motion.p layout="position" className="subtitle">
+                <motion.p layout className="subtitle">
                   ISIN: <strong>{data?.isin}</strong> | Tipo Asset: <strong>{data?.tipo_asset}</strong> 
                 </motion.p>
                 {data?.costo_annuo !== undefined && data.costo_annuo > 0 && (
-                  <motion.p layout="position" className="subtitle">
+                  <motion.p layout className="subtitle">
                     TER (Costo Annuo): <strong>{data.costo_annuo}%</strong>
                   </motion.p>
                 )}
               </>
             )}
-          </motion.div>
+          </div>
 
-          {/* ADD TO FAVORITES */}
-          <motion.div layout="position" className='favorite--container'>
+          {/* Sezione Preferiti */}
+          <motion.div layout="position" className="favorite--container">
             {showFavoriteControls && (
-              <button
+              <button 
+                onClick={onToggleFavorite} 
                 className={`favorite-btn ${isFavorite ? 'active' : ''}`}
-                onClick={onToggleFavorite}
                 aria-label={isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}
-                title={isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}
                 disabled={showSkeleton}
               >
                 {showSkeleton ? (
@@ -115,7 +108,7 @@ export function EtfDetails({
           {!isUserLoggedIn && (
             <motion.p layout="position" className="etf-details__favorite-hint">Accedi per salvare nei preferiti.</motion.p>
           )}
-        </motion.div>
+        </div>
 
         {/* GRIGLIA: Nutrita con i dati in tempo reale */}
         <motion.div layout="position" className="etf-details__grid">
@@ -129,13 +122,14 @@ export function EtfDetails({
 
           <CountriesSection
             countries={countriesArray}
+            // totaleCountries={data?.totale_countries ?? 0}
             limite={limiteCountries}
             onLoadMore={onLoadMoreCountries}
             isLoading={showSkeleton}
           />
         </motion.div>
-        
-      </Card>
+
+      </div>
     </motion.div>
   );
 }
