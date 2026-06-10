@@ -23,3 +23,5 @@ cd backend
 
 - il Context non dovrebbe mai fare da "database di passaggio" per i dati che arrivano dal server.
 
+- isin e numero di elementi visualizzati è gestito tutto tramite url params
+
