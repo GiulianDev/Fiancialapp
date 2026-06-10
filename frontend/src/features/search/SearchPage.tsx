@@ -74,6 +74,7 @@ export function SearchPage() {
     });
   };
 
+  
   const toggleFavorite = async (isin: string, name?: string) => {
     if (isFavorite(isin)) {
       await removeFavorite(isin);

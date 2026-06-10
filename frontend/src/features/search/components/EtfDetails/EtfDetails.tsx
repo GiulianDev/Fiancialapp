@@ -73,9 +73,11 @@ export function EtfDetails({
     peso,
   })) : [];
 
-  // Lo scheletro (e il collasso dell'altezza) avviene SOLO al primissimo avvio assoluto
+  // Lo scheletro completo (collasso dell'altezza) avviene SOLO al primissimo avvio
   const showSkeleton = !activeData;
-
+  // Quando abbiamo dati vecchi ma stiamo refetchando, mostriamo un overlay
+  // o skeleton parziale per comunicare il refresh senza svuotare la UI.
+  const showFetchingOverlay = !!activeData && isFetching;
   return (
     <motion.div 
       layout 
@@ -116,6 +118,9 @@ export function EtfDetails({
                     TER (Costo Annuo): <strong>{activeData.costo_annuo}%</strong>
                   </motion.p>
                 )}
+                {showFetchingOverlay && (
+                  <motion.div layout="position" className="skeleton skeleton-sub" style={{ width: '100%', height: '8px', marginTop: 8, opacity: 0.6 }} />
+                )}
               </>
             )}
           </motion.div>
@@ -128,10 +133,10 @@ export function EtfDetails({
                 onClick={onToggleFavorite}
                 aria-label={isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}
                 title={isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}
-                disabled={showSkeleton}
+                disabled={showSkeleton || isFetching}
               >
-                {showSkeleton ? (
-                  <div className="skeleton" style={{ width: 40, height: 40, borderRadius: '50%' }} />
+                {showSkeleton || showFetchingOverlay ? (
+                  <div className="skeleton" style={{ width: 40, height: 40, borderRadius: '50%', opacity: showFetchingOverlay ? 0.6 : 1 }} />
                 ) : (
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -153,14 +158,15 @@ export function EtfDetails({
             totaleHoldings={activeData?.totale_holdings ?? 0}
             limite={activeLimiteHoldings}
             onLoadMore={onLoadMoreHoldings}
-            isLoading={showSkeleton}
+            // Mostriamo loading anche durante il refetch mantenendo i dati precedenti
+            isLoading={showSkeleton || isFetching}
           />
 
           <CountriesSection
             countries={countriesArray}
             limite={activeLimiteCountries}
             onLoadMore={onLoadMoreCountries}
-            isLoading={showSkeleton}
+            isLoading={showSkeleton || isFetching}
           />
         </motion.div>
         
