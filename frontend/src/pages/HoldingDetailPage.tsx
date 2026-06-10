@@ -9,11 +9,9 @@ export function HoldingDetailPage() {
   // Recupera il nome che avevamo passato tramite lo "state" nella funzione handleHoldingClick
   const name = location.state?.name || 'Dettaglio Holding'; 
 
-  const handleBack = () => {
-    // Questo è il VERO tasto indietro: ti riporta alla SearchPage 
-    // ripristinando esattamente l'URL precedente (es: /?isin=IE123&hLimit=10)
-    navigate(-1); 
-  };
+  // Questo è il VERO tasto indietro: ti riporta alla SearchPage 
+  // ripristinando esattamente l'URL precedente (es: /?isin=IE123&hLimit=10)
+  const handleBack = () => { navigate(-1) };
 
   return (
     <div>
