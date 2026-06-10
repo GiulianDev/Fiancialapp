@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router'; 
-import { useFavorites } from '@context';
+import { useFavorites, useAuth } from '@context';
 import { SearchBar } from '.';
 import { EtfDetails } from '.';
 import { useEtfSearch } from '.';
 
+// SearchPage è il compositore principale della ricerca ETF.
+// - legge lo stato dalla query string (source of truth)
+// - mantiene l'input locale come draft
+// - esegue la fetch solo quando l'ISIN è confermato
+// - passa i risultati al componente di presentazione EtfDetails
 export function SearchPage() {
  
   // 1. Inizializziamo il router per leggere e scrivere l'URL
   const [searchParams, setSearchParams] = useSearchParams();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+  const { user } = useAuth();
 
   // 2. Leggiamo lo stato REALE dall'URL (Source of Truth)
   // Se non ci sono parametri, usiamo i valori di default (5 per le liste)
@@ -92,6 +98,7 @@ export function SearchPage() {
           onLoadMoreHoldings={handleLoadMoreHoldings}
           onLoadMoreCountries={handleLoadMoreCountries}
           isFavorite={isFavorite(activeIsin)}
+          isUserLoggedIn={Boolean(user)}
           onToggleFavorite={() => toggleFavorite(activeIsin, dati?.nome)}
         />
       )}

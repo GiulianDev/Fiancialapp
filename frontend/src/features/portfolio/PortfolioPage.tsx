@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useFavorites } from '../../hooks/useFavorites';
-import { usePortfolio } from './hook/usePortfolio'; 
+import { useFavorites, usePortfolio } from '@context';
 import { FavoritesSelector } from '.';
 import { PortfolioAnalysis } from '.';
 import type { SavedPortfolio } from '.';
 
 export function PortfolioPage() {
   
+  // Il portfolio usa i context globali per caricare i dati dell'utente
+  // e mantenere i salvataggi sincronizzati con Firestore.
   const { favorites, loading: favsLoading } = useFavorites();
-  const { savedPortfolio, loading: portfolioLoading, error: portfolioError, updatePortfolio } = usePortfolio();
+  const { portfolio: savedPortfolio, loading: portfolioLoading, error: portfolioError, savePortfolio } = usePortfolio();
 
   const [analysisData, setAnalysisData] = useState<{ isins: string[]; weights: Record<string, number> } | null>(null);
   
@@ -48,7 +49,7 @@ export function PortfolioPage() {
     };
 
     try {
-      await updatePortfolio(newPortfolio);
+      await savePortfolio(newPortfolio);
       setAnalysisData({ isins: selectedIsins, weights: numericWeights });
       setTriggerFetch(true); 
     } catch (err) {

@@ -5,7 +5,7 @@ import {
   setDoc,
   serverTimestamp,
 } from 'firebase/firestore';
-import { db } from '../../shared/config/firebase';
+import { db } from '../config/firebase';
 
 export interface SavedPortfolio {
   selectedIsins: string[];

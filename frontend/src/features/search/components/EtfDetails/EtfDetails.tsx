@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import type { Country, EtfData } from '@/shared/types';
-import { useAuth } from '@/shared/contexts';
 import { Card } from '@/shared/ui';
 import { HoldingsSection } from '../HoldingsSection';
 import { CountriesSection } from '../CountriesSection';
@@ -16,6 +15,7 @@ interface EtfDetailsProps {
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
   isFetching?: boolean;
+  isUserLoggedIn?: boolean;
 }
 
 export function EtfDetails({
@@ -27,9 +27,12 @@ export function EtfDetails({
   isFavorite = false,
   onToggleFavorite,
   isFetching = false,
+  isUserLoggedIn = false,
 }: EtfDetailsProps) {
   
-  const { user } = useAuth(); 
+  // Evitiamo che questo componente consumi direttamente il contesto auth.
+  // Lo stato di login viene passato dall'esterno, rendendo EtfDetails più riusabile e testabile.
+  const showFavoriteControls = Boolean(isUserLoggedIn && onToggleFavorite);
 
   // 🧠 PATTERN SENIOR: "Stale-While-Revalidate" UI
   // Quando cambia l'ISIN, 'data' diventa undefined. Noi salviamo l'ultimo ETF valido 
@@ -44,6 +47,7 @@ export function EtfDetails({
   }, [data]);
 
   // Se 'data' è undefined (stiamo cercando un nuovo ETF), mostriamo i dati in memoria (retainedData)
+  // Questo evita l'effetto di 'svuotamento' dell'interfaccia mentre arriva la nuova risposta.
   const activeData = data || retainedData;
 
   // Congelamento dei limiti visivi per evitare rimpicciolimenti durante i cambi di pagina
@@ -118,7 +122,7 @@ export function EtfDetails({
 
           {/* ADD TO FAVORITES */}
           <motion.div layout="position" className='favorite--container'>
-            {user && onToggleFavorite && (
+            {showFavoriteControls && (
               <button
                 className={`favorite-btn ${isFavorite ? 'active' : ''}`}
                 onClick={onToggleFavorite}
@@ -137,7 +141,7 @@ export function EtfDetails({
             )}
           </motion.div>
 
-          {!user && (
+          {!isUserLoggedIn && (
             <motion.p layout="position" className="etf-details__favorite-hint">Accedi per salvare nei preferiti.</motion.p>
           )}
         </motion.div>
