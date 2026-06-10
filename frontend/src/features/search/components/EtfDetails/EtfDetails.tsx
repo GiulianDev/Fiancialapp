@@ -48,7 +48,8 @@ export function EtfDetails({
       layout 
       style={{ transformOrigin: 'top' }} // <-- 1. Ancora l'animazione in alto
       transition={{ 
-        layout: { type: 'spring', bounce: 0, duration: 0.4 } // <-- 2. Molla senza rimbalzo
+        // layout: { type: 'spring', bounce: 0, duration: 0.4 } // <-- 2. Molla senza rimbalzo
+        layout: { type: 'tween', ease: 'easeInOut', duration: 0.3 }
       }}
       className="etf-details__wrapper bg-slate-900 border border-slate-800 p-6 shadow-xl w-full"
     >
