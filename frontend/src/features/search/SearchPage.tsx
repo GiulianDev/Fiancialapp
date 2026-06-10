@@ -12,10 +12,10 @@ import { useEtfSearch } from '.';
 // - passa i risultati al componente di presentazione EtfDetails
 export function SearchPage() {
  
+  const { user } = useAuth();
   // 1. Inizializziamo il router per leggere e scrivere l'URL
   const [searchParams, setSearchParams] = useSearchParams();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
-  const { user } = useAuth();
 
   // 2. Leggiamo lo stato REALE dall'URL (Source of Truth)
   // Se non ci sono parametri, usiamo i valori di default (5 per le liste)
