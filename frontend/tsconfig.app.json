@@ -14,7 +14,9 @@
       "@ui/*": ["./src/shared/ui/*"],
       "@ui": ["./src/shared/ui"],     // per gli import diretti
       "@config/*": ["./src/shared/config/*"],
-      "@type": ["./src/shared/types"],     // per gli import diretti
+      "@types": ["./src/shared/types"],     // per gli import diretti
+      "@services/*": ["./src/shared/services/*"],
+      "@services": ["./src/shared/services"],     // per gli import diretti
     },
 
     /* Bundler mode */

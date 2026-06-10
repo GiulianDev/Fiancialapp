@@ -23,6 +23,6 @@ export function useEtfSearch(isin: string) {
 
     // CONTROLLO: Se l'isin è vuoto (primo avvio), la query è disabilitata.
     // Non fa chiamate a vuoto e non mostra errori.
-    enabled: isin.trim().length >= 0, 
+    enabled: isin.trim().length > 0, 
   });
 }

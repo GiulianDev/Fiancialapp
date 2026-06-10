@@ -1,12 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-// import {
-//   addFavorite as addFavoriteService,
-//   removeFavorite as removeFavoriteService,
-//   getFavorites as getFavoritesService,
-// } from '../services/favoriteService';
-import * as favoriteDb from '../services/favoriteService';
-import type { Favorite } from '../types/favorite';
+import * as favoriteDb from '@services/favoriteService';
+import type { Favorite } from '@types';
 
 
 interface FavoritesContextType {
