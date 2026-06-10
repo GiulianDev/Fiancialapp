@@ -102,27 +102,48 @@ export function EtfDetails({
         <motion.div layout="position" className="header--container">
           
           <motion.div layout="position" className="info--container">
+            
             {showSkeleton ? (
               <>
-                <motion.div layout="position" className="skeleton skeleton-title" style={{ width: '60%', height: '28px', marginBottom: '8px' }} />
-                <motion.div layout="position" className="skeleton skeleton-sub" style={{ width: '45%', height: '16px', marginBottom: '6px' }} />
+                  <motion.div layout="position" className="skeleton skeleton-sub" style={{ width: '45%', height: '16px', marginBottom: '6px' }} /> 
+                  <motion.div layout="position" className="skeleton skeleton-title" style={{ width: '60%', height: '28px', marginBottom: '8px' }} />
               </>
             ) : (
               <>
                 <motion.h2 layout="position" className="title">{activeData.nome}</motion.h2>
-                <motion.p layout="position" className="subtitle">
-                  ISIN: <strong>{activeData.isin}</strong> | Tipo Asset: <strong>{activeData.tipo_asset}</strong>
-                </motion.p>
-                {activeData.costo_annuo && activeData.costo_annuo > 0 && (
-                  <motion.p layout="position" className="subtitle">
-                    TER (Costo Annuo): <strong>{activeData.costo_annuo}%</strong>
-                  </motion.p>
-                )}
-                {showFetchingOverlay && (
-                  <motion.div layout="position" className="skeleton skeleton-sub" style={{ width: '100%', height: '8px', marginTop: 8, opacity: 0.6 }} />
-                )}
+              
+               
+
               </>
             )}
+
+
+            {showFetchingOverlay ? (
+              <>
+                  <motion.div layout="position" className="skeleton skeleton-title" style={{ width: '60%', height: '28px', marginBottom: '8px' }} />
+                  <motion.div layout="position" className="skeleton skeleton-sub" style={{ width: '45%', height: '16px', marginBottom: '6px' }} /> 
+                  <motion.div layout="position" className="skeleton skeleton-sub" style={{ width: '100%', height: '8px', marginTop: 8, opacity: 0.6 }} />
+              </>
+            ) : (  
+              <>
+                <motion.h2 layout="position" className="title">
+                  {activeData ? ( 
+                    <> {activeData.nome}</> 
+                  ) : ('N/A')}
+                </motion.h2>
+                <motion.p layout="position" className="subtitle">
+                  ISIN: {activeData ? ( 
+                    <>
+                      ISIN: <strong>{activeData.isin}</strong> | Tipo Asset: <strong>{activeData.tipo_asset}</strong> 
+                    </>
+                   ) : ('N/A')}
+                </motion.p>
+                <motion.p layout="position" className="subtitle">
+                  TER (Costo Annuo): {activeData ? ( <strong>{activeData.costo_annuo}%</strong> ) : ('N/A')}
+                </motion.p>
+              </>
+            )}
+
           </motion.div>
 
           {/* ADD TO FAVORITES */}
