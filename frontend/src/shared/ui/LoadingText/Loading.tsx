@@ -1,14 +1,13 @@
 import React from 'react';
-import { Skeleton } from '@ui';
+import { Skeleton } from '@/shared/ui/Skeleton/Skeleton'; // Aggiusta il path se necessario
 import './Loading.css';
 
-// Definiamo il custom type per le varianti ammesse
 export type SkeletonVariant = 'title' | 'subtitle' | 'text';
 
 export interface LoadingProps {
   isLoading: boolean;
-  children: React.ReactNode;   // Accetta qualsiasi contenuto React
-  variant?: SkeletonVariant; // Opzionale, accetta solo le 3 stringhe definite sopra
+  children: React.ReactNode;
+  variant?: SkeletonVariant;
 }
 
 export function Loading({
@@ -17,27 +16,21 @@ export function Loading({
   variant = 'text',
 }: LoadingProps) {
 
-  // const combinedClassName = `loading--container ${variant}`.trim();
-
-  // Se sta caricando, mostra lo skeleton configurato dal padre
+  // Se sta caricando, mostra solo lo skeleton con le dimensioni corrette
   if (isLoading) {
     return (
       <div className="loading--container">     
-        <div className={variant}> 
-          <Skeleton className={variant} />
-        </div> 
+        <Skeleton className={variant} />
       </div>
     );
   }
 
-  // Altrimenti, renderizza il testo reale (o i componenti figli)
+  // Altrimenti, renderizza il testo reale avvolto nel contenitore semantico
   return (
     <div className="loading--container">      
-      <div className={variant}>
+      <div className={`loading--content ${variant}`.trim()}>
         {children}
       </div>
     </div>
-  )
-
-
+  );
 }

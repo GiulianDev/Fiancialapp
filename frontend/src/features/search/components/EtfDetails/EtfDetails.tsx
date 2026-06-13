@@ -58,6 +58,7 @@ export function EtfDetails({
 
         <div className='etf-detail--header'>
 
+          {/* INFO */}
           <div className="info--container">
 
             {/* INFO */}
@@ -101,6 +102,26 @@ export function EtfDetails({
           </div>
 
         </div>
+
+
+        {/* GRIGLIA: Nutrita con i dati in tempo reale */}
+        <motion.div layout="position" className="etf-details__grid">
+          <HoldingsSection
+            holdings={data?.holdings ?? []}
+            totaleHoldings={data?.totale_holdings ?? 0}
+            limite={limiteHoldings}
+            onLoadMore={onLoadMoreHoldings}
+            isLoading={showSkeleton}
+          />
+
+          <CountriesSection
+            countries={countriesArray}
+            // totaleCountries={data?.totale_countries ?? 0}
+            limite={limiteCountries}
+            onLoadMore={onLoadMoreCountries}
+            isLoading={showSkeleton}
+          />
+        </motion.div>
 
       </Card>
 
