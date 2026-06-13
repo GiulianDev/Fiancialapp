@@ -46,9 +46,10 @@ export function SearchPage() {
     error: errore
   } = useEtfSearch(activeIsin);
 
-  // 5. Azioni che modificano l'URL
+  // Al click su "Cerca Dati" aggiorniamo i parametri dell'URL
   const cercaEtf = () => {
     const querySana = draftIsin.trim().toUpperCase();
+
     // ToDo add visual control for invalid ISIN (e.g., toast notification)
     if (querySana.length < 12) {
       console.log('INVALID ISIN');
@@ -81,7 +82,6 @@ export function SearchPage() {
     });
   };
 
-  
   const toggleFavorite = async (isin: string, name?: string) => {
     if (isFavorite(isin)) {
       await removeFavorite(isin);
