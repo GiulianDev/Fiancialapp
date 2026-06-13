@@ -5,6 +5,7 @@ import './HomePage.css';
  * mostra i tab di navigazione.
  */
 export function HomePage() {
+  
   const location = useLocation();
 
   return (
@@ -12,22 +13,22 @@ export function HomePage() {
       <div className="navigation-tab--container">
         {/* 
           NavLink usa location.pathname + location.search per preservare i parametri.
-          Se sei in "/?isin=IE00B&hLimit=10" e clicchi sul tab "Cerca ETF",
-          rimane su "/?isin=IE00B&hLimit=10" (o vai a "/" se non ci sono parametri).
         */}
         <NavLink
-          to={`/${location.search}`}
-          end
+          to={`/search/${location.search}`}
+          // end // significa che il link è attivo solo se l'URL corrisponde esattamente a "/"
           className={({ isActive }) => (isActive ? 'active' : '')}
         >
           Cerca ETF
         </NavLink>
+
         <NavLink
           to={`/portfolio${location.search}`}
           className={({ isActive }) => (isActive ? 'active' : '')}
         >
           Portafoglio preferiti
         </NavLink>
+        
       </div>
 
       {/* Qui renderizziamo le pagine figlie (SearchPage o PortfolioPage) */}

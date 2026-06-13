@@ -43,32 +43,6 @@
       }
     }
     
-    /* FAVORITES */
-    .favorite--container {
-      .favorite-btn {
-        width: 40px;
-        height: 40px;
-        padding: 0;
-        border: none;
-        background: rgba(214, 92, 255, 0.12);
-        color: #d65cff;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        flex-shrink: 0;
-      }
-      .active {
-        color: #ff4081;
-        background: rgba(255, 64, 129, 0.2);
-      }
-      .favorite-btn:hover {
-        background: rgba(214, 92, 255, 0.2);
-        transform: scale(1.1);
-      }
-    }
   }
 }
 

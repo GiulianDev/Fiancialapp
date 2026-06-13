@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 import type { Country, EtfData } from '@/shared/types';
-// import { Card } from '@/shared/ui';,
 import { HoldingsSection } from '../HoldingsSection';
 import { CountriesSection } from '../CountriesSection';
 import './EtfDetails.css';
+import { FavoriteButton } from '@/shared/ui/FavoriteButton/FavoriteButton';
 
 interface EtfDetailsProps {
   data?: EtfData;
@@ -12,7 +12,7 @@ interface EtfDetailsProps {
   onLoadMoreHoldings: () => void;
   onLoadMoreCountries: () => void;
   isFavorite?: boolean;
-  onToggleFavorite?: () => void;
+  onToggleFavorite: () => void;
   isFetching?: boolean;
   isUserLoggedIn?: boolean;
 }
@@ -29,8 +29,6 @@ export function EtfDetails({
   isUserLoggedIn = false,
 }: EtfDetailsProps) {
   
-  const showFavoriteControls = Boolean(isUserLoggedIn && onToggleFavorite);
-
   // Mappa i paesi solo se 'data' esiste
   const countriesArray: Country[] = data 
     ? Object.entries(data.countries).map(([nome, peso]) => ({
@@ -87,29 +85,25 @@ export function EtfDetails({
           </div>
 
           {/* Sezione Preferiti */}
-          <motion.div layout="position" className="favorite--container">
-            {showFavoriteControls && (
-              <button 
-                onClick={onToggleFavorite} 
-                className={`favorite-btn ${isFavorite ? 'active' : ''}`}
-                aria-label={isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}
-                disabled={showSkeleton}
-              >
-                {showSkeleton ? (
-                  <div className="skeleton" style={{ width: 40, height: 40, borderRadius: '50%' }} />
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
-                )}
-              </button>
-            )}
-          </motion.div>
-
+          {isUserLoggedIn && (
+            <motion.div layout="position" className="favorite--container">
+              <FavoriteButton 
+                onToggleFavorite={onToggleFavorite}
+                showSkeleton={showSkeleton}
+                isFavorite={isFavorite}
+                />
+            </motion.div>
+          )}
+          {/* NO LOGGED UDER */}
           {!isUserLoggedIn && (
             <motion.p layout="position" className="etf-details__favorite-hint">Accedi per salvare nei preferiti.</motion.p>
           )}
+        
         </div>
+
+
+
+        
 
         {/* GRIGLIA: Nutrita con i dati in tempo reale */}
         <motion.div layout="position" className="etf-details__grid">

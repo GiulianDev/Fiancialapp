@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router'; 
 import { useFavorites, useAuth } from '@context';
-import { SearchBar } from '.';
-import { EtfDetails } from '.';
-import { useEtfSearch } from '.';
+import { useEtfSearch } from './hooks/useEtfSearch';
+import { SearchBar } from './components/SearchBar/SearchBar';
+import { EtfDetails } from './components/EtfDetails/EtfDetails';
+
 
 // SearchPage è il compositore principale della ricerca ETF.
 // - legge lo stato dalla query string (source of truth)
@@ -48,7 +49,13 @@ export function SearchPage() {
   // 5. Azioni che modificano l'URL
   const cercaEtf = () => {
     const querySana = draftIsin.trim().toUpperCase();
-    if (querySana.length < 12) return;
+    // ToDo add visual control for invalid ISIN (e.g., toast notification)
+    if (querySana.length < 12) {
+      console.log('INVALID ISIN');
+      return;
+    }
+
+    console.log('Navigating to ISIN:', querySana);
     
     // Aggiorniamo l'URL. Questo triggera in automatico React Query e aggiorna la UI
     setSearchParams((prev) => {

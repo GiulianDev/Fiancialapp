@@ -5,6 +5,7 @@ import type { EtfData } from '@/shared/types';
 import { SEARCH_ETF_API_URL } from '@config/constants';
 
 export function useEtfSearch(isin: string) {
+  
   // Eseguiamo la query normalmente ma manteniamo una copia locale
   // dell'ultimo risultato valido per evitare flash di vuoto durante il refetch.
   const query = useQuery<EtfData, Error, EtfData, [string, string]>({

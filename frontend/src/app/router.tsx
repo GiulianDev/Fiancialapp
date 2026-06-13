@@ -25,7 +25,7 @@ export const routes = [
     children: [
       {
         index: true,
-        element: <Navigate to="/search" replace />,
+        element: <Navigate to="/search"/>,
       },
       {
         element: <HomePage />,
