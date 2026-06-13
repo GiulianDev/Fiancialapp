@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Button } from '../../../shared/ui/Button';
-import { Card } from '../../../shared/ui/Card/Card';
-import type { Favorite } from '../../../shared/types/favorite';
-import type { SavedPortfolio } from '../services/portfolioService';
+import { Button } from '@ui/Button';
+import { Card } from '@/shared/ui';
+import type { Favorite, SavedPortfolio } from '@types';
 
 interface FavoritesSelectorProps {
   favorites: Favorite[];
@@ -224,14 +223,14 @@ export function FavoritesSelector({
           </div>
         )}
 
-        {/* AGGIUNTO width: 100% */}
+        {/* BUTTONS */}
         <div style={{ display: 'flex', gap: '12px', marginTop: '8px', width: '100%' }}>
           <Button 
             onClick={handleTestClick} 
             disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
             style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
           >
-            🔬 Test
+            Test
           </Button>
 
           <Button 
@@ -239,7 +238,7 @@ export function FavoritesSelector({
             disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
             style={{ flex: 1, backgroundColor: '#10b981', color: 'white' }}
           >
-            {isLoading ? 'Salvataggio...' : '💾 Applica e Salva'}
+            {isLoading ? 'Salvataggio...' : 'Applica e Salva'}
           </Button>
         </div>
       </Card>

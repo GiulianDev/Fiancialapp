@@ -7,12 +7,8 @@ import {
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
-export interface SavedPortfolio {
-  selectedIsins: string[];
-  weights: Record<string, string>;
-  unit: '€' | '$' | '%';
-  userId?: string;
-}
+import type { SavedPortfolio } from '@types';
+
 
 function portfolioCollection(userId: string) {
   return collection(db, 'users', userId, 'portfolio');

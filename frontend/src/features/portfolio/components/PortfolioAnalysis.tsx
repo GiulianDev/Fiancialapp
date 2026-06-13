@@ -86,6 +86,7 @@ export function PortfolioAnalysis({ selectedIsins, weights, triggerFetch }: Port
       )}
 
       <EtfCharts combined={combined} />
+      
     </div>
   );
 }

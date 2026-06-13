@@ -11,3 +11,10 @@ export interface AggregatedResult {
   residualCountry: number;
   residualSector: number;
 }
+
+export interface SavedPortfolio {
+  selectedIsins: string[];
+  weights: Record<string, string>;
+  unit: '€' | '$' | '%';
+  userId?: string;
+}
