@@ -1,6 +1,6 @@
 import './App.css';
+import { Header } from '@/features/header/Header';
 import { Outlet } from 'react-router';
-import { AuthButton } from '../features/auth/AuthButton/AuthButton';
 
 /**
  * APP ROOT LAYOUT
@@ -21,17 +21,11 @@ function App() {
     <div id="container">
 
       {/* HEADER - SEMPRE VISIBILE */}
-      <div className='header'>
-        <AuthButton />
-        <div className="title">
-          <h1>Ricerca Asset per ISIN</h1>
-        </div>
-      </div>
+      <Header />
 
       {/* OUTLET - Qui il router renderizza le rotte figlie */}
-      <div style={{ width: '100%' }}>
-        <Outlet />
-      </div>
+      <Outlet />
+
     </div>
   );
 }

@@ -85,6 +85,9 @@ export function PortfolioPage() {
         onInputsChanged={handleInputsChanged}
       />
 
+
+      
+
       {analysisData && (
         <PortfolioAnalysis 
           selectedIsins={analysisData.isins}
