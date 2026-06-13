@@ -1,0 +1,35 @@
+.loading--container {
+  margin-bottom: 0.2rem;
+  width: 100%;
+  >.title {
+    min-height: 2rem;
+    font-size: 1.4rem;
+    /* Applichiamo la maschera di trasparenza
+    -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 60%, transparent 100%); */
+  }
+  >.subtitle {
+    min-height: 1.5rem; 
+  }
+  >.text {
+    min-height: 1.2rem;
+  }
+}
+
+
+@media (max-width: 768px) {
+  
+  /* Su mobile il titolo probabilmente andrà a capo su 2 o 3 righe. */
+  
+  .loading--container { 
+    .title {
+      max-height: 3.6rem; /* Circa il doppio dell'altezza desktop + interlinea */
+      /* width: 100%; */
+      /* white-space: nowrap;     Impedisce al testo di andare a capo */
+      overflow: hidden;        /* Nasconde il testo in eccesso */
+      text-overflow: ellipsis; /* Aggiunge i tre puntini (...) alla fine */
+    }
+  }
+
+}
+

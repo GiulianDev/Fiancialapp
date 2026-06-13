@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@ui/Button';
+import { Button } from '@/shared/ui/Button/Button';
 import { Card } from '@/shared/ui';
 import type { Favorite, SavedPortfolio } from '@types';
 

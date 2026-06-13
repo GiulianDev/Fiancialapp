@@ -5,7 +5,7 @@ export { PortfolioAnalysis } from './components/PortfolioAnalysis';
 export { FavoritesSelector } from './components/FavoritesSelector';
 
 export { Card } from '@ui/Card/Card';
-export { Button } from '@ui/Button';
+export { Button } from '@/shared/ui/Button/Button';
 
 export { type AggregatedResult } from '@/shared/types/portfolio';
 

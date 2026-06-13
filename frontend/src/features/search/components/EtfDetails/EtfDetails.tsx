@@ -4,6 +4,8 @@ import { HoldingsSection } from '../HoldingsSection';
 import { CountriesSection } from '../CountriesSection';
 import './EtfDetails.css';
 import { FavoriteButton } from '@/shared/ui/FavoriteButton/FavoriteButton';
+import { Card, Loading } from '@/shared/ui';
+import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 
 interface EtfDetailsProps {
   data?: EtfData;
@@ -43,88 +45,69 @@ export function EtfDetails({
 
   return (
     <motion.div 
-      layout 
+      layout
+      className='etf-details--container'
       style={{ transformOrigin: 'top' }} // <-- 1. Ancora l'animazione in alto
       transition={{ 
-        // layout: { type: 'spring', bounce: 0, duration: 0.4 } // <-- 2. Molla senza rimbalzo
-        layout: { type: 'tween', ease: 'easeInOut', duration: 0.3 }
+        layout: { type: 'spring', bounce: 0, duration: 0.4 } // <-- 2. Molla senza rimbalzo
+        // layout: { type: 'tween', ease: 'easeInOut', duration: 0.3 }
       }}
-      className="etf-details__wrapper bg-slate-900 border border-slate-800 p-6 shadow-xl w-full"
+      // className="bg-slate-900 border border-slate-800 p-6 shadow-xl w-full"
     >
-      <div className={`etf-details--container ${isFetching ? 'is-fetching' : ''}`}>
-        
-        {/* Barra di caricamento orizzontale in alto durante il fetching in background */}
-        {isFetching && data && <div className="etf-details__loading-bar" />}
+      <Card>
 
-        {/* HEADER: Titolo, info e bottone preferiti */}
-        <div className="header--container">
-          
-          {/* info--container ottimizzato con flex-1 e min-w-0 per risolvere il bug del Flexbox */}
+        <div className='etf-detail--header'>
+
           <div className="info--container">
-            {showSkeleton ? (
-              <>
-                <div className="skeleton skeleton-title" />
-                <div className="skeleton skeleton-sub" style={{ width: '45%', height: '16px', marginBottom: '6px' }} /> 
-                <div className="skeleton skeleton-sub" style={{ width: '35%', height: '16px' }} /> 
-              </>
-            ) : (  
-              <>
-                <motion.h2 layout className="title">
-                  {data?.nome || 'N/A'}
-                </motion.h2>
-                <motion.p layout className="subtitle">
+
+            {/* INFO */}
+            <Loading isLoading={showSkeleton} variant="title">
+              <motion.h2 layout>
+                {data?.nome || 'N/A'}
+              </motion.h2>
+            </Loading>
+              
+            <Loading isLoading={showSkeleton} variant="subtitle">
+              <motion.p layout>
                   ISIN: <strong>{data?.isin}</strong> | Tipo Asset: <strong>{data?.tipo_asset}</strong> 
                 </motion.p>
-                {data?.costo_annuo !== undefined && data.costo_annuo > 0 && (
-                  <motion.p layout className="subtitle">
-                    TER (Costo Annuo): <strong>{data.costo_annuo}%</strong>
-                  </motion.p>
-                )}
-              </>
+            </Loading>
+
+            <Loading isLoading={showSkeleton} variant="text">
+              <motion.p layout>
+                  TER (Costo Annuo): <strong>{data?.costo_annuo}%</strong>
+                </motion.p>
+            </Loading>
+          
+          </div>
+
+
+          {/* FAVORITES */}
+          <div className='favorite--container'>
+
+            {isUserLoggedIn && (
+              <motion.div layout="position">
+                <FavoriteButton 
+                  onToggleFavorite={onToggleFavorite}
+                  showSkeleton={showSkeleton}
+                  isFavorite={isFavorite}
+                  />
+              </motion.div>
+            )}
+            {/* NO LOGGED UDER */}
+            {!isUserLoggedIn && (
+              <motion.p layout="position" className="etf-details__favorite-hint">Accedi per salvare</motion.p>
             )}
           </div>
 
-          {/* Sezione Preferiti */}
-          {isUserLoggedIn && (
-            <motion.div layout="position" className="favorite--container">
-              <FavoriteButton 
-                onToggleFavorite={onToggleFavorite}
-                showSkeleton={showSkeleton}
-                isFavorite={isFavorite}
-                />
-            </motion.div>
-          )}
-          {/* NO LOGGED UDER */}
-          {!isUserLoggedIn && (
-            <motion.p layout="position" className="etf-details__favorite-hint">Accedi per salvare nei preferiti.</motion.p>
-          )}
-        
         </div>
 
+      </Card>
 
 
-        
 
-        {/* GRIGLIA: Nutrita con i dati in tempo reale */}
-        <motion.div layout="position" className="etf-details__grid">
-          <HoldingsSection
-            holdings={data?.holdings ?? []}
-            totaleHoldings={data?.totale_holdings ?? 0}
-            limite={limiteHoldings}
-            onLoadMore={onLoadMoreHoldings}
-            isLoading={showSkeleton}
-          />
 
-          <CountriesSection
-            countries={countriesArray}
-            // totaleCountries={data?.totale_countries ?? 0}
-            limite={limiteCountries}
-            onLoadMore={onLoadMoreCountries}
-            isLoading={showSkeleton}
-          />
-        </motion.div>
-
-      </div>
+      
     </motion.div>
   );
 }

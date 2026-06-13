@@ -1,100 +1,20 @@
-.etf-details__wrapper {
-  border-radius: 16px;
-  will-change: transform, height;
-}
-
 .etf-details--container {
-  overflow: hidden;
-  height: 100%;
-  position: relative; 
-  transition: opacity 0.3s ease, filter 0.3s ease;
-  
-  /* EFFETTO CARICAMENTO IN BACKGROUND */
-  &.is-fetching {
-    opacity: 0.55;
-    filter: blur(0.5px);
-    pointer-events: none; 
-  }
+  width: 100%; 
 
-  /* HEADER */
-  >.header--container {
+  .etf-detail--header {
+
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    
-    /* INFO */
+    min-height: 5rem;
+
     .info--container {
-      flex: 1 1 0%;  
-      min-width: 0px;    
-      .title {
-        display:flex;
-        color: #d6b4ff;
-        margin-top: 0;
-        margin-bottom: 0.5rem;
-        font-size: 1.75rem;
-      }
-      .subtitle {
-        display: flex;
-        margin: 0.3rem 0;
-        color: #e8def8;
-        font-size: 0.98rem;
-      }
+      flex-grow: 10;
     }
-    
+
+    .favorite--container {
+      padding-left: 0.5rem;
+      max-width: 4rem;
+    }
   }
-}
 
-/* Sottile linea di caricamento orizzontale animata */
-.etf-details__loading-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 1px;
-  width: 100%;
-  /* background: linear-gradient(90deg, #d65cff, #ff4081, #d65cff); */
-  background-size: 200% 100%;
-  animation: loading-bar-shimmer 1.5s infinite linear;
-  z-index: 10;
-}
-
-@keyframes loading-bar-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-.etf-details__grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  margin-top: 2rem;
-  overflow: hidden;
-}
-
-.etf-details__favorite-hint {
-  margin-top: 0.75rem;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.9rem;
-}
-
-/* Skeleton loading styles */
-.skeleton {
-  background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.2s linear infinite;
-  border-radius: 4px;
-  margin-top: 0.5rem;
-}
-.skeleton-title { 
-  border-radius: 6px; 
-  width: '60%'; 
-  height: '28px'; 
-  margin-bottom: '8px' 
-}
-.skeleton-sub { border-radius: 4px; }
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
 }
