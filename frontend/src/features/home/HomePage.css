@@ -1,12 +1,12 @@
-.page-selector {
+.navigation-tab--container {
       display: flex;
       justify-content: center;
       gap: 0.75rem;
       margin: 1.5rem 0;
     }
   
-.page-selector button,
-.page-selector a {
+.navigation-tab--container button,
+.navigation-tab--container a {
   padding: 0.75rem 1rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -24,10 +24,10 @@
 }
 
 /* MODIFICATO: Gestione dello stato hover e active per entrambi i tag */
-.page-selector button.active,
-.page-selector a.active,
-.page-selector button:hover,
-.page-selector a:hover {
+.navigation-tab--container button.active,
+.navigation-tab--container a.active,
+.navigation-tab--container button:hover,
+.navigation-tab--container a:hover {
   border-color: #a78bfa;
   background: rgba(167, 139, 250, 0.16);
   color: #fff;

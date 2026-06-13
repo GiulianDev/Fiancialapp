@@ -1,15 +1,16 @@
 import App from './App';
-import { SearchLayout } from '../features/search/searchLayoyt/SearchLayout';
 import { SearchPage } from '../features/search/SearchPage';
 import { PortfolioPage } from '../features/portfolio/PortfolioPage';
 import { HoldingDetailPage } from '../features/holding/HoldingDetailPage';
+import { HomePage } from '@/features/home/HomePage';
+import { Navigate } from 'react-router';
 
 /**
  * DEFINIZIONE CENTRALIZZATA DELLE ROUTE
  * 
  * Pattern di layout nidificati:
  * - App = layout principale (header, footer, etc)
- *   - SearchLayout = layout con tab (solo per search e portfolio)
+ *   - HomePage = layout con tab (solo per search e portfolio)
  *     - SearchPage
  *     - PortfolioPage
  *   - HoldingDetailPage = senza layout/tab
@@ -20,12 +21,17 @@ import { HoldingDetailPage } from '../features/holding/HoldingDetailPage';
 export const routes = [
   {
     element: <App />,
+    path: '/',
     children: [
       {
-        element: <SearchLayout />,
+        index: true,
+        element: <Navigate to="/search" replace />,
+      },
+      {
+        element: <HomePage />,
         children: [
           {
-            path: '/',
+            path: '/search',
             element: <SearchPage />,
           },
           {

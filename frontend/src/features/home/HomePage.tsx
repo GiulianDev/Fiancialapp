@@ -1,18 +1,15 @@
 import { NavLink, useLocation, Outlet } from 'react-router';
-import './SearchLayout.css';
+import './HomePage.css';
 /**
- * SEARCH LAYOUT
- * 
- * Questo è il layout wrapper che mostra i tab di navigazione.
- * Viene renderizzato SOLO per le route "/" e "/portfolio".
- * Per "/holding/:isin" il layout non viene usato, quindi i tab non appaiono.
+ * HOME PAGE
+ * mostra i tab di navigazione.
  */
-export function SearchLayout() {
+export function HomePage() {
   const location = useLocation();
 
   return (
     <>
-      <div className="page-selector">
+      <div className="navigation-tab--container">
         {/* 
           NavLink usa location.pathname + location.search per preservare i parametri.
           Se sei in "/?isin=IE00B&hLimit=10" e clicchi sul tab "Cerca ETF",

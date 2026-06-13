@@ -10,8 +10,8 @@ import { Outlet } from 'react-router';
  * 
  * Vantaggi di questa architettura:
  * - Separazione delle responsabilità: App = solo header
- * - SearchLayout = gestisce i tab in autonomia
- * - HoldingDetailPage = appare senza tab perché è fuori da SearchLayout
+ * - HomePage = gestisce i tab in autonomia
+ * - HoldingDetailPage = appare senza tab perché è fuori da HomePage
  * - No useEffect per controllare il path
  * - No state derivato
  * - Scalabile: aggiungere nuove rotte è triviale
