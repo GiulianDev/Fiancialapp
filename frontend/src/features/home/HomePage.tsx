@@ -10,6 +10,7 @@ export function HomePage() {
 
   return (
     <>
+
       <div className="navigation-tab--container">
         {/* 
           NavLink usa location.pathname + location.search per preservare i parametri.

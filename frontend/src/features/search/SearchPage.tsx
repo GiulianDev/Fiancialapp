@@ -92,6 +92,7 @@ export function SearchPage() {
 
   return (
     <>
+    
       <SearchBar 
         isin={draftIsin} 
         onIsinChange={setDraftIsin} 

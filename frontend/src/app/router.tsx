@@ -33,16 +33,19 @@ export const routes = [
           {
             path: '/search',
             element: <SearchPage />,
+            handle: { title: 'Ricerca Asset per ISIN' },
           },
           {
             path: '/portfolio',
             element: <PortfolioPage />,
+            handle: { title: 'Portfolio' },
           },
         ],
       },
       {
         path: '/holding/:isin',
         element: <HoldingDetailPage />,
+        handle: { title: 'Dettaglio Holding' },
       },
     ],
   },
