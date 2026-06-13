@@ -1,17 +1,18 @@
-#container {
+.header--container {
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center;  
+  min-height: 4rem;
   
-  >.header {
-    width: 100%;
-    .title {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-    }
+  >.header--title {
+    font-size: 2rem;
+    width: 70%;
+    /* margin: 0px;
+    margin-top: 0.5rem; */
+    text-overflow: ellipsis;
+    /* text-wrap: nowrap; */
+    overflow: hidden;
     
   }
 }
