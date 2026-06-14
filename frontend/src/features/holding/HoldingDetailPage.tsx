@@ -17,11 +17,11 @@ export function HoldingDetailPage() {
   const handleBack = () => { navigate(-1) };
 
   return (
-    // Responsive: p-4 su mobile, p-6 su schermi più grandi
-    <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
+    // 1. Aggiunto w-full e rimosso il padding orizzontale che entrava in conflitto con #root
+    <div className="w-full max-w-6xl mx-auto space-y-6 flex flex-col box-border">
       
-      {/* Header con bottone indietro - Adattato allo stile scuro/glass della dashboard */}
-      <div className="flex items-center space-x-4">
+      {/* Header con bottone indietro coordinato al tema scuro */}
+      <div className="flex items-center">
         <button 
           onClick={handleBack}
           className="text-gray-200 hover:text-white flex items-center bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition-colors text-sm font-medium backdrop-blur-sm border border-white/10"
@@ -31,13 +31,13 @@ export function HoldingDetailPage() {
       </div>
 
       {isLoading && (
-        <Card className="p-10 text-center animate-pulse text-gray-400">
+        <Card className="w-full p-10 text-center animate-pulse text-gray-400">
           Recupero dati fondamentali per {fallbackName}...
         </Card>
       )}
 
       {error && (
-        <Card className="p-6 bg-red-950/40 border-red-900/50 backdrop-blur-sm">
+        <Card className="w-full p-6 bg-red-950/40 border-red-900/50 backdrop-blur-sm">
           <p className="text-red-400 font-bold">Errore: {error.message}</p>
         </Card>
       )}
@@ -45,43 +45,41 @@ export function HoldingDetailPage() {
       {/* Dati Aziendali */}
       {details && (
         <>
-          {/* Responsive: 1 colonna su mobile, 3 colonne da tablet/desktop in su */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* 2. Grid forzata a stare dentro il 100% della larghezza */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Colonna Principale: Info */}
-            <Card className="p-6 col-span-1 md:col-span-2">
+            <Card className="w-full p-6 col-span-1 md:col-span-2 overflow-hidden box-border">
               <div className="flex flex-wrap items-baseline gap-2 mb-2">
-                {/* Responsive: text-2xl su mobile, text-3xl su desktop per evitare che scenda a capo male */}
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-100 break-words max-w-full">
                   {details.nome}
                 </h2>
               </div>
-              {/* Testo secondario convertito in grigio chiaro coordinato */}
               <p className="text-gray-400 text-sm sm:text-base mb-6">
                 {details.settore} • {details.industria} ({details.paese})
               </p>
               
-              {/* Descrizione convertita in grigio morbido ad alta leggibilità */}
               <div className="text-sm text-gray-300 leading-relaxed max-w-none line-clamp-4 hover:line-clamp-none transition-all cursor-pointer">
                 {details.descrizione}
               </div>
             </Card>
 
-            {/* Colonna Laterale: Statistiche - RIMOSSO il vecchio gradient chiaro per uniformare lo stile alla prima Card */}
-            <Card className="p-6">
+            {/* Colonna Laterale: Statistiche */}
+            <Card className="w-full p-6 overflow-hidden box-border">
               <h3 className="text-lg font-semibold text-gray-200 mb-4 border-b border-white/10 pb-2">
                 Fondamentali
               </h3>
               <div className="space-y-4">
-                {/* Gestito gap-4 e allineamento per non rompere il layout sui telefoni stretti */}
                 <div className="flex justify-between items-center gap-4">
                   <span className="text-gray-400 text-sm sm:text-base">Prezzo Attuale</span>
+                  {/* 3. Colore Prezzo Attuale corretto in grigio chiaro/bianco uniforme */}
                   <span className="text-xl sm:text-2xl font-bold text-gray-100 text-right">
                     {details.dati_finanziari.valuta} {details.dati_finanziari.prezzo_attuale}
                   </span>
                 </div>
                 <div className="flex justify-between items-center gap-4">
                   <span className="text-gray-400 text-sm sm:text-base">P/E Ratio</span>
+                  {/* Testi convertiti in toni neutri di grigio */}
                   <span className="font-semibold text-gray-200 text-right">
                     {details.dati_finanziari.pe_ratio_trailing?.toFixed(2) || 'N/A'}
                   </span>
@@ -99,8 +97,8 @@ export function HoldingDetailPage() {
 
           </div>
 
-          {/* Grafico Integrato - Avvolto in un contenitore anti-overflow per il mobile */}
-          <div className="w-full overflow-hidden">
+          {/* Grafico Integrato: w-full e overflow-hidden per evitare lo sfasamento da parte della libreria Recharts */}
+          <div className="w-full overflow-hidden box-border">
             <HoldingChart isin={isin || ''} />
           </div>
         </>
