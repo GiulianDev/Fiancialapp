@@ -50,9 +50,9 @@ export function HoldingDetailPage() {
             <Card className="p-6 col-span-1 md:col-span-2">
               <div className="flex items-baseline space-x-3 mb-2">
                 <h2 className="text-3xl font-bold text-gray-900">{details.nome}</h2>
-                <span className="text-lg font-mono text-gray-500 bg-gray-100 px-2 rounded">
+                {/* <span className="text-lg font-mono text-gray-500 bg-gray-100 px-2 rounded">
                   {details.ticker}
-                </span>
+                </span> */}
               </div>
               <p className="text-gray-600 mb-6">{details.settore} • {details.industria} ({details.paese})</p>
               
