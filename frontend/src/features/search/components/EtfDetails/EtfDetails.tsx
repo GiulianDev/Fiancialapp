@@ -5,7 +5,6 @@ import { CountriesSection } from '../CountriesSection';
 import './EtfDetails.css';
 import { FavoriteButton } from '@/shared/ui/FavoriteButton/FavoriteButton';
 import { Card, Loading } from '@/shared/ui';
-import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 
 interface EtfDetailsProps {
   data?: EtfData;

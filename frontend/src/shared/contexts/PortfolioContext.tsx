@@ -3,8 +3,8 @@ import { useAuth } from './AuthContext';
 import {
   savePortfolio as savePortfolioService,
   getPortfolio as getPortfolioService,
-  type SavedPortfolio,
 } from '../services/portfolioService';
+import type { SavedPortfolio } from '../types';
 
 interface PortfolioContextType {
   portfolio: SavedPortfolio | null;
