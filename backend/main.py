@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import yfinance as yf
 import requests
 
 app = FastAPI()
@@ -224,3 +225,126 @@ def debug_etf_holdings(isin: str):
         }
     except Exception as e:
         return {"status": "error", "message": f"Errore nel debug: {str(e)}"}
+    
+
+
+    # Usa l'API di ricerca di Yahoo Finance per convertire un ISIN in un Ticker.
+def get_ticker_from_isin(isin: str):
+    url = f"https://query2.finance.yahoo.com/v1/finance/search?q={isin}"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+    }
+    
+    try:
+        response = requests.get(url, headers=headers, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            quotes = data.get("quotes", [])
+            if quotes:
+                # Ritorna il simbolo del primo risultato trovato
+                return quotes[0].get("symbol")
+    except Exception as e:
+        print(f"Errore nella conversione ISIN->Ticker: {e}")        
+    return None
+
+@app.get("/api/holding-details/{isin}")
+def get_detailed_holding_data(isin: str):
+    try:
+        # 1. Traduciamo l'ISIN in Ticker
+        ticker_symbol = get_ticker_from_isin(isin.strip().upper())
+        
+        if not ticker_symbol:
+            return {
+                "status": "error", 
+                "message": f"Impossibile trovare un Ticker associato all'ISIN {isin}"
+            }
+            
+        # 2. Usiamo yfinance per recuperare tutti i dati fondamentali
+        stock = yf.Ticker(ticker_symbol)
+        info = stock.info
+        
+        # 3. Formattiamo i dati più importanti (ma info contiene decine di parametri in più)
+        return {
+            "status": "success",
+            "isin": isin,
+            "ticker": ticker_symbol,
+            "nome": info.get("shortName") or info.get("longName"),
+            "settore": info.get("sector", "Sconosciuto"),
+            "industria": info.get("industry", "Sconosciuta"),
+            "paese": info.get("country", "Sconosciuto"),
+            "dipendenti": info.get("fullTimeEmployees"),
+            "descrizione": info.get("longBusinessSummary"),
+            "dati_finanziari": {
+                "prezzo_attuale": info.get("currentPrice"),
+                "valuta": info.get("currency"),
+                "market_cap": info.get("marketCap"),
+                "pe_ratio_trailing": info.get("trailingPE"),
+                "pe_ratio_forward": info.get("forwardPE"),
+                "dividendo_yield_percentuale": info.get("dividendYield", 0) * 100 if info.get("dividendYield") else 0,
+                "margine_profitto": info.get("profitMargins"),
+                "revenue_crescita": info.get("revenueGrowth"),
+                "ebitda": info.get("ebitda")
+            },
+            # "raw_data": info  # <-- Decommenta questa riga se vuoi inviare al frontend TUTTO il JSON gigante di yfinance
+        }
+        
+    except Exception as e:
+        return {"status": "error", "message": f"Errore nel recupero dettagli: {str(e)}"}
+    
+
+@app.get("/api/holding-history/{isin}")
+def get_holding_history(isin: str, period: str = "1y"):
+    """
+    Recupera la serie storica dei prezzi per una holding tramite ISIN.
+    Il parametro 'period' accetta valori come: 1mo, 3mo, 6mo, 1y, 5y, max.
+    """
+    try:
+        # 1. Traduciamo l'ISIN in Ticker usando la funzione definita in precedenza
+        ticker_symbol = get_ticker_from_isin(isin.strip().upper())
+        
+        if not ticker_symbol:
+            return {
+                "status": "error", 
+                "message": f"Impossibile trovare un Ticker associato all'ISIN {isin}"
+            }
+            
+        # 2. Inizializziamo il ticker con yfinance
+        stock = yf.Ticker(ticker_symbol)
+        
+        # 3. Recuperiamo la cronologia dei prezzi
+        # period può essere: '1mo', '3mo', '6mo', '1y', '5y', 'max'
+        hist = stock.history(period=period)
+        
+        if hist.empty:
+            return {
+                "status": "error", 
+                "message": f"Nessun dato storico trovato per il periodo {period}"
+            }
+            
+        # 4. Trasformiamo l'indice delle date in una colonna normale
+        hist = hist.reset_index()
+        
+        # 5. Formattiamo i dati in una lista di dizionari (array di oggetti JSON)
+        cronologia_pulita = []
+        for _, row in hist.iterrows():
+            # Estraiamo solo la data (YYYY-MM-DD) escludendo l'orario/fuso orario
+            data_str = row['Date'].strftime('%Y-%m-%d') if hasattr(row['Date'], 'strftime') else str(row['Date'])[:10]
+            
+            cronologia_pulita.append({
+                "data": data_str,
+                "prezzo": round(row['Close'], 2),
+                "volume": int(row['Volume'])
+            })
+            
+        return {
+            "status": "success",
+            "isin": isin,
+            "ticker": ticker_symbol,
+            "periodo_selezionato": period,
+            "valuta": stock.info.get("currency", "USD"),
+            "andamento": cronologia_pulita  # <--- Questo array va dritto nel grafico del FE
+        }
+        
+    except Exception as e:
+        return {"status": "error", "message": f"Errore nel recupero della serie storica: {str(e)}"}
+    
