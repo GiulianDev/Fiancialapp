@@ -80,10 +80,15 @@ export function EtfDetails({
 
   return (
     <motion.div 
-      layout
+      key={data?.isin || 'empty'} 
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
       className="w-full"
-      style={{ transformOrigin: 'top' }}
-      transition={{ layout: { type: 'spring', bounce: 0, duration: 0.4 } }}
+      // layout
+      // className="w-full"
+      // style={{ transformOrigin: 'top' }}
+      // transition={{ layout: { type: 'spring', bounce: 0, duration: 0.4 } }}
     >
       <Card>
         {/* DETAIL HEADER (Convertito in Tailwind) */}
@@ -126,7 +131,7 @@ export function EtfDetails({
           onChange={handleTabChange}
         />
 
-        {/* 🎯 CONTENUTO CONDIZIONALE RESPONSIVE (1 colonna su mobile, 2 colonne da 'lg' in su) */}
+        {/* OVERVIEW TAB */}
         {activeTab === 'overview' && (
           <motion.div 
             layout="position" 
@@ -194,6 +199,7 @@ export function EtfDetails({
           </motion.div>
         )}
 
+        {/* RISK ANALISYS TAB */}
         {activeTab === 'risk' && (
           <motion.div layout="position" className="p-4 text-center text-gray-400 border border-dashed border-white/20 rounded-lg mt-4">
             <RiskSection isin={data?.isin || ''} isLoading={isLoadingData} />
