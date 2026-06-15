@@ -15,12 +15,12 @@ export function EtfCharts({ combined }: EtfChartsProps) {
   //     : []),
   // ];
 
-  const countriesData = [
-    ...combined.countries.slice(0, 10),
-    ...(combined.residualCountry > 0
-      ? [{ nome: 'Altri paesi', peso: combined.residualCountry }]
-      : []),
-  ];
+  // const countriesData = [
+  //   ...combined.countries.slice(0, 10),
+  //   ...(combined.residualCountry > 0
+  //     ? [{ nome: 'Altri paesi', peso: combined.residualCountry }]
+  //     : []),
+  // ];
 
   return (
     <Card className="etf-charts--container">
