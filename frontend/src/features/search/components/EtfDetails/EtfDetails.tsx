@@ -130,7 +130,7 @@ export function EtfDetails({
         {activeTab === 'overview' && (
           <motion.div 
             layout="position" 
-            className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6"
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 mt-6"
           >
             {/* IF: Aziende */}
             {data?.holdings && data.holdings.length > 0 && (
@@ -166,7 +166,7 @@ export function EtfDetails({
             )}
 
             {/* IF: Regioni */}
-            {regionsArray.length > 0 && (
+            {/* {regionsArray.length > 0 && (
               <BreakdownSection
                 title="Esposizione Regionale"
                 data={regionsArray}
@@ -176,7 +176,7 @@ export function EtfDetails({
                 maxChartItems={10}
                 isLoading={isLoadingData}
               />
-            )}
+            )} */}
 
             {/* IF: Settori */}
             {sectorsArray.length > 0 && (
