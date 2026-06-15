@@ -1,3 +1,4 @@
+import { PieChartDisplay } from '@/features/portfolio/components/EtfCharts/PieChartDisplay';
 import { type Holding } from '../../../shared/types/etf';
 import { Button } from '../../../shared/ui/Button/Button';
 import { useNavigate } from 'react-router';
@@ -32,6 +33,21 @@ export function HoldingsSection({
 
   return (
     <div style={{ flex: '1', minWidth: '200px' }}>
+      
+      {/* 🎯 Pulito, leggibile e dichiarativo */}
+      <PieChartDisplay
+        data={holdings}
+        dataKey="peso_percentuale"
+        nameKey="nome"
+        title="Composizione Aziende"
+        maxItems={10}
+        residualLabel="Altre aziende"
+      />
+    
+    
+    
+    
+    
       <h3 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '5px' }}>
         Top Partecipazioni
       </h3>
