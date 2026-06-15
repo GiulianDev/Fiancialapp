@@ -8,6 +8,7 @@ aiutano l'investitore a capire se quell'asset è sicuro, efficiente e adatto ai 
 
 Ecco le analisi e i calcoli più importanti suddivisi per categoria che potresti integrare per rendere l'app un prodotto Premium.
 
+# 1. Analisi del Rischio e Volatilità (Fondamentale per gli ETF)
 Gli investitori professionali guardano il rendimento solo dopo aver valutato il rischio. Puoi calcolare queste metriche partendo dallo storico dei prezzi che già recuperi:
 
 - Deviazione Standard e Volatilità: 
