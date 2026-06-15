@@ -5,9 +5,8 @@ import { HoldingsSection } from '../HoldingsSection';
 import { CountriesSection } from '../CountriesSection';
 import './EtfDetails.css';
 import { FavoriteButton } from '@/shared/ui/FavoriteButton/FavoriteButton';
-import { Card, Loading } from '@/shared/ui';
+import { Card, Loading, Tabs, type TabItem } from '@/shared/ui';
 import { RiskSection } from '../RiskSection';
-import { Tabs, type TabItem } from '@/shared/ui/Tabs/tabs';
 
 // 1. 🎯 IMPORTA IL NUOVO COMPONENTE Condiviso
 // (Adatta il percorso in base a dove hai salvato il file Tabs.tsx)
@@ -107,9 +106,10 @@ export function EtfDetails({
           onChange={handleTabChange}
         />
 
-        {/* CONTENUTO CONDIZIONALE BASATO SUL TAB */}
+        {/* TAB OVERVIEW */}
         {activeTab === 'overview' && (
           <motion.div layout="position" className="etf-details__grid">
+            
             <HoldingsSection
               holdings={data?.holdings ?? []}
               totaleHoldings={data?.totale_holdings ?? 0}
@@ -123,6 +123,7 @@ export function EtfDetails({
               onLoadMore={onLoadMoreCountries}
               isLoading={isLoadingData}
             />
+            
           </motion.div>
         )}
 
