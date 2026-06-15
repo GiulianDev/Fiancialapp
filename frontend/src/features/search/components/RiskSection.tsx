@@ -1,15 +1,15 @@
 // import { Card } from '@/shared/ui';
-import { useEtfRisk } from '../hooks/useEtfRisk';
+// import { useEtfRisk } from '../hooks/useEtfRisk';
 import { MetricCard } from './EtfDetails/MetricCard/MetricCard';
 
 interface RiskSectionProps {
   isin: string;
-  isLoading: boolean;
+  // isLoading: boolean;
 }
 
-export function RiskSection({ isin, isLoading: isEtfLoading }: RiskSectionProps) {
+export function RiskSection({ isin }: RiskSectionProps) {
   
-  const { data: riskData, isLoading: isRiskLoading, error } = useEtfRisk(isin);
+  // const { data: riskData, isLoading: isRiskLoading, error } = useEtfRisk(isin);
 
   // Mostra lo skeleton durante il caricamento
   // if (isEtfLoading || isRiskLoading) {
@@ -23,23 +23,23 @@ export function RiskSection({ isin, isLoading: isEtfLoading }: RiskSectionProps)
   // }
 
   // Gestione dell'errore (es: Ticker Yahoo non associato o errore di rete)
-  if (error) {
-    return (
-      <div className="p-6 text-center text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl my-4">
-        <p className="font-semibold">Analisi del Rischio momentaneamente non disponibile</p>
-        <p className="text-xs mt-1 text-gray-400">{error.message}</p>
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className="p-6 text-center text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl my-4">
+  //       <p className="font-semibold">Analisi del Rischio momentaneamente non disponibile</p>
+  //       <p className="text-xs mt-1 text-gray-400">{error.message}</p>
+  //     </div>
+  //   );
+  // }
 
   // --- ESTRAZIONE SICURA E FORMATTAZIONE ---
   // Funzione helper per garantire che il valore sia sempre un numero
-  const formatNum = (val: any) => (typeof val === 'number' ? val : 0);
+  // const formatNum = (val: any) => (typeof val === 'number' ? val : 0);
 
   // const volatilita = formatNum(riskData?.volatilita_annua ?? riskData?.volatilia_annua);
-  const sharpe = formatNum(riskData?.sharpe_ratio);
-  const maxDrawdown = formatNum(riskData?.max_drawdown);
-  const beta = formatNum(riskData?.beta);
+  // const sharpe = formatNum(riskData?.sharpe_ratio);
+  // const maxDrawdown = formatNum(riskData?.max_drawdown);
+  // const beta = formatNum(riskData?.beta);
 
   const getVolatilitaColor = (val: number) => {
     if (val < 10) return 'text-green-400'; // Rischio basso
@@ -103,7 +103,7 @@ export function RiskSection({ isin, isLoading: isEtfLoading }: RiskSectionProps)
         {/* CARD 4: BETA */}
         <MetricCard 
           isin={isin}
-          metricType="drawdown"
+          metricType="beta"
           title="Beta di Mercato"
           suffix="%"
           description="Sensibilità rispetto al mercato. Scostamenti superiori a 1 indicano uno strumento più amplificato rispetto all'indice generale."

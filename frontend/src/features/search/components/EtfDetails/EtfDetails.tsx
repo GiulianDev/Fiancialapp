@@ -202,7 +202,8 @@ export function EtfDetails({
         {/* RISK ANALISYS TAB */}
         {activeTab === 'risk' && (
           <motion.div layout="position" className="p-4 text-center text-gray-400 border border-dashed border-white/20 rounded-lg mt-4">
-            <RiskSection isin={data?.isin || ''} isLoading={isLoadingData} />
+            {/* <RiskSection isin={data?.isin || ''} isLoading={isLoadingData} /> */}
+            <RiskSection isin={data?.isin || ''}/>
           </motion.div>
         )}
       </Card>
