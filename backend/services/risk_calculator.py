@@ -33,15 +33,15 @@ def calcola_volatilita(ticker_symbol: str, period: str = "3y"):
     volatilita_annua = rendimenti.std() * np.sqrt(252)
     return {"valore": round(volatilita_annua * 100, 2)}
 
-def calcola_drawdown(ticker_symbol: str):
-    hist, _ = _get_dati_storici(ticker_symbol)
+def calcola_drawdown(ticker_symbol: str, period: str = "3y"):
+    hist, _ = _get_dati_storici(ticker_symbol, period)
     rendimenti = hist['Close'].pct_change().dropna()
     rendimenti_cumulati = (1 + rendimenti).cumprod()
     drawdown = (rendimenti_cumulati - rendimenti_cumulati.cummax()) / rendimenti_cumulati.cummax()
     return {"valore": round(drawdown.min() * 100, 2)}
 
-def calcola_sharpe(ticker_symbol: str):
-    hist, _ = _get_dati_storici(ticker_symbol)
+def calcola_sharpe(ticker_symbol: str, period: str = "3y"):
+    hist, _ = _get_dati_storici(ticker_symbol, period)
     rendimenti = hist['Close'].pct_change().dropna()
     volatilita_annua = rendimenti.std() * np.sqrt(252)
     
@@ -51,8 +51,8 @@ def calcola_sharpe(ticker_symbol: str):
     sharpe_ratio = (cagr - 0.02) / volatilita_annua if volatilita_annua > 0 else 0
     return {"valore": round(sharpe_ratio, 2)}
 
-def calcola_beta(ticker_symbol: str):
-    _, info = _get_dati_storici(ticker_symbol)
+def calcola_beta(ticker_symbol: str, period: str = "3y"):
+    _, info = _get_dati_storici(ticker_symbol, period)
     beta = info.get("beta") or info.get("beta3Year") or info.get("threeYearAverageReturn")
     if isinstance(beta, (int, float)):
         return {"valore": round(beta, 2)}
