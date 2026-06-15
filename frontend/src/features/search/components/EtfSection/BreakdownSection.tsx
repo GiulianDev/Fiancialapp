@@ -1,20 +1,25 @@
 // src/features/portfolio/components/BreakdownSection/BreakdownSection.tsx
 
 import { useMemo } from 'react';
+import { Button } from '@/shared/ui';
 import { PieChartDisplay } from '@/features/portfolio/components/EtfCharts/PieChartDisplay';
-import { Button } from '@/shared/ui'; 
+
+interface BreakdownItem {
+  nome: string;
+  [key: string]: any; 
+}
 
 interface BreakdownSectionProps {
   title: string;
   subtitle?: string;
-  data: Array<Record<string, any>>; // Accetta array di oggetti generici
-  dataKey: string;                  // es. 'peso_percentuale' o 'peso'
-  nameKey: string;                  // es. 'nome'
-  residualLabel?: string;           // es. 'Altre aziende' o 'Altri paesi'
-  maxChartItems?: number;           // Quante fette mostrare nel grafico prima di "Altro"
-  limiteLista?: number;             // Limite corrente per la visualizzazione testuale/pulsante
-  onLoadMore?: () => void;          // Funzione per caricare altri elementi (opzionale)
-  onItemClick?: (item: any) => void;// Funzione al click sull'elemento (opzionale)
+  data: BreakdownItem[];
+  dataKey: string;
+  nameKey: string;
+  residualLabel?: string;
+  maxChartItems?: number;
+  limiteLista?: number;   
+  onLoadMore?: () => void; 
+  onItemClick?: (item: Record<string, any>) => void; // 🎯 NUOVA: Event handler generico
   isLoading?: boolean;
 }
 
@@ -29,26 +34,28 @@ export function BreakdownSection({
   limiteLista,
   onLoadMore,
   onItemClick,
-  isLoading = false,
+  isLoading = false
 }: BreakdownSectionProps) {
 
-  // Ordiniamo i dati in modo uniforme in base alla dataKey passata
   const sortedData = useMemo(() => {
     return [...data].sort((a, b) => (b[dataKey] || 0) - (a[dataKey] || 0));
   }, [data, dataKey]);
 
+  // const itemsToShow = useMemo(() => {
+  //   if (limiteLista === undefined) return sortedData;
+  //   return sortedData.slice(0, limiteLista);
+  // }, [sortedData, limiteLista]);
+
   return (
-    <div style={{ flex: '1', minWidth: '200px' }}>
+    <div className="w-full flex flex-col">
       {isLoading ? (
-        // Skeleton unico per il caricamento
-        <ul style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
-          {[...Array(5)].map((_, i) => (
-            <li key={i} className="skeleton" style={{ height: '18px', margin: '6px 0', width: `${80 - i * 8}%` }} />
-          ))}
-        </ul>
+        <div className="w-full p-4 space-y-3 animate-pulse">
+          <div className="h-6 bg-white/10 rounded w-1/3"></div>
+          <div className="h-4 bg-white/5 rounded w-1/2"></div>
+          <div className="h-[300px] bg-white/5 rounded-full mx-auto w-[300px] mt-6"></div>
+        </div>
       ) : sortedData.length > 0 ? (
         <>
-          {/* Grafico pre-ottimizzato */}
           <PieChartDisplay
             data={data}
             dataKey={dataKey}
@@ -60,15 +67,18 @@ export function BreakdownSection({
             onItemClick={onItemClick}
           />
 
-          {/* Se viene passato un limite e una funzione onLoadMore, mostra il pulsante */}
-          {limiteLista && onLoadMore && limiteLista < sortedData.length && (
-            <Button onClick={onLoadMore}>
-              Mostra altri 5 ({sortedData.length - limiteLista} rimanenti)
-            </Button>
+          {limiteLista !== undefined && onLoadMore && limiteLista < sortedData.length && (
+            <div className="mt-4 flex justify-start">
+              <Button onClick={onLoadMore} variant="secondary">
+                Mostra altri 5 ({sortedData.length - limiteLista} rimanenti)
+              </Button>
+            </div>
           )}
         </>
       ) : (
-        <p className="text-gray-500 text-sm italic">Nessun dato disponibile per questa sezione.</p>
+        <div className="p-4 text-center text-sm text-gray-500 italic">
+          Nessun dato disponibile per {title.toLowerCase()}
+        </div>
       )}
     </div>
   );
