@@ -55,10 +55,10 @@ export function EtfDetails({
     return Object.entries(data.countries).map(([nome, peso]) => ({ nome, peso }));
   }, [data?.countries]);
 
-  const regionsArray = useMemo(() => {
-    if (!data?.regions) return [];
-    return Object.entries(data.regions).map(([nome, peso]) => ({ nome, peso }));
-  }, [data?.regions]);
+  // const regionsArray = useMemo(() => {
+  //   if (!data?.regions) return [];
+  //   return Object.entries(data.regions).map(([nome, peso]) => ({ nome, peso }));
+  // }, [data?.regions]);
 
   const sectorsArray = useMemo(() => {
     if (!data?.sectors) return [];
