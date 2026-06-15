@@ -1,6 +1,5 @@
 import { PieChartDisplay } from '@/features/portfolio/components/EtfCharts/PieChartDisplay';
 import { type Holding } from '../../../shared/types/etf';
-import { Button } from '../../../shared/ui/Button/Button';
 import { useNavigate } from 'react-router';
 
 interface HoldingsSectionProps {
@@ -11,13 +10,6 @@ interface HoldingsSectionProps {
   isLoading?: boolean;
 }
 
-/**
- * COMPONENTE SELF-CONTAINED
- * 
- * Pattern senior: il componente usa useNavigate direttamente invece di
- * aspettare un callback dall'alto. Questo rende il componente autonomo
- * e riduce il prop drilling.
- */
 export function HoldingsSection({
   holdings, totaleHoldings, limite, onLoadMore,
   isLoading = false,
@@ -34,55 +26,28 @@ export function HoldingsSection({
   return (
     <div style={{ flex: '1', minWidth: '200px' }}>
       
-      
-      {/* <h3 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '5px' }}>
-        Top Partecipazioni
-      </h3> */}
-
-      {/* <p style={{ fontSize: '14px', color: '#555', fontStyle: 'italic' }}>
-        Visualizzate <strong>{holdingsToShow.length}</strong> di <strong>{holdingsSorted.length}</strong> in anteprima
-        (Aziende totali: <strong>{totaleHoldings}</strong>)
-      </p> */}
-
       {isLoading ? (
-        <>
-          <ul style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
-            {[...Array(5)].map((_, i) => (
-              <li key={i} className="skeleton" style={{ height: '18px', margin: '6px 0', width: `${80 - i * 8}%` }} />
-            ))}
-          </ul>
-        </>
+        <ul style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
+          {[...Array(5)].map((_, i) => (
+            <li key={i} className="skeleton" style={{ height: '18px', margin: '6px 0', width: `${80 - i * 8}%` }} />
+          ))}
+        </ul>
       ) : holdingsSorted.length > 0 ? (
-        <>
-          <PieChartDisplay
-            data={holdings}
-            dataKey="peso_percentuale"
-            nameKey="nome"
-            title="Top Partecipazioni"
-            subtitle={`Visualizzate ${holdingsToShow.length} di ${totaleHoldings} partecipazioni totali`}
-            maxItems={20}
-            residualLabel="Altre aziende"
-          />
-
-          {/* <ul style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
-            {holdingsToShow.map((h, i) => (
-              <li 
-                key={i}
-                className={h.isin ? "cursor-pointer hover:bg-gray-700 p-1 rounded transition-colors" : ""}
-                onClick={() => h.isin && handleHoldingClick(h.isin, h.nome)}
-                style={h.isin ? { cursor: 'pointer' } : {}}
-              >
-                {h.nome}: <strong>{h.peso_percentuale.toFixed(2)}%</strong>
-              </li>
-            ))}
-          </ul>
-
-          {limite < holdingsSorted.length && (
-            <Button onClick={onLoadMore}>
-              Mostra altri 5 ({holdingsSorted.length - limite} rimanenti)
-            </Button>
-          )} */}
-        </>
+        <PieChartDisplay
+          data={holdings}
+          dataKey="peso_percentuale"
+          nameKey="nome"
+          title="Top Partecipazioni"
+          subtitle={`Visualizzate ${holdingsToShow.length} di ${totaleHoldings} partecipazioni totali`}
+          maxItems={20}
+          residualLabel="Altre aziende"
+          // 🎯 Passiamo la logica di click specifica per questo caso d'uso!
+          onItemClick={(item) => {
+            if (item.isin) {
+              handleHoldingClick(item.isin, item.nome);
+            }
+          }}
+        />
       ) : (
         <p>Dati partecipazioni non disponibili.</p>
       )}
