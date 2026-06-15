@@ -34,28 +34,15 @@ export function HoldingsSection({
   return (
     <div style={{ flex: '1', minWidth: '200px' }}>
       
-      {/* 🎯 Pulito, leggibile e dichiarativo */}
-      <PieChartDisplay
-        data={holdings}
-        dataKey="peso_percentuale"
-        nameKey="nome"
-        title="Composizione Aziende"
-        maxItems={10}
-        residualLabel="Altre aziende"
-      />
-    
-    
-    
-    
-    
-      <h3 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '5px' }}>
+      
+      {/* <h3 style={{ borderBottom: '2px solid #0066cc', paddingBottom: '5px' }}>
         Top Partecipazioni
-      </h3>
+      </h3> */}
 
-      <p style={{ fontSize: '14px', color: '#555', fontStyle: 'italic' }}>
+      {/* <p style={{ fontSize: '14px', color: '#555', fontStyle: 'italic' }}>
         Visualizzate <strong>{holdingsToShow.length}</strong> di <strong>{holdingsSorted.length}</strong> in anteprima
         (Aziende totali: <strong>{totaleHoldings}</strong>)
-      </p>
+      </p> */}
 
       {isLoading ? (
         <>
@@ -67,7 +54,17 @@ export function HoldingsSection({
         </>
       ) : holdingsSorted.length > 0 ? (
         <>
-          <ul style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
+          <PieChartDisplay
+            data={holdings}
+            dataKey="peso_percentuale"
+            nameKey="nome"
+            title="Top Partecipazioni"
+            subtitle={`Visualizzate ${holdingsToShow.length} di ${totaleHoldings} partecipazioni totali`}
+            maxItems={20}
+            residualLabel="Altre aziende"
+          />
+
+          {/* <ul style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
             {holdingsToShow.map((h, i) => (
               <li 
                 key={i}
@@ -84,7 +81,7 @@ export function HoldingsSection({
             <Button onClick={onLoadMore}>
               Mostra altri 5 ({holdingsSorted.length - limite} rimanenti)
             </Button>
-          )}
+          )} */}
         </>
       ) : (
         <p>Dati partecipazioni non disponibili.</p>
