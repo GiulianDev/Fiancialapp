@@ -100,7 +100,7 @@ export function EtfDetails({
           </div>
         </div>
 
-        {/* 4. 🎯 IL NUOVO COMPONENTE TABS SOSTITUISCE TUTTO IL VECCHIO MARKUP RIPETITIVO */}
+        {/* TABS */}
         <Tabs 
           tabs={ETF_DETAILS_TABS}
           activeTab={activeTab}
