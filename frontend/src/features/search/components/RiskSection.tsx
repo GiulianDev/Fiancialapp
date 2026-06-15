@@ -1,3 +1,4 @@
+import { Card } from '@/shared/ui';
 import { useEtfRisk } from '../hooks/useEtfRisk';
 
 interface RiskSectionProps {
@@ -6,6 +7,7 @@ interface RiskSectionProps {
 }
 
 export function RiskSection({ isin, isLoading: isEtfLoading }: RiskSectionProps) {
+  
   const { data: riskData, isLoading: isRiskLoading, error } = useEtfRisk(isin);
 
   // Mostra lo skeleton durante il caricamento
@@ -49,7 +51,7 @@ export function RiskSection({ isin, isLoading: isEtfLoading }: RiskSectionProps)
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* CARD 1: VOLATILITÀ */}
-        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+        <Card>
           <span className="text-xs text-gray-400 block mb-1 uppercase tracking-wider font-semibold">
             Volatilità Annua
           </span>
@@ -59,7 +61,7 @@ export function RiskSection({ isin, isLoading: isEtfLoading }: RiskSectionProps)
           <p className="text-[11px] text-gray-500 mt-2 leading-tight">
             Indica l'oscillazione media del prezzo. Più è alta, più lo strumento è oscillante e rischioso.
           </p>
-        </div>
+        </Card>
 
         {/* CARD 2: INDICE DI SHARPE */}
         <div className="bg-white/5 p-4 rounded-xl border border-white/5">
