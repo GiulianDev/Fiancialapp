@@ -1,4 +1,4 @@
-import { Card } from '@/shared/ui';
+// import { Card } from '@/shared/ui';
 
 interface RiskSectionProps {
   isin: string;

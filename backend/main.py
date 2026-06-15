@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import yfinance as yf
 import requests
 
+from services.risk_calculator import calcola_metriche_rischio
+
 app = FastAPI()
 
 app.add_middleware(
@@ -347,4 +349,33 @@ def get_holding_history(isin: str, period: str = "1y"):
         
     except Exception as e:
         return {"status": "error", "message": f"Errore nel recupero della serie storica: {str(e)}"}
+    
+
+
+@app.get("/api/etf/{isin}/risk")
+def get_etf_risk_analysis(isin: str):
+    try:
+        # 1. Traduciamo l'ISIN in Ticker (usando la funzione che avevi già scritto)
+        ticker_symbol = get_ticker_from_isin(isin.strip().upper())
+        
+        if not ticker_symbol:
+            return {
+                "status": "error", 
+                "message": f"Impossibile trovare un Ticker associato all'ISIN {isin}"
+            }
+
+        # 2. Richiamiamo il nostro calcolatore esterno
+        # Di default calcola su uno storico di 3 anni ("3y")
+        metriche = calcola_metriche_rischio(ticker_symbol, period="3y")
+        
+        return {
+            "status": "success",
+            "isin": isin.upper(),
+            "ticker": ticker_symbol,
+            "periodo_analisi": "3 Anni",
+            "dati_rischio": metriche
+        }
+
+    except Exception as e:
+        return {"status": "error", "message": f"Errore nel calcolo del rischio: {str(e)}"}
     
