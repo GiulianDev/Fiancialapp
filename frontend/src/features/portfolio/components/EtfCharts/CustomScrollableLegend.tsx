@@ -30,9 +30,10 @@ export function CustomScrollableLegend({ payload, onItemClick }: CustomScrollabl
     >
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         {sortedPayload?.map((entry, index) => { 
-          const value = entry.payload.peso_percentuale ?? entry.payload.peso;
-          const valueDisplay = value !== undefined ? `${value.toFixed(2)}%` : '';
-
+          const rawValue = entry.payload.peso_percentuale ?? entry.payload.peso;
+          const value = typeof rawValue === 'number' ? rawValue : 0;
+          const valueDisplay = `${value.toFixed(2)}%`;
+          
           return (
             <li 
               key={`legend-item-${index}`} 
