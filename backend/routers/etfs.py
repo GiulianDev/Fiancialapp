@@ -2,7 +2,7 @@ from fastapi import APIRouter
 import requests
 from services.extraetf_api import fetch_data_from_extraetf, fetch_data_from_extraetf_v2
 from services.yfinance_api import get_ticker_from_isin
-from services.risk_calculator import calcola_metriche_rischio
+from services.risk_calculator import calcola_metriche_rischio, calcola_volatilita
 
 router = APIRouter(tags=["ETFs"])
 
@@ -13,6 +13,58 @@ def get_etf_data_v2(isin: str):
     except Exception as e:
         return {"status": "error", "message": f"Errore interno V2: {str(e)}"}
 
+
+
+@router.get("/api/etf/{isin}/risk/volatilita")
+def get_volatilita(isin: str):
+    try:
+        ticker_symbol = get_ticker_from_isin(isin.strip().upper())
+        
+        if not ticker_symbol:
+            return {
+                "status": "error", 
+                "message": f"Impossibile trovare un Ticker associato all'ISIN {isin}"
+            }
+
+        volatilita = calcola_volatilita(ticker_symbol, period="3y")
+        
+        return {
+            "status": "success",
+            "isin": isin.upper(),
+            "ticker": ticker_symbol,
+            "periodo_analisi": "3 Anni",
+            "data": volatilita
+        }
+    except Exception as e:
+        return {"status": "error", "message": f"Errore nel calcolo del rischio: {str(e)}"}
+
+
+
+@router.get("/api/etf/{isin}/risk")
+def get_etf_risk_analysis(isin: str):
+    try:
+        ticker_symbol = get_ticker_from_isin(isin.strip().upper())
+        
+        if not ticker_symbol:
+            return {
+                "status": "error", 
+                "message": f"Impossibile trovare un Ticker associato all'ISIN {isin}"
+            }
+
+        metriche = calcola_metriche_rischio(ticker_symbol, period="3y")
+        
+        return {
+            "status": "success",
+            "isin": isin.upper(),
+            "ticker": ticker_symbol,
+            "periodo_analisi": "3 Anni",
+            "dati_rischio": metriche
+        }
+    except Exception as e:
+        return {"status": "error", "message": f"Errore nel calcolo del rischio: {str(e)}"}
+    
+
+# DEBUG ONLY
 @router.get("/api/etf/{isin}/debug-holdings")
 def debug_etf_holdings(isin: str):
     try:
@@ -38,26 +90,3 @@ def debug_etf_holdings(isin: str):
         }
     except Exception as e:
         return {"status": "error", "message": f"Errore nel debug: {str(e)}"}
-
-@router.get("/api/etf/{isin}/risk")
-def get_etf_risk_analysis(isin: str):
-    try:
-        ticker_symbol = get_ticker_from_isin(isin.strip().upper())
-        
-        if not ticker_symbol:
-            return {
-                "status": "error", 
-                "message": f"Impossibile trovare un Ticker associato all'ISIN {isin}"
-            }
-
-        metriche = calcola_metriche_rischio(ticker_symbol, period="3y")
-        
-        return {
-            "status": "success",
-            "isin": isin.upper(),
-            "ticker": ticker_symbol,
-            "periodo_analisi": "3 Anni",
-            "dati_rischio": metriche
-        }
-    except Exception as e:
-        return {"status": "error", "message": f"Errore nel calcolo del rischio: {str(e)}"}

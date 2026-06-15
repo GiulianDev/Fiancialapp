@@ -1,5 +1,6 @@
 import { Card } from '@/shared/ui';
 import { useEtfRisk } from '../hooks/useEtfRisk';
+import { MetricCard } from './EtfDetails/MetricCard/MetricCard';
 
 interface RiskSectionProps {
   isin: string;
@@ -51,6 +52,14 @@ export function RiskSection({ isin, isLoading: isEtfLoading }: RiskSectionProps)
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* CARD 1: VOLATILITÀ */}
+        <MetricCard 
+          isin={isin}
+          metricType="volatilita"
+          title="Volatilità Annua"
+          suffix="%"
+          description="Indica l'oscillazione media del prezzo. Più è alta, più lo strumento è oscillante e rischioso."
+        />
+        
         <Card>
           <span className="text-xs text-gray-400 block mb-1 uppercase tracking-wider font-semibold">
             Volatilità Annua
