@@ -20,3 +20,8 @@ Solo ora, da dentro quella cartella: Lancia
 
 - Service URL: 
         https://etf-backend-629230247075.europe-west3.run.app/
+
+
+# librerie
+   - pandas
+   - yfinance
