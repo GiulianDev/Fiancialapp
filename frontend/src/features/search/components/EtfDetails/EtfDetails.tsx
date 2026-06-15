@@ -68,6 +68,7 @@ export function EtfDetails({
     >
       <Card>
 
+        {/* DETAIL HEADER */}
         <div className='etf-detail--header'>
 
           {/* INFO */}
@@ -112,7 +113,7 @@ export function EtfDetails({
 
         </div>
 
-        {/* 3. AGGIUNTA BARRA DI NAVIGAZIONE SUB-TAB */}
+        {/* 3. BARRA DI NAVIGAZIONE SUB-TAB */}
         <div className="flex gap-4 border-b border-white/10 mb-6 overflow-x-auto no-scrollbar pb-2">
           <button
             onClick={() => handleTabChange('overview')}
