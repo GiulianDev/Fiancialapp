@@ -83,7 +83,6 @@ def get_sharpe_index(isin: str):
     except Exception as e:
         return {"status": "error", "message": f"Errore nel calcolo del rischio: {str(e)}"}
 
-
 @router.get("/api/etf/{isin}/risk/beta")
 def get_beta(isin: str):
     try:
