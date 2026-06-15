@@ -7,6 +7,10 @@ import './EtfDetails.css';
 import { FavoriteButton } from '@/shared/ui/FavoriteButton/FavoriteButton';
 import { Card, Loading } from '@/shared/ui';
 import { RiskSection } from '../RiskSection';
+import { Tabs, type TabItem } from '@/shared/ui/Tabs/tabs';
+
+// 1. 🎯 IMPORTA IL NUOVO COMPONENTE Condiviso
+// (Adatta il percorso in base a dove hai salvato il file Tabs.tsx)
 
 interface EtfDetailsProps {
   data?: EtfData;
@@ -20,6 +24,13 @@ interface EtfDetailsProps {
   isUserLoggedIn?: boolean;
 }
 
+// 2. 🎯 CONFIGURAZIONE STATICA DEI TAB (definita fuori dal componente)
+const ETF_DETAILS_TABS: TabItem[] = [
+  { id: 'overview', label: '📊 Panoramica' },
+  { id: 'risk', label: '🛡️ Analisi Rischio' },
+  { id: 'esg', label: '🌱 Sostenibilità ESG', disabled: true } // Manteniamo il tab disabilitato come prima
+];
+
 export function EtfDetails({
   data,
   limiteHoldings,
@@ -31,26 +42,19 @@ export function EtfDetails({
   isUserLoggedIn = false,
 }: EtfDetailsProps) {
   
-  // 1. Aggiunta gestione stato Tab via URL
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'overview';
 
-  // Mappa i paesi solo se 'data' esiste
   const countriesArray: Country[] = data 
-    ? Object.entries(data.countries).map(([nome, peso]) => ({
-        nome,
-        peso,
-      })) 
+    ? Object.entries(data.countries).map(([nome, peso]) => ({ nome, peso })) 
     : [];
 
-  // Lo skeleton si deve mostrare SEMPRE durante il caricamento (isFetching) 
-  // o se non sono ancora presenti dati solidi (!data).
   const isLoadingData = isFetching || !data;
 
-  // 2. Funzione per gestire il cambio tab
-  const handleTabChange = (tabName: string) => {
+  // 3. 🎯 FUNZIONE PER CAMBIARE IL TAB NELL'URL
+  const handleTabChange = (tabId: string) => {
     setSearchParams((prev) => {
-      prev.set('tab', tabName);
+      prev.set('tab', tabId);
       return prev;
     });
   };
@@ -60,91 +64,52 @@ export function EtfDetails({
       layout
       className='etf-details--container'
       style={{ transformOrigin: 'top' }}
-      transition={{ 
-        layout: { type: 'spring', bounce: 0, duration: 0.4 } // <-- 2. Molla senza rimbalzo
-        // layout: { type: 'tween', ease: 'easeInOut', duration: 0.3 }
-      }}
+      transition={{ layout: { type: 'spring', bounce: 0, duration: 0.4 } }}
     >
       <Card>
-
         {/* DETAIL HEADER */}
         <div className='etf-detail--header'>
-
-          {/* INFO */}
           <div className="info--container">
-
-            {/* INFO */}
             <Loading isLoading={isLoadingData} variant="title">
-              <motion.h2 layout>
-                {data?.nome || 'N/A'}
-              </motion.h2>
+              <motion.h2 layout>{data?.nome || 'N/A'}</motion.h2>
             </Loading>
-              
             <Loading isLoading={isLoadingData} variant="subtitle">
               <motion.p layout>
-                  ISIN: <strong>{data?.isin}</strong> | Tipo Asset: <strong>{data?.tipo_asset}</strong> 
-                </motion.p>
+                ISIN: <strong>{data?.isin}</strong> | Tipo Asset: <strong>{data?.tipo_asset}</strong> 
+              </motion.p>
             </Loading>
-
             <Loading isLoading={isLoadingData} variant="text">
               <motion.p layout>
-                  TER (Costo Annuo): <strong>{data?.costo_annuo}%</strong>
-                </motion.p>
+                TER (Costo Annuo): <strong>{data?.costo_annuo}%</strong>
+              </motion.p>
             </Loading>
           </div>
 
-          {/* FAVORITES */}
           <div className='favorite--container'>
-            {isUserLoggedIn && (
+            {isUserLoggedIn ? (
               <motion.div layout="position">
                 <FavoriteButton 
                   onToggleFavorite={onToggleFavorite}
                   showSkeleton={isLoadingData}
                   isFavorite={isFavorite}
-                  />
+                />
               </motion.div>
-            )}
-            {/* NO LOGGED UDER */}
-            {!isUserLoggedIn && (
+            ) : (
               <motion.p layout="position" className="etf-details__favorite-hint">Accedi per salvare</motion.p>
             )}
           </div>
-
         </div>
 
-        {/* 3. BARRA DI NAVIGAZIONE SUB-TAB */}
-        <div className="flex gap-4 border-b border-white/10 mb-6 overflow-x-auto no-scrollbar pb-2">
-          <button
-            onClick={() => handleTabChange('overview')}
-            className={`whitespace-nowrap px-2 py-1 text-sm transition-colors border-b-2 ${
-              activeTab === 'overview'
-                ? 'border-blue-500 text-blue-400 font-bold'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            📊 Panoramica
-          </button>
-          
-          <button
-            onClick={() => handleTabChange('risk')}
-            className={`whitespace-nowrap px-2 py-1 text-sm transition-colors border-b-2 ${
-              activeTab === 'risk'
-                ? 'border-blue-500 text-blue-400 font-bold'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            🛡️ Analisi Rischio
-          </button>
+        {/* 4. 🎯 IL NUOVO COMPONENTE TABS SOSTITUISCE TUTTO IL VECCHIO MARKUP RIPETITIVO */}
+        <Tabs 
+          tabs={ETF_DETAILS_TABS}
+          activeTab={activeTab}
+          onChange={handleTabChange}
+        />
 
-          <button disabled className="whitespace-nowrap px-2 py-1 text-sm text-gray-600 cursor-not-allowed border-b-2 border-transparent">
-            🌱 Sostenibilità ESG
-          </button>
-        </div>
-
-        {/* 4. CONTENUTO CONDIZIONALE BASATO SUL TAB */}
+        {/* CONTENUTO CONDIZIONALE BASATO SUL TAB */}
         {activeTab === 'overview' && (
           <motion.div layout="position" className="etf-details__grid">
-            
             <HoldingsSection
               holdings={data?.holdings ?? []}
               totaleHoldings={data?.totale_holdings ?? 0}
@@ -163,12 +128,9 @@ export function EtfDetails({
 
         {activeTab === 'risk' && (
           <motion.div layout="position" className="p-4 text-center text-gray-400 border border-dashed border-white/20 rounded-lg mt-4">
-            {/* <p>Sezione Analisi Rischio in costruzione...</p>
-            <p className="text-sm">Qui inseriremo le metriche per l'ISIN: {data?.isin}</p> */}
             <RiskSection isin={data?.isin || ''} isLoading={isLoadingData} />
           </motion.div>
         )}
-
       </Card>
     </motion.div>
   );
