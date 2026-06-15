@@ -7,6 +7,7 @@ interface PieChartDisplayProps {
   dataKey: string;
   nameKey: string;
   title: string;
+  subtitle?: string;
   maxItems?: number;       
   residualLabel?: string;  
 }
@@ -16,6 +17,7 @@ export function PieChartDisplay({
   dataKey, 
   nameKey, 
   title, 
+  subtitle,
   maxItems, 
   residualLabel = 'Altro' 
 }: PieChartDisplayProps) {
@@ -78,6 +80,12 @@ export function PieChartDisplay({
   return (
     <div className="etf-charts__chart" style={{ width: '100%' }}>
       <h4>{title}</h4>
+      {subtitle && 
+        <p style={{ fontSize: '14px', color: '#555', fontStyle: 'italic' }}>
+          {subtitle}
+        </p>
+      } 
+
       <ResponsiveContainer width="99%" height={350}>
         <PieChart>
           <Pie  
