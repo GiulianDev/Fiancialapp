@@ -55,9 +55,7 @@ export function SearchPage() {
       console.log('INVALID ISIN');
       return;
     }
-
-    console.log('Navigating to ISIN:', querySana);
-    
+    console.log('Navigating to Holding detail : ISIN ', querySana);
     // Aggiorniamo l'URL. Questo triggera in automatico React Query e aggiorna la UI
     setSearchParams((prev) => {
       prev.set('isin', querySana);
