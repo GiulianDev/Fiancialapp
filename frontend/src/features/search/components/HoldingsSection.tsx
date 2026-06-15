@@ -6,12 +6,11 @@ interface HoldingsSectionProps {
   holdings: Holding[];
   totaleHoldings: number;
   limite: number;
-  onLoadMore: () => void;
   isLoading?: boolean;
 }
 
 export function HoldingsSection({
-  holdings, totaleHoldings, limite, onLoadMore,
+  holdings, totaleHoldings, limite,
   isLoading = false,
 }: HoldingsSectionProps) {
   const navigate = useNavigate();
@@ -27,6 +26,7 @@ export function HoldingsSection({
     <div style={{ flex: '1', minWidth: '200px' }}>
       
       {isLoading ? (
+        // ToDo - gestire il caricamento al posto dello skeleton con un componente più specifico
         <ul style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
           {[...Array(5)].map((_, i) => (
             <li key={i} className="skeleton" style={{ height: '18px', margin: '6px 0', width: `${80 - i * 8}%` }} />

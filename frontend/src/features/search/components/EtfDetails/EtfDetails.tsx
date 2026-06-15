@@ -24,7 +24,6 @@ export function EtfDetails({
   data,
   limiteHoldings,
   limiteCountries,
-  onLoadMoreHoldings,
   onLoadMoreCountries,
   isFavorite = false,
   onToggleFavorite,
@@ -150,7 +149,6 @@ export function EtfDetails({
               holdings={data?.holdings ?? []}
               totaleHoldings={data?.totale_holdings ?? 0}
               limite={limiteHoldings}
-              onLoadMore={onLoadMoreHoldings}
               isLoading={isLoadingData}
             />
 
