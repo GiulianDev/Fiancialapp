@@ -16,6 +16,7 @@ export function HoldingsSection({
   const navigate = useNavigate();
   
   const handleHoldingClick = (isin: string, name: string) => {
+    console.log(isin, name);
     navigate(`/holding/${isin}`, { state: { name } });
   };
 

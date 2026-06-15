@@ -1,3 +1,5 @@
+// src/features/portfolio/components/EtfCharts/PieChartDisplay.tsx
+
 import { useMemo } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { CustomScrollableLegend } from './CustomScrollableLegend';
@@ -16,7 +18,7 @@ interface PieChartDisplayProps {
 export function PieChartDisplay({ 
   data, 
   dataKey, 
-  nameKey, 
+  nameKey,
   title, 
   subtitle,
   maxItems, 
@@ -60,7 +62,7 @@ export function PieChartDisplay({
       if (index === totalItems - 1 && processedData[index][nameKey] === residualLabel) {
         return 'hsl(215, 15%, 60%)'; 
       }
-
+      
       const hue = (baseHue + index * goldenAngle) % 360;
       const saturation = 65; 
       const lightness = index % 2 === 0 ? 50 : 60;
@@ -70,15 +72,15 @@ export function PieChartDisplay({
   }, [processedData, nameKey, residualLabel]);
 
   return (
-    <div className="etf-charts__chart" style={{ width: '100%' }}>
-      <h4>{title}</h4>
+    <div className="w-full flex flex-col">
+      <h4 className="text-md font-medium text-gray-300 border-b border-white/10 pb-2 mb-2">{title}</h4>
       
-      {/* 🛠️ FIX: Rimosso il doppio rendering del subtitle presente nel file precedente */}
-      {subtitle && 
-        <p style={{ fontSize: '14px', color: '#555', fontStyle: 'italic', marginBottom: '1rem' }}>
+      {/* 🎯 Unico blocco per il sottotitolo: pulito e protetto dal controllo condizionale */}
+      {subtitle && (
+        <p className="text-xs text-gray-500 italic mb-3">
           {subtitle}
         </p>
-      } 
+      )} 
 
       <ResponsiveContainer width="99%" height={350}>
         <PieChart>
@@ -100,9 +102,21 @@ export function PieChartDisplay({
               />
             ))}
           </Pie>
-          <Tooltip formatter={(value) => `${(value as number).toFixed(2)}%`} />
+          
+          <Tooltip 
+            formatter={(value) => `${(value as number).toFixed(2)}%`} 
+            contentStyle={{ backgroundColor: '#1e1e2e', borderColor: '#313244', borderRadius: '8px', color: '#cdd6f4' }}
+          />
+
+          {/* <CustomScrollableLegend /> */}
+
+          <Tooltip 
+            formatter={(value) => `${(value as number).toFixed(2)}%`} 
+          />
+
           {/* 🎯 Passiamo l'handler anche alla legenda */}
           <Legend content={<CustomScrollableLegend onItemClick={onItemClick} />} />
+
         </PieChart>
       </ResponsiveContainer>
     </div>
