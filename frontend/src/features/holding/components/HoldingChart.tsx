@@ -8,11 +8,38 @@ interface Props {
 }
 
 const PERIODS = [
-  { label: '1M', value: '1mo' }, // Accorciato etichette per mobile
+  { label: '1M', value: '1mo' }, 
   { label: '6M', value: '6mo' },
   { label: '1A', value: '1y' },
   { label: '5A', value: '5y' }
 ];
+
+// Funzione di formattazione interna con tipizzazione stringa pulita
+const formatDateToAAMMDD = (dateStr: string): string => {
+  if (!dateStr) return '';
+  
+  if (dateStr.includes('-')) {
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const aa = parts[0].slice(-2); 
+      const mm = parts[1];
+      const dd = parts[2];
+      return `${aa}.${mm}.${dd}`;
+    }
+  }
+  
+  if (dateStr.includes('/')) {
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+      const dd = parts[0];
+      const mm = parts[1];
+      const aa = parts[2].slice(-2);
+      return `${aa}.${mm}.${dd}`;
+    }
+  }
+
+  return dateStr; 
+};
 
 export function HoldingChart({ isin }: Props) {
   const [period, setPeriod] = useState<string>('1y');
@@ -26,7 +53,7 @@ export function HoldingChart({ isin }: Props) {
       {/* Header Responsivo */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
         <h3 className="text-lg font-bold text-gray-100 whitespace-nowrap">
-          Andamento
+          Andamento Azionario
         </h3>
         
         {/* Selettore Periodi */}
@@ -47,8 +74,8 @@ export function HoldingChart({ isin }: Props) {
         </div>
       </div>
 
-      {/* Contenitore Grafico con altezza fissa per evitare il collasso */}
-      <div className="h-[250px] w-full">
+      {/* Contenitore Grafico */}
+      <div className="h-[260px] w-full">
         {isLoading ? (
           <div className="w-full h-full flex items-center justify-center text-gray-500 animate-pulse">
             Caricamento dati...
@@ -57,7 +84,7 @@ export function HoldingChart({ isin }: Props) {
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart 
               data={data?.andamento} 
-              margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+              margin={{ top: 10, right: 10, left: -20, bottom: 10 }}
             >
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
@@ -68,8 +95,14 @@ export function HoldingChart({ isin }: Props) {
               
               <XAxis 
                 dataKey="data" 
-                hide={true} // Nascondiamo le date su mobile per pulizia visiva
+                tick={{ fontSize: 10, fill: '#9ca3af' }}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(val) => formatDateToAAMMDD(String(val ?? ''))} 
+                minTickGap={30} 
+                dy={10} 
               />
+              
               <YAxis 
                 domain={['auto', 'auto']} 
                 tick={{ fontSize: 10, fill: '#9ca3af' }}
@@ -82,6 +115,13 @@ export function HoldingChart({ isin }: Props) {
                   border: 'none',
                   borderRadius: '8px',
                   fontSize: '12px'
+                }}
+                // CORREZIONE TYPE: Trasformiamo in stringa sicura prima di passare il valore alla funzione
+                labelFormatter={(label) => {
+                  if (typeof label === 'string' || typeof label === 'number') {
+                    return formatDateToAAMMDD(String(label));
+                  }
+                  return '';
                 }}
               />
               <Area 
