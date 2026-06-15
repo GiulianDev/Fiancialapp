@@ -2,7 +2,7 @@ import { NavLink, useLocation, Outlet } from 'react-router';
 import './HomePage.css';
 /**
  * HOME PAGE
- * mostra i tab di navigazione.
+ * mostra i tab di navigazione per la ricerca ETF e per gestire il portfolio.
  */
 export function HomePage() {
   
