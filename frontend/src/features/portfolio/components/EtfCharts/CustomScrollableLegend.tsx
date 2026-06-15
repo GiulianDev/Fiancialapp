@@ -10,12 +10,13 @@ interface CustomScrollableLegendProps extends LegendProps {
 }
 
 export function CustomScrollableLegend({ payload }: CustomScrollableLegendProps) {
-  // Ordiniamo il payload in base al valore (peso_percentuale o peso) in ordine decrescente
-  const sortedPayload = payload?.sort((a, b) => {
-    const valA = a.payload.peso_percentuale ?? a.payload.peso ?? 0;
-    const valB = b.payload.peso_percentuale ?? b.payload.peso ?? 0;
-    return valB - valA; // Ordine decrescente
-  });
+  const sortedPayload = payload 
+    ? [...payload].sort((a, b) => {
+        const valA = a.payload.peso_percentuale ?? a.payload.peso ?? 0;
+        const valB = b.payload.peso_percentuale ?? b.payload.peso ?? 0;
+        return valB - valA; // Ordine decrescente
+      })
+    : [];
 
   return (
     <div 
