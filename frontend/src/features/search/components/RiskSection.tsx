@@ -1,12 +1,11 @@
-import { useEtfRisk } from '../hooks/useEtfRisk'; // Regola il percorso relativo se necessario
+import { useEtfRisk } from '../hooks/useEtfRisk';
 
 interface RiskSectionProps {
   isin: string;
-  isLoading: boolean; // Indica lo stato di caricamento dell'asset principale
+  isLoading: boolean;
 }
 
 export function RiskSection({ isin, isLoading: isEtfLoading }: RiskSectionProps) {
-  // Richiamiamo l'hook custom agganciato all'API Python
   const { data: riskData, isLoading: isRiskLoading, error } = useEtfRisk(isin);
 
   // Mostra lo skeleton durante il caricamento
@@ -30,16 +29,14 @@ export function RiskSection({ isin, isLoading: isEtfLoading }: RiskSectionProps)
     );
   }
 
-  // ==================== ESTRAZIONE BLINDATA ====================
-  // Estraiamo ogni proprietà singolarmente usando l'operatore di coalescenza nulla (??).
-  // In questo modo, se una metrica è null o undefined dal backend, l'app non crasha e mostra 0.00
-  
-  // Controlla sia la chiave con il refuso (volatilia) sia quella corretta (volatilita)
-  const volatilita = riskData?.volatilia_annua ?? riskData?.volatilia_annua ?? 0;
-  const sharpe = riskData?.sharpe_ratio ?? 0;
-  const maxDrawdown = riskData?.max_drawdown ?? 0;
-  const beta = riskData?.beta ?? 0;
-  // =============================================================
+  // --- ESTRAZIONE SICURA E FORMATTAZIONE ---
+  // Funzione helper per garantire che il valore sia sempre un numero
+  const formatNum = (val: any) => (typeof val === 'number' ? val : 0);
+
+  const volatilita = formatNum(riskData?.volatilita_annua ?? riskData?.volatilia_annua);
+  const sharpe = formatNum(riskData?.sharpe_ratio);
+  const maxDrawdown = formatNum(riskData?.max_drawdown);
+  const beta = formatNum(riskData?.beta);
 
   const getSharpeColor = (val: number) => {
     if (val >= 1) return 'text-green-400';
@@ -102,11 +99,10 @@ export function RiskSection({ isin, isLoading: isEtfLoading }: RiskSectionProps)
             Sensibilità rispetto al mercato. Scostamenti superiori a 1 indicano uno strumento più amplificato rispetto all'indice generale.
           </p>
         </div>
-
       </div>
 
       <div className="bg-white/5 p-4 rounded-xl border border-white/5 text-center py-6 text-xs text-gray-400">
-        🛡️ Calcolo avanzato in tempo reale basato sullo storico prezzi dell'ISIN {isin}.
+        🛡️ Calcolo avanzato basato sullo storico prezzi dell'ISIN {isin}.
       </div>
     </div>
   );
