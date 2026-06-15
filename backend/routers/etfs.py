@@ -7,13 +7,6 @@ from services.risk_calculator import calcola_metriche_rischio
 router = APIRouter(tags=["ETFs"])
 
 @router.get("/api/etf/{isin}")
-def get_etf_data(isin: str):
-    try:
-        return fetch_data_from_extraetf(isin.strip().upper())
-    except Exception as e:
-        return {"status": "error", "message": f"Errore interno: {str(e)}"}
-
-@router.get("/api/v2/etf/{isin}")
 def get_etf_data_v2(isin: str):
     try:
         return fetch_data_from_extraetf_v2(isin.strip().upper())
