@@ -145,6 +145,7 @@ export function EtfDetails({
         {/* 4. CONTENUTO CONDIZIONALE BASATO SUL TAB */}
         {activeTab === 'overview' && (
           <motion.div layout="position" className="etf-details__grid">
+            
             <HoldingsSection
               holdings={data?.holdings ?? []}
               totaleHoldings={data?.totale_holdings ?? 0}
