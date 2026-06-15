@@ -8,12 +8,12 @@ interface EtfChartsProps {
 }
 
 export function EtfCharts({ combined }: EtfChartsProps) {
-  const holdingsData = [
-    ...combined.holdings.slice(0, 10),
-    ...(combined.residualHolding > 0
-      ? [{ nome: 'Altre aziende', peso_percentuale: combined.residualHolding }]
-      : []),
-  ];
+  // const holdingsData = [
+  //   ...combined.holdings.slice(0, 10),
+  //   ...(combined.residualHolding > 0
+  //     ? [{ nome: 'Altre aziende', peso_percentuale: combined.residualHolding }]
+  //     : []),
+  // ];
 
   const countriesData = [
     ...combined.countries.slice(0, 10),
@@ -36,18 +36,22 @@ export function EtfCharts({ combined }: EtfChartsProps) {
        <div className="etf-charts__grid">
         {/* Pie Chart per le holdings */}
         <PieChartDisplay
-          data={holdingsData}
+          data={combined.holdings}
           dataKey="peso_percentuale"
           nameKey="nome"
           title="Composizione Aziende"
+          maxItems={11}
+          residualLabel="Altre aziende"
         />
 
         {/* Pie Chart per i paesi */}
         <PieChartDisplay
-          data={countriesData}
+          data={combined.countries}
           dataKey="peso"
           nameKey="nome"
           title="Esposizione Geografica"
+          maxItems={11}
+          residualLabel="Altri paesi"
         />
       </div>
 
