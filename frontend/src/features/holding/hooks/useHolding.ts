@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import type { HoldingDetails, HoldingHistory } from '@/shared/types';
-import { API_URL } from '@/shared/config/constants';
+import { HOLDING_DETAIL_API, HOLDING_HISTORY_API } from '@/shared/config/constants';
 
 // Hook per i dettagli anagrafici e fondamentali
 export function useHoldingDetails(isin: string) {
   return useQuery<HoldingDetails, Error>({
     queryKey: ['holding-details', isin],
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/api/holding-details/${isin}`);
+      const response = await fetch(`${HOLDING_DETAIL_API}/${isin}`);
       const data = await response.json();
       if (data.status === 'error') throw new Error(data.message);
       return data;
@@ -22,7 +22,7 @@ export function useHoldingHistory(isin: string, period: string) {
   return useQuery<HoldingHistory, Error>({
     queryKey: ['holding-history', isin, period],
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/api/holding-history/${isin}?period=${period}`);
+      const response = await fetch(`${HOLDING_HISTORY_API}/${isin}?period=${period}`);
       const data = await response.json();
       if (data.status === 'error') throw new Error(data.message);
       return data;

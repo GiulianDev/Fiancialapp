@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { EtfData } from '../shared/types/etf';
-import { API_URL } from '../shared/config/constants';
+import { SEARCH_ETF_API_URL } from '../shared/config/constants';
 import { useAuth } from '../shared/contexts/AuthContext';
 
 interface UseFetchedEtfDataResult {
@@ -37,7 +37,7 @@ export function useFetchedEtfData(
         const fetchedData = await Promise.all(
           selectedIsins.map(async (isin) => {
             // Usiamo la costante ed il nuovo endpoint v2!
-            const response = await fetch(`${API_URL}/api/v2/etf/${isin}`);
+            const response = await fetch(`${SEARCH_ETF_API_URL}/${isin}`);
             const payload = await response.json();
 
             if (!response.ok || payload?.status === 'error') {
