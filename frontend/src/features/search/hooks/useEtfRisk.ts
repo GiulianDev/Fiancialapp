@@ -1,11 +1,13 @@
-import { SEARCH_ETF_API_URL } from '@/shared/config/constants';
+import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
+import { SEARCH_ETF_API_URL } from '@/shared/config/constants';
 
 interface RiskMetrics {
-  volatilia_annua: number;
-  sharpe_ratio: number;
-  max_drawdown: number;
-  beta: number;
+  volatilita_annua?: number;
+  volatilia_annua?: number;
+  sharpe_ratio?: number;
+  max_drawdown?: number;
+  beta?: number;
 }
 
 interface ApiResponse {
@@ -15,40 +17,48 @@ interface ApiResponse {
 }
 
 export function useEtfRisk(isin: string) {
-  const [data, setData] = useState<RiskMetrics | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+  const query = useQuery<RiskMetrics, Error, RiskMetrics, [string, string]>({
+    // La chiave di cache identifica univocamente questa query
+    queryKey: ['etf-risk', isin],
+
+    queryFn: async (): Promise<RiskMetrics> => {
+      const response = await fetch(`${SEARCH_ETF_API_URL}/${isin}/risk`);
+      
+      if (!response.ok) {
+        throw new Error(`Errore di rete (Status: ${response.status})`);
+      }
+      
+      const json: ApiResponse = await response.json();
+      
+      if (json.status === 'success' && json.dati_rischio) {
+        return json.dati_rischio;
+      } else {
+        throw new Error(json.message || 'Impossibile recuperare le metriche di rischio dal server.');
+      }
+    },
+
+    // Manteniamo i dati validi in cache per 5 minuti (come nell'ETF Search)
+    staleTime: 1000 * 60 * 5, 
+
+    // Esegue la chiamata solo se c'è un ISIN valido
+    enabled: isin.trim().length >= 12,
+  });
+
+  // Mantiene l'ultimo dato valido locale per evitare sfarfallii durante i refetch in background
+  const [retainedData, setRetainedData] = useState<RiskMetrics | null>(null);
 
   useEffect(() => {
-    if (!isin || isin.length < 12) return;
+    if (query.data) {
+      setRetainedData(query.data);
+    }
+  }, [query.data]);
 
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        // Legge la variabile d'ambiente o fa fallback sul server locale
-        const response = await fetch(`${SEARCH_ETF_API_URL}/${isin}/risk`);
-        
-        if (!response.ok) {
-          throw new Error(`Errore di rete (Status: ${response.status})`);
-        }
-        
-        const json: ApiResponse = await response.json();
-        
-        if (json.status === 'success' && json.dati_rischio) {
-          setData(json.dati_rischio);
-        } else {
-          throw new Error(json.message || 'Impossibile recuperare le metriche di rischio dal server.');
-        }
-      } catch (err: any) {
-        setError(err instanceof Error ? err : new Error(err.message || 'Errore sconosciuto'));
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const effectiveData = query.data ?? retainedData;
 
-    fetchData();
-  }, [isin]);
-
-  return { data, isLoading, error };
+  return {
+    data: effectiveData,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    error: query.error
+  };
 }
