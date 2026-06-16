@@ -1,7 +1,7 @@
 import { type AggregatedResult } from '../../index';
 import { Card } from '../../index';
 import './EtfCharts.css';
-import { PieChartDisplay } from './PieChartDisplay';
+import { PieChartDisplay } from '../../../../shared/ui/PieChartDisplay/PieChartDisplay';
 
 interface EtfChartsProps {
   combined: AggregatedResult;

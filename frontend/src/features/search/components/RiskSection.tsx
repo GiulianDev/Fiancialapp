@@ -1,6 +1,6 @@
 // import { Card } from '@/shared/ui';
 // import { useEtfRisk } from '../hooks/useEtfRisk';
-import { MetricCard } from './EtfDetails/MetricCard/MetricCard';
+import { MetricCard } from './MetricCard/MetricCard';
 
 interface RiskSectionProps {
   isin: string;

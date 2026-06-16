@@ -1,4 +1,4 @@
-import { useEtfMetric, type RiskMetricType } from "@/features/search/hooks/useEtfMetric";
+import { useEtfMetric, type RiskMetricType } from "@/features/search/components/MetricCard/useEtfMetric";
 
 interface MetricCardProps {
   isin: string;

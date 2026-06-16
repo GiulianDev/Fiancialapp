@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { Button } from '@/shared/ui';
-import { PieChartDisplay } from '@/features/portfolio/components/EtfCharts/PieChartDisplay';
+import { PieChartDisplay } from '@/shared/ui/PieChartDisplay/PieChartDisplay';
 
 interface BreakdownItem {
   nome: string;
