@@ -56,6 +56,7 @@ def get_detailed_holding_data(isin: str):
 
 @router.get("/api/holding-history/{isin}")
 def get_holding_history(isin: str, period: str = "1y"):
+
     try:
         ticker_symbol = get_ticker_from_isin(isin.strip().upper())
         
@@ -64,7 +65,7 @@ def get_holding_history(isin: str, period: str = "1y"):
                 "status": "error", 
                 "message": f"Impossibile trovare un Ticker associato all'ISIN {isin}"
             }
-            
+
         stock = yf.Ticker(ticker_symbol)
         hist = stock.history(period=period)
         
@@ -122,3 +123,34 @@ def get_holding_history(isin: str, period: str = "1y"):
         }
     except Exception as e:
         return {"status": "error", "message": f"Errore nel recupero della serie storica: {str(e)}"}
+    
+
+
+# prova a recuperare lo storico con yf.download invece di yf.Tiker
+@router.get("/api/holding-full/{isin}")
+def get_full_holding_data(isin: str):
+    try:
+        ticker_symbol = get_ticker_from_isin(isin.strip().upper())
+        
+        if not ticker_symbol:
+            return {
+                "status": "error", 
+                "message": f"Impossibile trovare un Ticker associato all'ISIN {isin}"
+            }
+            
+        df = yf.download(ticker_symbol)
+
+        
+        if df is None:
+            raise ValueError("Dati societari non restituiti da Yahoo Finance")
+        
+        print(df.to_string())
+       
+        return {
+            "status": "success",
+            "isin": isin,
+            "ticker": ticker_symbol,
+            "dati_completi": df.to_dict()
+        }
+    except Exception as e:
+        return {"status": "error", "message": f"Errore nel recupero dettagli: {str(e)}"}
