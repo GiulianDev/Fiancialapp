@@ -9,6 +9,7 @@ import { usePortfolio as usePortfolioContext } from '../../../shared/contexts/Po
  * @returns oggetto con savedPortfolio, loading, error e updatePortfolio
  */
 export function usePortfolio() {
+  
   const context = usePortfolioContext();
 
   return {
