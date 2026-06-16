@@ -26,6 +26,9 @@ def get_detailed_holding_data(isin: str):
         stock = yf.Ticker(ticker_symbol)
         info = stock.info
         
+        if not info:
+            raise ValueError("Dati societari non restituiti da Yahoo Finance")
+        
         return {
             "status": "success",
             "isin": isin,
@@ -71,6 +74,32 @@ def get_holding_history(isin: str, period: str = "1y"):
                 "message": f"Nessun dato storico trovato per il periodo {period}"
             }
             
+        # ==================== RECUPERO VALUTA COMPATIBILE CON PYLANCE ====================
+        valuta_rilevata = "USD"
+        
+        # 1. Tentativo sicuro tramite i metadati del DataFrame (introdotto nelle ultime versioni di yfinance)
+        hist_metadata = getattr(hist, "metadata", None)
+        if isinstance(hist_metadata, dict) and "currency" in hist_metadata:
+            valuta_rilevata = hist_metadata["currency"]
+        else:
+            # 2. Tentativo dinamico tramite fast_info o basic_info usando getattr per evitare l'errore Pylance
+            fast_info = getattr(stock, "fast_info", None)
+            basic_info = getattr(stock, "basic_info", None)
+            
+            # Controlliamo fast_info (il dizionario nativo super veloce di yfinance)
+            if fast_info:
+                if isinstance(fast_info, dict) and "currency" in fast_info:
+                    valuta_rilevata = fast_info["currency"]
+                elif hasattr(fast_info, "currency"):
+                    valuta_rilevata = getattr(fast_info, "currency", "USD")
+            # Fallback su basic_info se presente in versioni alternative
+            elif basic_info:
+                if isinstance(basic_info, dict) and "currency" in basic_info:
+                    valuta_rilevata = basic_info["currency"]
+                elif hasattr(basic_info, "currency"):
+                    valuta_rilevata = getattr(basic_info, "currency", "USD")
+        # =================================================================================
+            
         hist = hist.reset_index()
         
         cronologia_pulita = []
@@ -88,7 +117,7 @@ def get_holding_history(isin: str, period: str = "1y"):
             "isin": isin,
             "ticker": ticker_symbol,
             "periodo_selezionato": period,
-            "valuta": stock.info.get("currency", "USD"),
+            "valuta": valuta_rilevata,
             "andamento": cronologia_pulita
         }
     except Exception as e:
