@@ -1,20 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-# Importazione dei router architettati
 from routers import etfs, holdings
 
 app = FastAPI()
 
+# 1. PRIMA REGISTRI IL MIDDLEWARE CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=[
+        "*",
+        "http://localhost:5173",  # Porta standard di Vite
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Registrazione dei router nel ciclo vitale dell'applicazione
+# 2. DOPO INCLUDI I ROUTER
 app.include_router(etfs.router)
 app.include_router(holdings.router)
 
