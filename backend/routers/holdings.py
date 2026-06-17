@@ -1,3 +1,6 @@
+
+from datetime import datetime
+import pandas as pd
 from fastapi import APIRouter
 import yfinance as yf
 from services.extraetf_api import fetch_data_from_extraetf_v2
@@ -127,8 +130,8 @@ def get_holding_history(isin: str, period: str = "1y"):
 
 
 # prova a recuperare lo storico con yf.download invece di yf.Tiker
-@router.get("/api/holding-full/{isin}")
-def get_full_holding_data(isin: str):
+@router.get("/api/holding-full/{isin}/{start}/{end}")
+def get_full_holding_data(isin: str, start: str, end: str ):
     try:
         ticker_symbol = get_ticker_from_isin(isin.strip().upper())
         
@@ -138,19 +141,38 @@ def get_full_holding_data(isin: str):
                 "message": f"Impossibile trovare un Ticker associato all'ISIN {isin}"
             }
             
-        df = yf.download(ticker_symbol)
-
         
+        # df = yf.download(ticker_symbol, start=start, end=end)
+        df = yf.download(ticker_symbol, period='10d', interval='1d')
+
+
         if df is None:
             raise ValueError("Dati societari non restituiti da Yahoo Finance")
         
-        print(df.to_string())
        
+       # 1. ELIMINA IL MULTIINDEX (Rimuove la riga doppia "Ticker CSSPX.MI CSSPX.MI...")
+        # Se le colonne hanno due livelli (Price e Ticker), teniamo solo il primo (Close, High, ecc.)
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
+
+        # 2. SPOSTA LA DATA DA INDICE A COLONNA NORMALE
+        df = df.reset_index()
+
+        # 3. CONVERTI LE DATE IN STRINGHE (Formato ISO YYYY-MM-DD)
+        # Altrimenti il serializzatore JSON di FastAPI andrà in errore
+        df["Date"] = df["Date"].dt.strftime("%Y-%m-%d")
+
+        # 4. CONVERTI IL DATAFRAME IN LISTA DI DIZIONARI
+        # Genera una struttura del tipo: [{"Date": "...", "Close": ...}, {...}]
+        dati_puliti = df.to_dict(orient="records")
+        # print(dati_puliti)
+        
         return {
             "status": "success",
             "isin": isin,
             "ticker": ticker_symbol,
-            "dati_completi": df.to_dict()
+            "dati_completi": dati_puliti
         }
     except Exception as e:
+        print(f"Errore nel recupero dettagli: {str(e)}")
         return {"status": "error", "message": f"Errore nel recupero dettagli: {str(e)}"}
