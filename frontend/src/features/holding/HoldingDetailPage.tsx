@@ -1,7 +1,7 @@
 import { useParams, useLocation, useNavigate } from 'react-router';
 import { Card } from '../../shared/ui/Card/Card';
 import { useHoldingDetails } from './hooks/useHolding';
-import { HoldingChart } from './components/HoldingChart';
+import { HoldingHistoryChart } from './components/HoldingHistoryChart/HoldingHistoryChart';
 
 export function HoldingDetailPage() {
   const { isin } = useParams<{ isin: string }>(); 
@@ -98,9 +98,9 @@ export function HoldingDetailPage() {
           </div>
 
           {/* Grafico Integrato: w-full e overflow-hidden per evitare lo sfasamento da parte della libreria Recharts */}
-          <div className="w-full overflow-hidden box-border">
-            <HoldingChart isin={isin || ''} />
-          </div>
+          {/* <div className="w-full overflow-hidden box-border"> */}
+            <HoldingHistoryChart isin={isin || ''} />
+          
         </>
       )}
 

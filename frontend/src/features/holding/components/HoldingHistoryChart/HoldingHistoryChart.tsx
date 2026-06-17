@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
-import { useHoldingHistory } from '../hooks/useHolding';
-import { Card } from '../../../shared/ui/Card/Card';
+import { useHoldingHistory } from './useHoldingHistory';
 
 interface Props {
   isin: string;
@@ -41,15 +40,15 @@ const formatDateToAAMMDD = (dateStr: string): string => {
   return dateStr; 
 };
 
-export function HoldingChart({ isin }: Props) {
+export function HoldingHistoryChart({ isin }: Props) {
   const [period, setPeriod] = useState<string>('1y');
   const { data, isLoading, error } = useHoldingHistory(isin, period);
 
   if (error) return <div className="p-4 text-red-400 font-semibold">Errore grafico: {error.message}</div>;
 
   return (
-    <Card className="w-full mt-6">
-      
+    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col h-full min-h-[140px]">
+
       {/* Header Responsivo */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
         <h3 className="text-lg font-bold text-gray-100 whitespace-nowrap">
@@ -135,6 +134,6 @@ export function HoldingChart({ isin }: Props) {
           </ResponsiveContainer>
         )}
       </div>
-    </Card>
+    </div>
   );
 }
