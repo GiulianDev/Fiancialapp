@@ -47,7 +47,7 @@ export function HoldingHistoryChart({ isin }: Props) {
   if (error) return <div className="p-4 text-red-400 font-semibold">Errore grafico: {error.message}</div>;
 
   return (
-    <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col h-full min-h-[140px]">
+    <div>
 
       {/* Header Responsivo */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
