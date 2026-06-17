@@ -4,6 +4,7 @@ import { PortfolioPage } from '../features/portfolio/PortfolioPage';
 import { HoldingDetailPage } from '../features/holding/HoldingDetailPage';
 import { HomePage } from '@/features/home/HomePage';
 import { Navigate } from 'react-router';
+import { TestPage } from '@/features/test/TestPage';
 
 /**
  * DEFINIZIONE CENTRALIZZATA DELLE ROUTE
@@ -46,6 +47,11 @@ export const routes = [
         path: '/holding/:isin',
         element: <HoldingDetailPage />,
         handle: { title: 'Dettaglio Holding' },
+      },
+      {
+        path: '/holding/full/',
+        element: <TestPage />,
+        handle: { title: 'Global Holding Page' },
       },
     ],
   },
