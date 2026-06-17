@@ -20,6 +20,7 @@ export function useEtfSearch(isin: string) {
         throw new Error(data.message || 'Errore di connessione al server Python.');
       }
 
+      console.log('Search ETF API success');
       return data;
     },
 
