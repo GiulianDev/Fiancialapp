@@ -2,29 +2,62 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 import time
+import threading # Aggiungi l'import per i Lock
+
+# NB. yfinance fornisce i dati tutti insieme
+# Per esporre i singoli fattori di rischio come microservizi sonos tati creati:
+# - dei lock per evitare di scaricare più volte lo stesso storico in caso di richieste simultanee.
+# - un sistema di cache in memoria per evitare di scaricare più volte lo stesso storico
 
 # Micro-cache in memoria per evitare di scaricare 4 volte di fila gli stessi dati
 _cache_storico = {}
+
+# Dizionario per tenere traccia dei Lock per ogni singolo ticker
+_locks_storico = {}
+# Lock globale per proteggere la creazione dei lock individuali
+_global_lock = threading.Lock()
+
+def _get_lock_for_ticker(ticker_symbol: str):
+    """Restituisce un Lock specifico per il ticker, creandolo se non esiste."""
+    with _global_lock:
+        if ticker_symbol not in _locks_storico:
+            _locks_storico[ticker_symbol] = threading.Lock()
+        return _locks_storico[ticker_symbol]
 
 # Scarica lo storico una sola volta per poi calcolare le varie metriche
 def _get_dati_storici(ticker_symbol: str, period: str = "3y"):
     """Scarica i dati storici una sola volta e li tiene in cache per 5 minuti."""
     now = time.time()
     
-    # Se abbiamo già scaricato i dati da meno di 300 secondi (5 minuti), usiamo quelli
+    # 1. Controllo ottimistico: se c'è già in cache, restituisci subito
     if ticker_symbol in _cache_storico and (now - _cache_storico[ticker_symbol]['timestamp'] < 300):
         return _cache_storico[ticker_symbol]['hist'], _cache_storico[ticker_symbol]['info']
     
-    stock = yf.Ticker(ticker_symbol)
-    hist = stock.history(period=period)
-    info = stock.info
+    # Recuperiamo il "semaforo" per questo specifico ticker
+    ticker_lock = _get_lock_for_ticker(ticker_symbol)
     
-    if hist.empty:
-        raise ValueError(f"Dati storici insufficienti per {ticker_symbol}")
+    # Mettiamo in coda le altre richieste per questo ticker
+    with ticker_lock:
+        # 2. Quando è il nostro turno, ricontrolliamo! 
+        # Magari il processo prima di noi ha appena riempito la cache.
+        now = time.time()
+        if ticker_symbol in _cache_storico and (now - _cache_storico[ticker_symbol]['timestamp'] < 300):
+            print(f"\nDati trovati in cache per {ticker_symbol} dopo l'attesa.\n")
+            return _cache_storico[ticker_symbol]['hist'], _cache_storico[ticker_symbol]['info']
         
-    # Salviamo in cache
-    _cache_storico[ticker_symbol] = {'hist': hist, 'info': info, 'timestamp': now}
-    return hist, info
+        # 3. Se siamo i primi ad arrivare qui, scarichiamo davvero i dati
+        print(f"\nScaricando dati storici per {ticker_symbol}...\n")
+        stock = yf.Ticker(ticker_symbol)
+        hist = stock.history(period=period)
+        info = stock.info
+        
+        if hist.empty:
+            raise ValueError(f"Dati storici insufficienti per {ticker_symbol}")
+            
+        # Salviamo in cache in modo che i processi in attesa fuori dal 'with' li trovino
+        _cache_storico[ticker_symbol] = {'hist': hist, 'info': info, 'timestamp': now}
+        
+        return hist, info
 
 
 def calcola_volatilita(ticker_symbol: str, period: str = "3y"):
