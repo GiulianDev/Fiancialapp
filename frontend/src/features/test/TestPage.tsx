@@ -8,7 +8,7 @@ export function TestPage() {
   const { data: value } = useHoldingFull(ISIN, '2020-01-01', '2023-01-01 ');
 
   // Estraiamo in modo sicuro l'array dei dati, di default un array vuoto
-  const dati = value?.dati_completi || [];
+  // const dati = value?.dati_completi || [];
 
   return (
     <div className="w-full max-w-6xl mx-auto space-y-6 flex flex-col box-border p-4">
@@ -45,7 +45,7 @@ export function TestPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dati.map((row: any, index: number) => (
+                {/* {dati.map((row: any, index: number) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
                       {row.Date}
@@ -66,16 +66,16 @@ export function TestPage() {
                       {row.Volume.toLocaleString()}
                     </td>
                   </tr>
-                ))}
+                ))} */}
               </tbody>
             </table>
             
             {/* Messaggio se l'array è vuoto */}
-            {dati.length === 0 && (
+            {/* {dati.length === 0 && (
               <div className="p-4 text-center text-gray-500">
                 Nessun dato disponibile per il periodo selezionato.
               </div>
-            )}
+            )} */}
           </div>
         </div>
       )}

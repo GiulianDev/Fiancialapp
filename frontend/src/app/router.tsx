@@ -49,7 +49,7 @@ export const routes = [
         handle: { title: 'Dettaglio Holding' },
       },
       {
-        path: '/holding/full/',
+        path: '/test/',
         element: <TestPage />,
         handle: { title: 'Global Holding Page' },
       },
