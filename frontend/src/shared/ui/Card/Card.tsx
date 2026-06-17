@@ -1,5 +1,4 @@
 import { type PropsWithChildren, type HTMLAttributes } from 'react';
-import './Card.css';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
