@@ -14,6 +14,8 @@ def get_etf_data_v2(isin: str):
         return {"status": "error", "message": f"Errore interno V2: {str(e)}"}
 
 
+# API endpoint per calcolare le metriche di rischio di un ETF dato il suo ISIN
+
 @router.get("/api/etf/{isin}/risk/drawdown")
 def get_drawdown(isin: str):
     try:
@@ -105,6 +107,10 @@ def get_beta(isin: str):
         }
     except Exception as e:
         return {"status": "error", "message": f"Errore nel calcolo del rischio: {str(e)}"}
+
+
+
+
 
 # get all data
 @router.get("/api/etf/{isin}/risk")

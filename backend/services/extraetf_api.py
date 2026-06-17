@@ -79,7 +79,6 @@ def fetch_data_from_extraetf(isin: str):
         "sectors": sectors
     }
 
-
 def fetch_data_from_extraetf_v2(isin: str):
     url = f"https://extraetf.com/api-v2/detail/?isin={isin}&extraetf_locale=it"
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
@@ -154,7 +153,6 @@ def fetch_data_from_extraetf_v2(isin: str):
         "countries": countries,
         "sectors": sectors
     }
-
 
 def format_exposure(exposure_dict):
     if not exposure_dict:

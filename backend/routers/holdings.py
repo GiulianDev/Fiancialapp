@@ -3,6 +3,7 @@ from datetime import datetime
 import pandas as pd
 from fastapi import APIRouter
 import yfinance as yf
+from services.holding_api import get_holding_financial_data, get_main_holding_info
 from services.extraetf_api import fetch_data_from_extraetf_v2
 from services.yfinance_api import get_ticker_from_isin
 
@@ -15,6 +16,52 @@ def get_holding_data(isin_holding: str):
     except Exception as e:
         return {"status": "error", "message": f"Errore nel recupero holding {isin_holding}: {str(e)}"}
 
+# microservizio per recuperare i dettagli principali di un holding tramite ISIN
+@router.get("/api/holding-main-details/{isin}")
+def get_main_holding_data(isin: str):
+    try:
+        ticker_symbol = get_ticker_from_isin(isin.strip().upper())
+        
+        if not ticker_symbol:
+            return {
+                "status": "error", 
+                "message": f"Impossibile trovare un Ticker associato all'ISIN {isin}"
+            }
+
+        info = get_main_holding_info(ticker_symbol)
+        return {
+            "status": "success",
+            "isin": isin,
+            "data": info
+        }
+    
+    except Exception as e:
+        return {"status": "error", "message": f"Errore nel recupero dettagli: {str(e)}"}
+
+# microservizio per recuperare i dettagli principali di un holding tramite ISIN
+@router.get("/api/holding-financial-details/{isin}")
+def get_financial_holding_data(isin: str):
+    try:
+        ticker_symbol = get_ticker_from_isin(isin.strip().upper())
+        
+        if not ticker_symbol:
+            return {
+                "status": "error", 
+                "message": f"Impossibile trovare un Ticker associato all'ISIN {isin}"
+            }
+
+        info = get_holding_financial_data(ticker_symbol)
+        return {
+            "status": "success",
+            "isin": isin,
+            "dati_finanziari": info
+        }
+    
+    except Exception as e:
+        return {"status": "error", "message": f"Errore nel recupero dettagli: {str(e)}"}
+
+
+# vecchia funzione monolitica per recuperare i dettagli di un holding tramite ISIN
 @router.get("/api/holding-details/{isin}")
 def get_detailed_holding_data(isin: str):
     try:
@@ -56,6 +103,9 @@ def get_detailed_holding_data(isin: str):
         }
     except Exception as e:
         return {"status": "error", "message": f"Errore nel recupero dettagli: {str(e)}"}
+
+
+
 
 @router.get("/api/holding-history/{isin}")
 def get_holding_history(isin: str, period: str = "1y"):
