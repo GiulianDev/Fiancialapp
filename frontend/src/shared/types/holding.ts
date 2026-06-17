@@ -30,3 +30,13 @@ export interface HoldingHistory {
   valuta: string;
   andamento: StoricoPrezzo[];
 }
+
+export interface HoldingFull {
+  status: string;
+  isin: string;
+  ticker: string;
+  periodo_selezionato: string;
+  data: string; // es. {"2023-01-01": 100, "2023-02-01": 105}
+  dati_completi: {}; // array di oggetti con le colonne del dataframe,
+  message: string;
+}
