@@ -75,6 +75,7 @@ export function EtfDetails({
   // callback al click sulla singola holding
   const handleHoldingClick = (isin: string, name: string) => {
     console.log(isin, name);
+    if (!isin) return;
     navigate(`/holding/${isin}`, { state: { name } });
   };
 
