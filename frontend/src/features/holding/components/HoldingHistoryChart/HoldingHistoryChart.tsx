@@ -42,10 +42,17 @@ const formatDateToAAMMDD = (dateStr: string): string => {
 };
 
 export function HoldingHistoryChart({ isin }: Props) {
+  
   const [period, setPeriod] = useState<string>('1y');
   const { data, isLoading, error } = useHoldingHistory(isin, period);
 
-  if (error) return <div className="p-4 text-red-400 font-semibold">Errore grafico: {error.message}</div>;
+  if (error) return (
+    <Card className="col-span-1 md:col-span-2 min-h-[342px] flex items-center justify-center text-center">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+          <p className="text-red-400 font-bold ">Errore nel caricamento del grafico</p>
+        </div>
+    </Card>
+  );
 
   return (
     <Card className={isLoading ? "animate-pulse" : ""}>
@@ -140,6 +147,7 @@ export function HoldingHistoryChart({ isin }: Props) {
           </ResponsiveContainer>
         )}
       </div>
+
     </Card>
   );
 }

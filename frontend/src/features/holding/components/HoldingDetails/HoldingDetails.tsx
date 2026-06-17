@@ -31,9 +31,17 @@ export function HoldingDetails({isin}: {isin: string}) {
       )}
 
       {error && (
-        <Card className="w-full p-6 bg-red-950/40 border-red-900/50 backdrop-blur-sm">
-          <p className="text-red-400 font-bold">Errore: {error.message}</p>
-        </Card>
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Card Info - In caricamento */}
+          <Card className="col-span-1 md:col-span-2 min-h-[240px] flex items-center justify-center text-center">
+            <p className="text-red-400 font-bold">Errore del recupero dei dettagli</p>
+          </Card>
+          
+          {/* Card Statistiche - In caricamento */}
+          <Card className="min-h-[240px] flex items-center justify-center">
+            <p className="text-red-400 font-bold">Errore nel recupero dei fondamentali</p>
+          </Card>
+        </div>
       )}
 
 
