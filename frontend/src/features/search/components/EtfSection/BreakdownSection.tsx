@@ -43,11 +43,6 @@ export function BreakdownSection({
 
   console.log('Breakdown section:', title);
 
-  // const itemsToShow = useMemo(() => {
-  //   if (limiteLista === undefined) return sortedData;
-  //   return sortedData.slice(0, limiteLista);
-  // }, [sortedData, limiteLista]);
-
   return (
     <div className="w-full flex flex-col">
       {isLoading ? (
