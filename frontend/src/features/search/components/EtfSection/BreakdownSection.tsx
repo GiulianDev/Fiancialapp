@@ -41,6 +41,8 @@ export function BreakdownSection({
     return [...data].sort((a, b) => (b[dataKey] || 0) - (a[dataKey] || 0));
   }, [data, dataKey]);
 
+  console.log('Breakdown section:', title);
+
   // const itemsToShow = useMemo(() => {
   //   if (limiteLista === undefined) return sortedData;
   //   return sortedData.slice(0, limiteLista);
