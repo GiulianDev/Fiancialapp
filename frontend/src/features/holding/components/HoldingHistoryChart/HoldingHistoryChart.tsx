@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHoldingHistory } from './useHoldingHistory';
+import { Card } from '@/shared/ui/Card/Card';
 
 interface Props {
   isin: string;
@@ -47,7 +48,7 @@ export function HoldingHistoryChart({ isin }: Props) {
   if (error) return <div className="p-4 text-red-400 font-semibold">Errore grafico: {error.message}</div>;
 
   return (
-    <div>
+    <Card className={isLoading ? "animate-pulse" : ""}>
 
       {/* Header Responsivo */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
@@ -139,6 +140,6 @@ export function HoldingHistoryChart({ isin }: Props) {
           </ResponsiveContainer>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

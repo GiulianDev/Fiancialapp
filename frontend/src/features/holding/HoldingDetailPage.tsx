@@ -1,5 +1,4 @@
 import { useParams, useNavigate } from 'react-router';
-import { Card } from '../../shared/ui/Card/Card';
 import { HoldingHistoryChart } from './components/HoldingHistoryChart/HoldingHistoryChart';
 import { HoldingDetails } from './components/HoldingDetails/HoldingDetails';
 
@@ -26,9 +25,7 @@ export function HoldingDetailPage() {
       <HoldingDetails isin={isin || ''} />
       
       {/* Grafico con lo storico */}
-      <Card>
-        <HoldingHistoryChart isin={isin || ''} />
-      </Card>
+      <HoldingHistoryChart isin={isin || ''} />
 
     </div>
   );
