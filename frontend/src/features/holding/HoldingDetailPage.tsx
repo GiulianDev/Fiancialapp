@@ -42,6 +42,7 @@ export function HoldingDetailPage() {
         </Card>
       )}
 
+
       {/* Dati Aziendali */}
       {details && (
         <>
@@ -49,7 +50,7 @@ export function HoldingDetailPage() {
           <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Colonna Principale: Info */}
-            <Card className="w-full p-6 col-span-1 md:col-span-2 overflow-hidden box-border">
+            <Card className="col-span-1 md:col-span-2 overflow-hidden box-border">
               <div className="flex flex-wrap items-baseline gap-2 mb-2">
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-100 break-words max-w-full">
                   {details.nome}
@@ -65,7 +66,7 @@ export function HoldingDetailPage() {
             </Card>
 
             {/* Colonna Laterale: Statistiche */}
-            <Card className="w-full p-6 overflow-hidden box-border">
+            <Card>
               <h3 className="text-lg font-semibold text-gray-200 mb-4 border-b border-white/10 pb-2">
                 Fondamentali
               </h3>
@@ -97,12 +98,13 @@ export function HoldingDetailPage() {
 
           </div>
 
-          {/* Grafico Integrato: w-full e overflow-hidden per evitare lo sfasamento da parte della libreria Recharts */}
-          {/* <div className="w-full overflow-hidden box-border"> */}
-            <HoldingHistoryChart isin={isin || ''} />
-          
         </>
       )}
+      
+      {/* Grafico Integrato: w-full e overflow-hidden per evitare lo sfasamento da parte della libreria Recharts */}
+      <Card>
+        <HoldingHistoryChart isin={isin || ''} />
+      </Card>
 
     </div>
   );
