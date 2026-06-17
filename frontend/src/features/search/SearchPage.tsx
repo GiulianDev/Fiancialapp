@@ -14,15 +14,15 @@ import { EtfDetails } from './components/EtfDetails/EtfDetails';
 export function SearchPage() {
  
   const { user } = useAuth();
-  // 1. Inizializziamo il router per leggere e scrivere l'URL
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
-  // 2. Leggiamo lo stato REALE dall'URL (Source of Truth)
+  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+  
+  // Leggiamo i parametri dall'URL (isin, hLimit, cLimit)
   // Se non ci sono parametri, usiamo i valori di default (5 per le liste)
+  const [searchParams, setSearchParams] = useSearchParams();
   const activeIsin = searchParams.get('isin') || '';
-  const limiteHoldings = parseInt(searchParams.get('hLimit') || '5', 10);
-  const limiteCountries = parseInt(searchParams.get('cLimit') || '5', 10);
+  const limiteHoldings = parseInt(searchParams.get('hLimit') || '5', 10); // num di holding da visualizzare, default 5
+  const limiteCountries = parseInt(searchParams.get('cLimit') || '5', 10); // num di country da visualizzare, default 5
 
   // 3. Stato locale (Draft) per l'input mentre l'utente digita
   const [draftIsin, setDraftIsin] = useState(activeIsin);
