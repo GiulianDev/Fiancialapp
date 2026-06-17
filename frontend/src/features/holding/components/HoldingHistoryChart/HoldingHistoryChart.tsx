@@ -76,8 +76,13 @@ export function HoldingHistoryChart({ isin }: Props) {
       {/* Contenitore Grafico */}
       <div className="h-[260px] w-full">
         {isLoading ? (
-          <div className="w-full h-full flex items-center justify-center text-gray-500 animate-pulse">
-            Caricamento dati...
+          <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+            {/* Spinner moderno circolare */}
+            <div className="w-8 h-8 border-4 border-white/10 border-t-blue-500 rounded-full animate-spin"></div>
+            {/* Testo di accompagnamento */}
+            <span className="text-sm font-medium text-gray-400 animate-pulse">
+              Caricamento dati...
+            </span>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
