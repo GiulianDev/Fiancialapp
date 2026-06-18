@@ -3,5 +3,3 @@ uvicorn[standard]
 requests
 yfinance
 pandas
-time
-threading
