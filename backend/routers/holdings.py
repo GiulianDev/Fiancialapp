@@ -16,8 +16,9 @@ def get_holding_data(isin_holding: str):
     except Exception as e:
         return {"status": "error", "message": f"Errore nel recupero holding {isin_holding}: {str(e)}"}
 
+
 # microservizio per recuperare i dettagli principali di un holding tramite ISIN
-@router.get("/api/holding-main-details/{isin}")
+@router.get("/api/holding/details/main/{isin}")
 def get_main_holding_data(isin: str):
     try:
         ticker_symbol = get_ticker_from_isin(isin.strip().upper())
@@ -39,7 +40,7 @@ def get_main_holding_data(isin: str):
         return {"status": "error", "message": f"Errore nel recupero dettagli: {str(e)}"}
 
 # microservizio per recuperare i dettagli principali di un holding tramite ISIN
-@router.get("/api/holding-financial-details/{isin}")
+@router.get("/api/holding/details/financial/{isin}")
 def get_financial_holding_data(isin: str):
     try:
         ticker_symbol = get_ticker_from_isin(isin.strip().upper())
@@ -62,7 +63,7 @@ def get_financial_holding_data(isin: str):
 
 
 # vecchia funzione monolitica per recuperare i dettagli di un holding tramite ISIN
-@router.get("/api/holding-details/{isin}")
+@router.get("/api/holding/details/{isin}")
 def get_detailed_holding_data(isin: str):
     try:
         ticker_symbol = get_ticker_from_isin(isin.strip().upper())
@@ -107,7 +108,7 @@ def get_detailed_holding_data(isin: str):
 
 
 
-@router.get("/api/holding-history/{isin}")
+@router.get("/api/holding/history/{isin}")
 def get_holding_history(isin: str, period: str = "1y"):
 
     try:

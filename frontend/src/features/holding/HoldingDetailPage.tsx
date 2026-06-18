@@ -1,6 +1,9 @@
 import { useParams, useNavigate } from 'react-router';
 import { HoldingHistoryChart } from './components/HoldingHistoryChart/HoldingHistoryChart';
-import { HoldingDetails } from './components/HoldingDetails/HoldingDetails';
+import { HoldingFinancialDetails } from './components/HoldingFinancialDetails/HoldingFinancialDetails';
+import { HoldingMainDetails } from './components/HoldingMainDetails/HoldingMainDetails';
+
+// import { HoldingDetails } from './components/HoldingDetails/HoldingDetails';
 
 export function HoldingDetailPage() {
   const { isin } = useParams<{ isin: string }>(); 
@@ -22,7 +25,13 @@ export function HoldingDetailPage() {
         </button>
       </div>
 
-      <HoldingDetails isin={isin || ''} />
+className="col-span-1 md:col-span-2 overflow-hidden box-border flex flex-col justify-center min-h-[240px]"
+
+      {/* HOLDING DETAILS */}
+      <div>
+        <HoldingMainDetails isin={isin || ''} />
+        <HoldingFinancialDetails isin={isin || ''} />
+      </div>
       
       {/* Grafico con lo storico */}
       <HoldingHistoryChart isin={isin || ''} />

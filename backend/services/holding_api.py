@@ -57,7 +57,6 @@ def _get_holding_info(ticker_symbol: str):
         
         return info # <-- CORRETTO: restituisce il dizionario
 
-
 def get_main_holding_info(ticker_symbol: str):
     info = _get_holding_info(ticker_symbol)
     return {

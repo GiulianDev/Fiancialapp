@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import type { HoldingHistory } from '@/shared/types';
 import { HOLDING_HISTORY_API } from '@/shared/config/constants';
+import type { HoldingHistoryChartProps } from './HoldingHistoryChartProps';
 
 
 // Hook per il grafico storico (dipende anche dal periodo)
 export function useHoldingHistory(isin: string, period: string) {
-  return useQuery<HoldingHistory, Error>({
+  return useQuery< HoldingHistoryChartProps, Error>({
     queryKey: ['holding-history', isin, period],
     queryFn: async () => {
       const response = await fetch(`${HOLDING_HISTORY_API}/${isin}?period=${period}`);

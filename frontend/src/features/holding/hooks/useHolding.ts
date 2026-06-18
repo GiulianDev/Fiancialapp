@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import type { HoldingDetails, HoldingHistory } from '@/shared/types';
+import type { HoldingDetails } from '@/shared/types';
 import { HOLDING_DETAIL_API, HOLDING_HISTORY_API } from '@/shared/config/constants';
 
 // Hook per i dettagli anagrafici e fondamentali
