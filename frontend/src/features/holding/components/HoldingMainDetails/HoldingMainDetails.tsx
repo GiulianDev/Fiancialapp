@@ -1,13 +1,13 @@
 import { useLocation } from 'react-router';
-import { useHoldingDetails } from '../../hooks/useHolding';
 import { Card } from '@/shared/ui';
+import { useHoldingMainDetails } from './useHoldingMainDetails';
 
 export function HoldingMainDetails({isin}: {isin: string}) {
 
   const location = useLocation();
   
   // Eseguiamo la fetch dei dati aziendali
-  const { data: details, isLoading, error } = useHoldingDetails(isin || '');
+  const { data: details, isLoading, error } = useHoldingMainDetails(isin || '');
 
   // Recupera il nome di fallback dallo state in attesa del backend
   const fallbackName = location.state?.name || 'Dettaglio Holding'; 
@@ -33,15 +33,15 @@ export function HoldingMainDetails({isin}: {isin: string}) {
         <Card className="w-full h-full overflow-hidden box-border flex flex-col justify-center min-h-[240px]">
           <div className="flex flex-wrap items-baseline gap-2 mb-2">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-100 break-words max-w-full">
-              {details.nome}
+              {details.data.nome}
             </h2>
           </div>
           <p className="text-gray-400 text-sm sm:text-base mb-6">
-            {details.settore} • {details.industria} ({details.paese})
+            {details.data.settore} • {details.data.industria} ({details.data.paese})
           </p>
           
           <div className="text-sm text-gray-300 leading-relaxed max-w-none line-clamp-4 hover:line-clamp-none transition-all cursor-pointer">
-            {details.descrizione}
+            {details.data.descrizione}
           </div>
         </Card>
       )}

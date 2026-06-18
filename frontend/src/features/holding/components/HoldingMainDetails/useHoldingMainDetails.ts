@@ -10,6 +10,7 @@ export function useHoldingMainDetails(isin: string) {
       const response = await fetch(`${HOLDING_MAIN_DETAIL_API}/${isin}`);
       const data = await response.json();
       if (data.status === 'error') throw new Error(data.message);
+      // console.log("retrieved data: ", data);
       return data;
     },
     enabled: isin.length > 0,
