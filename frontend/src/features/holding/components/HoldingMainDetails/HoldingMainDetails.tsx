@@ -13,49 +13,37 @@ export function HoldingMainDetails({isin}: {isin: string}) {
   const fallbackName = location.state?.name || 'Dettaglio Holding'; 
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6 flex flex-col box-border">
+    // Rimosso max-w-6xl e grid. Aggiunto h-full per pareggiare le altezze.
+    <div className="w-full h-full flex flex-col box-border">
 
-      {/* CARICAMENTO: Stessa griglia dei dati con un'altezza minima per evitare sbalzi (Layout Shift) */}
       {isLoading && (
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card Info - In caricamento */}
-          <Card className="col-span-1 md:col-span-2 min-h-[240px] flex items-center justify-center text-center animate-pulse box-border">
-            <span className="text-gray-400">Recupero dati fondamentali per {fallbackName}...</span>
-          </Card>
-        </div>
+        <Card className="w-full h-full min-h-[240px] flex items-center justify-center text-center animate-pulse box-border">
+          <span className="text-gray-400">Recupero dati fondamentali per {fallbackName}...</span>
+        </Card>
       )}
 
       {error && (
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card Info - In caricamento */}
-          <Card className="col-span-1 md:col-span-2 min-h-[240px] flex items-center justify-center text-center">
-            <p className="text-red-400 font-bold">Errore del recupero dei dettagli</p>
-          </Card>
-        </div>
+        <Card className="w-full h-full min-h-[240px] flex items-center justify-center text-center">
+          <p className="text-red-400 font-bold">Errore del recupero dei dettagli</p>
+        </Card>
       )}
 
-
-      {/* Dati Aziendali */}
       {details && (
-        <div>
+        // Rimosse le classi col-span. Aggiunto w-full e h-full.
+        <Card className="w-full h-full overflow-hidden box-border flex flex-col justify-center min-h-[240px]">
+          <div className="flex flex-wrap items-baseline gap-2 mb-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-100 break-words max-w-full">
+              {details.nome}
+            </h2>
+          </div>
+          <p className="text-gray-400 text-sm sm:text-base mb-6">
+            {details.settore} • {details.industria} ({details.paese})
+          </p>
           
-          {/* Colonna Principale: Info */}
-          <Card className="col-span-1 md:col-span-2 overflow-hidden box-border flex flex-col justify-center min-h-[240px]">
-            <div className="flex flex-wrap items-baseline gap-2 mb-2">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-100 break-words max-w-full">
-                {details.nome}
-              </h2>
-            </div>
-            <p className="text-gray-400 text-sm sm:text-base mb-6">
-              {details.settore} • {details.industria} ({details.paese})
-            </p>
-            
-            <div className="text-sm text-gray-300 leading-relaxed max-w-none line-clamp-4 hover:line-clamp-none transition-all cursor-pointer">
-              {details.descrizione}
-            </div>
-          </Card>
-
-        </div>
+          <div className="text-sm text-gray-300 leading-relaxed max-w-none line-clamp-4 hover:line-clamp-none transition-all cursor-pointer">
+            {details.descrizione}
+          </div>
+        </Card>
       )}
 
     </div>

@@ -9,7 +9,7 @@ export function HoldingFinancialDetails({isin}: {isin: string}) {
 
   return (
 
-      <Card className={`flex flex-col justify-center min-h-[240px] max-w-[400px] ${isLoading ? "animate-pulse" : ""}`}>
+      <Card className={`flex flex-col justify-center min-h-[240px] ${isLoading ? "animate-pulse" : ""}`}>
         
         {error && (
           <div>          

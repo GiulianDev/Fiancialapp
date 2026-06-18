@@ -25,12 +25,20 @@ export function HoldingDetailPage() {
         </button>
       </div>
 
-className="col-span-1 md:col-span-2 overflow-hidden box-border flex flex-col justify-center min-h-[240px]"
 
       {/* HOLDING DETAILS */}
-      <div>
-        <HoldingMainDetails isin={isin || ''} />
-        <HoldingFinancialDetails isin={isin || ''} />
+      <div className="flex flex-col md:flex-row gap-6 items-stretch w-full">
+      
+        {/* Colonna di sinistra: Si espande all'infinito (flex-1) */}
+        <div className="flex-1 min-w-0">
+          <HoldingMainDetails isin={isin || ''} />
+        </div>
+        
+        {/* Colonna di destra: 1/3 dello spazio, ma bloccato a 400px massimi */}
+        <div className="w-full md:w-1/3 shrink-0">
+          <HoldingFinancialDetails isin={isin || ''} />
+        </div>
+
       </div>
       
       {/* Grafico con lo storico */}
