@@ -17,3 +17,6 @@ frontend/.firebase/hosting.ZGlzdA.cache
 .continue/.DS_Store
 backend/.DS_Store
 backend/services/.DS_Store
+
+# graphify
+graphify-out
