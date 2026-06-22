@@ -24,7 +24,7 @@ export function EtfCharts({ combined }: EtfChartsProps) {
         {/* Pie Chart per le holdings */}
         <PieChartDisplay
           data={combined.holdings}
-          dataKey="peso_percentuale"
+          dataKey="percentuale"
           nameKey="nome"
           title="Composizione Aziende"
           maxItems={11}
@@ -49,7 +49,7 @@ export function EtfCharts({ combined }: EtfChartsProps) {
           <ul>
             {combined.holdings.slice(0, 15).map((holding) => (
               <li key={holding.nome}>
-                {holding.nome}: <strong>{holding.peso_percentuale.toFixed(2)}%</strong>
+                {holding.nome}: <strong>{holding.percentuale.toFixed(2)}%</strong>
               </li>
             ))}
             {combined.residualHolding > 0 && (
