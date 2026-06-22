@@ -26,7 +26,7 @@ export function PieChartDisplay({
   onItemClick 
 }: PieChartDisplayProps) {
 
-  // 1. Elaborazione dei dati con calcolo matematico del 100% e del taglio maxItems
+  // 1. Elaborazione dei dati (il tuo calcolo per il residuo a 100 è corretto)
   const processedData = useMemo(() => {
     const parseValue = (item: Record<string, any>): number => {
       if (!item || item[dataKey] === undefined || item[dataKey] === null) return 0;
@@ -66,7 +66,7 @@ export function PieChartDisplay({
     return topItems;
   }, [data, dataKey, nameKey, maxItems, residualLabel]);
 
-  // 2. Unione dei Dati con i Colori (Recharts 4.0 Pattern)
+  // 2. Unione dei Dati con i Colori
   const chartDataWithStyles = useMemo(() => {
     const totalItems = processedData.length;
     if (totalItems === 0) return [];
@@ -87,7 +87,6 @@ export function PieChartDisplay({
         fillUrl = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
       }
 
-      // Restituiamo l'oggetto con la proprietà "fill" integrata e un flag di utilità
       return {
         ...item,
         fill: fillUrl,
@@ -96,16 +95,10 @@ export function PieChartDisplay({
     });
   }, [processedData, nameKey, residualLabel]);
 
-  // Intercettore del click: blocca l'evento se l'elemento è il residuo ("Altro")
   const handleItemClick = (entry: any) => {
     if (!onItemClick) return;
-    
     const item = entry?.payload || entry; 
-    
-    if (item && item[nameKey] === residualLabel) {
-      return;
-    }
-
+    if (item && item[nameKey] === residualLabel) return;
     onItemClick(item);
   };
 
@@ -129,18 +122,18 @@ export function PieChartDisplay({
             cy="50%"
             outerRadius={100} 
             onClick={handleItemClick}
-            // Sostituisce il vecchio `<Cell>` usando la prop shape e il componente `<Sector>`
+            /* Aggiunto label per mostrare le percentuali sul grafico */
+            // label={({ value }) => `${Number(value).toFixed(2)}%`}
+            labelLine={true}
             shape={(props: any) => {
-              // props contiene le posizioni generate da Recharts e i nostri dati in "payload"
               const { isResidual } = props.payload;
-              
               return (
                 <Sector 
                   {...props} 
                   style={{ 
                     ...props.style, 
                     cursor: onItemClick && !isResidual ? 'pointer' : 'default',
-                    outline: 'none' // Evita il bordo azzurro bruttino al click su alcuni browser
+                    outline: 'none' 
                   }} 
                 />
               );
@@ -157,7 +150,8 @@ export function PieChartDisplay({
             }}
           />
 
-          <Legend content={<CustomScrollableLegend onItemClick={handleItemClick} />} />
+          {/* Passiamo il dataKey alla legenda in modo che sappia quale valore stampare */}
+          <Legend content={<CustomScrollableLegend dataKey={dataKey} onItemClick={handleItemClick} />} />
         </PieChart>
       </ResponsiveContainer>
     </div>
