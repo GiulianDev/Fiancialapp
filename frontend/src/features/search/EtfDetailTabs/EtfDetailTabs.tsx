@@ -6,7 +6,9 @@ import { Card, Loading } from '@/shared/ui';
 import { Tabs, type TabItem } from '@/shared/ui/Tabs/Tabs';
 import { BreakdownSection } from '../components/EtfSection/BreakdownSection';
 import { RiskTab } from './RiskTab/RiskTab';
-import { useEtfSearch } from '../hooks/useEtfSearch';
+// import { useEtfSearch } from '../hooks/useEtfSearch';
+import { useEtfDetailTabs } from './useEtfDetailTabs';
+import { EtfOverviewTab } from './EtfOverviewTab/EtfOverviewTab';
 // Importiamo l'hook direttamente nel componente autonomo
 
 interface EtfDetailTabsProps {
@@ -42,26 +44,33 @@ export function EtfDetailTabs({
   const activeTab = searchParams.get('tab') || 'overview';
 
   // Il componente recupera i suoi dati in autonomia
+  // const { 
+  //   data2, 
+  //   isLoading: caricando2, 
+  //   isFetching: fetching2,
+  //   error: errore2
+  // } = useEtfSearch(isin);
+
   const { 
-    data, 
+    data: data, 
     isLoading: caricando, 
     isFetching: fetching,
     error: errore
-  } = useEtfSearch(isin);
+  } = useEtfDetailTabs(isin);
 
   // Consideriamo in caricamento se React Query sta scaricando O se non abbiamo ancora i dati
   const isLoadingData = fetching || caricando || !data;
 
   // Parsing dei dizionari eseguiti in modo efficiente con useMemo
-  const countriesArray = useMemo(() => {
-    if (!data?.countries) return [];
-    return Object.entries(data.countries).map(([nome, peso]) => ({ nome, peso }));
-  }, [data?.countries]);
+  // const countriesArray = useMemo(() => {
+  //   if (!data?.countries) return [];
+  //   return Object.entries(data.countries).map(([nome, peso]) => ({ nome, peso }));
+  // }, [data?.countries]);
 
-  const sectorsArray = useMemo(() => {
-    if (!data?.sectors) return [];
-    return Object.entries(data.sectors).map(([nome, peso]) => ({ nome, peso }));
-  }, [data?.sectors]);
+  // const sectorsArray = useMemo(() => {
+  //   if (!data?.sectors) return [];
+  //   return Object.entries(data.sectors).map(([nome, peso]) => ({ nome, peso }));
+  // }, [data?.sectors]);
 
   const handleTabChange = (tabId: string) => {
     setSearchParams((prev) => {
@@ -70,10 +79,10 @@ export function EtfDetailTabs({
     });
   };
 
-  const handleHoldingClick = (isinToNavigate: string, name: string) => {
-    if (!isinToNavigate) return;
-    navigate(`/holding/${isinToNavigate}`, { state: { name } });
-  };
+  // const handleHoldingClick = (isinToNavigate: string, name: string) => {
+  //   if (!isinToNavigate) return;
+  //   navigate(`/holding/${isinToNavigate}`, { state: { name } });
+  // };
 
   // Gestione dell'errore isolata all'interno del widget dei dettagli
   if (errore) {
@@ -137,56 +146,7 @@ export function EtfDetailTabs({
 
         {/* CONTENUTO DEL TAB: OVERVIEW */}
         {activeTab === 'overview' && (
-          <motion.div 
-            layout="position" 
-            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 mt-6"
-          >
-            {/* Sotto-sezione: Aziende */}
-            {data?.holdings && data.holdings.length > 0 && (
-              <BreakdownSection
-                title="Top Partecipazioni"
-                subtitle={`Visualizzate ${Math.min(data.holdings.length, limiteHoldings)} di ${data.totale_holdings ?? data.holdings.length} partecipazioni totali`}
-                data={data.holdings}
-                dataKey="peso_percentuale"
-                nameKey="nome"
-                residualLabel="Altre aziende"
-                maxChartItems={20}
-                limiteLista={limiteHoldings}
-                onLoadMore={onLoadMoreHoldings}
-                onItemClick={(item) => handleHoldingClick(item.isin, item.nome)}
-                isLoading={isLoadingData}
-              />
-            )}
-
-            {/* Sotto-sezione: Paesi */}
-            {countriesArray.length > 0 && (
-              <BreakdownSection
-                title="Esposizione Geografica"
-                subtitle={`Visualizzati ${Math.min(countriesArray.length, limiteCountries)} di ${countriesArray.length} paesi mappati`}
-                data={countriesArray}
-                dataKey="peso"
-                nameKey="nome"
-                residualLabel="Altri paesi"
-                maxChartItems={10}
-                limiteLista={limiteCountries}
-                onLoadMore={onLoadMoreCountries}
-                isLoading={isLoadingData}
-              />
-            )}
-
-            {/* Sotto-sezione: Settori */}
-            {sectorsArray.length > 0 && (
-              <BreakdownSection
-                title="Esposizione Settoriale"
-                data={sectorsArray}
-                dataKey="peso"
-                nameKey="nome"
-                residualLabel="Altri settori"
-                maxChartItems={10}
-                isLoading={isLoadingData}
-              />
-            )}
-          </motion.div>
+          <EtfOverviewTab isin={isin}/>
         )}
 
         {/* CONTENUTO DEL TAB: RISK ANALYSIS */}
