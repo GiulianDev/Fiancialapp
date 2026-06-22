@@ -6,9 +6,9 @@ import { useSearchParams, useNavigate } from 'react-router';
 import type { EtfData } from '@/shared/types';
 import { FavoriteButton } from '@/shared/ui/FavoriteButton/FavoriteButton';
 import { Card, Loading } from '@/shared/ui';
-import { RiskSection } from '../RiskSection';
 import { Tabs, type TabItem } from '@/shared/ui/Tabs/Tabs';
-import { BreakdownSection } from '../EtfSection/BreakdownSection';
+import { BreakdownSection } from '../components/EtfSection/BreakdownSection';
+import { RiskTab } from './RiskTab/RiskTab';
 
 interface EtfDetailsProps {
   data?: EtfData;
@@ -203,8 +203,8 @@ export function EtfDetails({
         {/* RISK ANALISYS TAB */}
         {activeTab === 'risk' && (
           <motion.div layout="position" className="p-4 text-center text-gray-400 border border-dashed border-white/20 rounded-lg mt-4">
-            {/* <RiskSection isin={data?.isin || ''} isLoading={isLoadingData} /> */}
-            <RiskSection isin={data?.isin || ''}/>
+            {/* <RiskTab isin={data?.isin || ''} isLoading={isLoadingData} /> */}
+            <RiskTab isin={data?.isin || ''}/>
           </motion.div>
         )}
       </Card>

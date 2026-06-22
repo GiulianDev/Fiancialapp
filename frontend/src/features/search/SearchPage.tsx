@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router'; 
 import { useFavorites, useAuth } from '@context';
 import { useEtfSearch } from './hooks/useEtfSearch';
-import { SearchBar } from './components/SearchBar/SearchBar';
-import { EtfDetails } from './components/EtfDetails/EtfDetails';
+import { SearchBar } from './SearchBar/SearchBar';
+import { EtfDetails } from './EtfDetailTabs/EtfDetailTabs';
 
 
 // SearchPage è il compositore principale della ricerca ETF.

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useFavorites, usePortfolio } from '@context';
 import { FavoritesSelector } from '.';
-import { PortfolioAnalysis } from '.';
+import { PortfolioAnalisys } from '.';
 import type { SavedPortfolio } from '@/shared/types';
 
 export function PortfolioPage() {
@@ -84,7 +84,7 @@ export function PortfolioPage() {
       />
 
       {analysisData && (
-        <PortfolioAnalysis 
+        <PortfolioAnalisys 
           selectedIsins={analysisData.isins}
           weights={analysisData.weights}
           triggerFetch={triggerFetch}

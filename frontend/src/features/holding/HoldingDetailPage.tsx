@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router';
-import { HoldingHistoryChart } from './components/HoldingHistoryChart/HoldingHistoryChart';
-import { HoldingFinancialDetails } from './components/HoldingFinancialDetails/HoldingFinancialDetails';
-import { HoldingMainDetails } from './components/HoldingMainDetails/HoldingMainDetails';
+import { HoldingHistoryChart } from './HoldingHistoryChart/HoldingHistoryChart';
+import { HoldingFinancialDetails } from './HoldingFinancialDetails/HoldingFinancialDetails';
+import { HoldingMainDetails } from './HoldingMainDetails/HoldingMainDetails';
 
 // import { HoldingDetails } from './components/HoldingDetails/HoldingDetails';
 

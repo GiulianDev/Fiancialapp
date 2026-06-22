@@ -1,9 +1,9 @@
 // src/components/PortfolioAnalysis.tsx
 import { useMemo } from 'react';
-import { EtfCharts } from './EtfCharts/EtfCharts';
+import { EtfCharts } from '../components/EtfCharts/EtfCharts';
 import { Card } from '../../../shared/ui/Card/Card'; 
-import { analyzePortfolio } from '.././../../utils/portfolioUtils';
-import { useFetchedEtfData } from '.././../../hooks/useFetchedEtfData';
+import { analyzePortfolio } from '../../../utils/portfolioUtils';
+import { useFetchedEtfData } from '../../../hooks/useFetchedEtfData';
 
 interface PortfolioAnalysisProps {
   selectedIsins: string[];
@@ -11,7 +11,7 @@ interface PortfolioAnalysisProps {
   triggerFetch: boolean; // <-- NUOVA PROP
 }
 
-export function PortfolioAnalysis({ selectedIsins, weights, triggerFetch }: PortfolioAnalysisProps) {
+export function PortfolioAnalisys({ selectedIsins, weights, triggerFetch }: PortfolioAnalysisProps) {
   
   // Passiamo il triggerFetch all'hook
   const { etfData, loading, error } = useFetchedEtfData( selectedIsins, triggerFetch);
