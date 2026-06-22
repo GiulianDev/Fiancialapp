@@ -128,7 +128,7 @@ def get_etf_holdings(isin: str):
         "isin": data["isin"], 
         "nome": data["nome"], 
         "totale": data["totale_holdings"], 
-        "data": data["holdings"]
+        "holdings": data["holdings"]
     }
 
 def get_etf_countries(isin: str):
@@ -137,12 +137,17 @@ def get_etf_countries(isin: str):
         "status": "success", 
         "isin": data["isin"], 
         "nome": data["nome"], 
-        "data": data["countries"]
+        "countries": data["countries"]
     }
 
 def get_etf_sectors(isin: str):
     data = _get_extraetf_data(isin)
-    return {"status": "success", "isin": data["isin"], "nome": data["nome"], "sectors": data["sectors"]}
+    return {
+        "status": "success", 
+        "isin": data["isin"], 
+        "nome": data["nome"], 
+        "sectors": data["sectors"]
+    }
 
 def get_etf_regions(isin: str):
     data = _get_extraetf_data(isin)
@@ -150,7 +155,7 @@ def get_etf_regions(isin: str):
         "status": "success", 
         "isin": data["isin"], 
         "nome": data["nome"], 
-        "data": data["regions"]
+        "regions": data["regions"]
     }
 
 def get_etf_full_data(isin: str):
