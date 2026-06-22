@@ -88,7 +88,7 @@ def _get_extraetf_data(isin: str):
                         peso = h.get("weight")
                         holdings_pulite.append({
                             "nome": h.get("name", "Sconosciuto"),
-                            "peso_percentuale": float(peso) if peso is not None else 0.0,
+                            "percentuale": float(peso) if peso is not None else 0.0,
                             "isin": h.get("isin", None)
                         })
             raw_regions = portfolio.get("region_stock_exposure") or portfolio.get("region_bond_exposure") or {}
@@ -98,7 +98,7 @@ def _get_extraetf_data(isin: str):
             if etf_data.get("land_name"): raw_countries = {etf_data.get("land_name"): 100.0}
             if etf_data.get("sector_name"): raw_sectors = {etf_data.get("sector_name"): 100.0}
             if etf_data.get("region_name"): raw_regions = {etf_data.get("region_name"): 100.0}
-            holdings_pulite = [{"nome": nome.strip(), "peso_percentuale": 100.0, "isin": isin_upper}]
+            holdings_pulite = [{"nome": nome.strip(), "percentuale": 100.0, "isin": isin_upper}]
 
         # Salviamo in cache il dizionario con la struttura identica alla v2
         parsed_data = {
@@ -133,7 +133,7 @@ def get_etf_base_info(isin: str):
 
 def get_etf_holdings(isin: str):
     data = _get_extraetf_data(isin)
-    return {"status": "success", "isin": data["isin"], "nome": data["nome"], "holdings": data["holdings"]}
+    return {"status": "success", "isin": data["isin"], "nome": data["nome"], "totale": data["totale_holdings"], "holdings": data["holdings"]}
 
 def get_etf_countries(isin: str):
     data = _get_extraetf_data(isin)
