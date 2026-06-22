@@ -8,7 +8,7 @@ interface PieChartDisplayProps {
   data: Array<Record<string, any>>; 
   dataKey: string;
   nameKey: string;
-  title: string;
+  title?: string;
   subtitle?: string;
   maxItems?: number;       
   residualLabel?: string;  
@@ -19,9 +19,9 @@ export function PieChartDisplay({
   data, 
   dataKey, 
   nameKey,
-  title, 
-  subtitle,
-  maxItems, 
+  title = "Titolo", 
+  subtitle = "Subtitle",
+  maxItems = 5, 
   residualLabel = 'Altro',
   onItemClick 
 }: PieChartDisplayProps) {
