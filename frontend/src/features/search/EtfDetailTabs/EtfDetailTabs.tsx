@@ -1,24 +1,22 @@
-// src/features/portfolio/components/EtfDetails/EtfDetails.tsx
-
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useSearchParams, useNavigate } from 'react-router'; 
-import type { EtfData } from '@/shared/types';
 import { FavoriteButton } from '@/shared/ui/FavoriteButton/FavoriteButton';
 import { Card, Loading } from '@/shared/ui';
 import { Tabs, type TabItem } from '@/shared/ui/Tabs/Tabs';
 import { BreakdownSection } from '../components/EtfSection/BreakdownSection';
 import { RiskTab } from './RiskTab/RiskTab';
+import { useEtfSearch } from '../hooks/useEtfSearch';
+// Importiamo l'hook direttamente nel componente autonomo
 
 interface EtfDetailsProps {
-  data?: EtfData;
+  isin: string;
   limiteHoldings: number;
   limiteCountries: number;
   onLoadMoreHoldings: () => void;
   onLoadMoreCountries: () => void;
   isFavorite?: boolean;
-  onToggleFavorite: () => void;
-  isFetching?: boolean;
+  onToggleFavorite: (isin: string, name?: string) => void;
   isUserLoggedIn?: boolean;
 }
 
@@ -28,18 +26,14 @@ const ETF_DETAILS_TABS: TabItem[] = [
   { id: 'esg', label: '🌱 Sostenibilità ESG', disabled: true }
 ];
 
-
- 
-
 export function EtfDetails({
-  data,
+  isin,
   limiteHoldings,
   limiteCountries,
   onLoadMoreHoldings,
   onLoadMoreCountries,
   isFavorite = false,
   onToggleFavorite,
-  isFetching = false,
   isUserLoggedIn = false,
 }: EtfDetailsProps) {
   
@@ -47,18 +41,22 @@ export function EtfDetails({
   const navigate = useNavigate();
   const activeTab = searchParams.get('tab') || 'overview';
 
-  const isLoadingData = isFetching || !data;
+  // Il componente recupera i suoi dati in autonomia
+  const { 
+    data, 
+    isLoading: caricando, 
+    isFetching: fetching,
+    error: errore
+  } = useEtfSearch(isin);
 
-  // Parsing dei dizionari in array (eseguiti in modo efficiente con useMemo)
+  // Consideriamo in caricamento se React Query sta scaricando O se non abbiamo ancora i dati
+  const isLoadingData = fetching || caricando || !data;
+
+  // Parsing dei dizionari eseguiti in modo efficiente con useMemo
   const countriesArray = useMemo(() => {
     if (!data?.countries) return [];
     return Object.entries(data.countries).map(([nome, peso]) => ({ nome, peso }));
   }, [data?.countries]);
-
-  // const regionsArray = useMemo(() => {
-  //   if (!data?.regions) return [];
-  //   return Object.entries(data.regions).map(([nome, peso]) => ({ nome, peso }));
-  // }, [data?.regions]);
 
   const sectorsArray = useMemo(() => {
     if (!data?.sectors) return [];
@@ -72,12 +70,21 @@ export function EtfDetails({
     });
   };
 
-  // callback al click sulla singola holding
-  const handleHoldingClick = (isin: string, name: string) => {
-    console.log(isin, name);
-    if (!isin) return;
-    navigate(`/holding/${isin}`, { state: { name } });
+  const handleHoldingClick = (isinToNavigate: string, name: string) => {
+    if (!isinToNavigate) return;
+    navigate(`/holding/${isinToNavigate}`, { state: { name } });
   };
+
+  // Gestione dell'errore isolata all'interno del widget dei dettagli
+  if (errore) {
+    return (
+      <div className="w-full p-4 mt-4 border border-red-500/20 rounded-lg bg-red-500/10 text-center">
+        <p style={{ color: 'red', fontWeight: 'bold' }}>{(errore as Error).message}</p>
+      </div>
+    );
+  }
+
+  if (!isin) return null;
 
   return (
     <motion.div 
@@ -86,13 +93,9 @@ export function EtfDetails({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
       className="w-full"
-      // layout
-      // className="w-full"
-      // style={{ transformOrigin: 'top' }}
-      // transition={{ layout: { type: 'spring', bounce: 0, duration: 0.4 } }}
     >
       <Card>
-        {/* DETAIL HEADER (Convertito in Tailwind) */}
+        {/* DETAIL HEADER */}
         <div className="flex justify-between min-h-[5rem] gap-4 mb-5">
           <div className="flex-grow">
             <Loading isLoading={isLoadingData} variant="title">
@@ -114,7 +117,7 @@ export function EtfDetails({
             {isUserLoggedIn ? (
               <motion.div layout="position">
                 <FavoriteButton 
-                  onToggleFavorite={onToggleFavorite}
+                  onToggleFavorite={() => onToggleFavorite(isin, data?.nome)}
                   showSkeleton={isLoadingData}
                   isFavorite={isFavorite}
                 />
@@ -125,20 +128,20 @@ export function EtfDetails({
           </div>
         </div>
 
-        {/* TABS */}
+        {/* COMPONENTE DEI TAB */}
         <Tabs 
           tabs={ETF_DETAILS_TABS}
           activeTab={activeTab}
           onChange={handleTabChange}
         />
 
-        {/* OVERVIEW TAB */}
+        {/* CONTENUTO DEL TAB: OVERVIEW */}
         {activeTab === 'overview' && (
           <motion.div 
             layout="position" 
             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 mt-6"
           >
-            {/* IF: Aziende */}
+            {/* Sotto-sezione: Aziende */}
             {data?.holdings && data.holdings.length > 0 && (
               <BreakdownSection
                 title="Top Partecipazioni"
@@ -155,7 +158,7 @@ export function EtfDetails({
               />
             )}
 
-            {/* IF: Paesi */}
+            {/* Sotto-sezione: Paesi */}
             {countriesArray.length > 0 && (
               <BreakdownSection
                 title="Esposizione Geografica"
@@ -171,20 +174,7 @@ export function EtfDetails({
               />
             )}
 
-            {/* IF: Regioni */}
-            {/* {regionsArray.length > 0 && (
-              <BreakdownSection
-                title="Esposizione Regionale"
-                data={regionsArray}
-                dataKey="peso"
-                nameKey="nome"
-                residualLabel="Altre regioni"
-                maxChartItems={10}
-                isLoading={isLoadingData}
-              />
-            )} */}
-
-            {/* IF: Settori */}
+            {/* Sotto-sezione: Settori */}
             {sectorsArray.length > 0 && (
               <BreakdownSection
                 title="Esposizione Settoriale"
@@ -196,14 +186,12 @@ export function EtfDetails({
                 isLoading={isLoadingData}
               />
             )}
-            
           </motion.div>
         )}
 
-        {/* RISK ANALISYS TAB */}
+        {/* CONTENUTO DEL TAB: RISK ANALYSIS */}
         {activeTab === 'risk' && (
           <motion.div layout="position" className="p-4 text-center text-gray-400 border border-dashed border-white/20 rounded-lg mt-4">
-            {/* <RiskTab isin={data?.isin || ''} isLoading={isLoadingData} /> */}
             <RiskTab isin={data?.isin || ''}/>
           </motion.div>
         )}
