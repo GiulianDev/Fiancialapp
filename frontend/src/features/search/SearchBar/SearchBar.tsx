@@ -7,11 +7,10 @@ interface SearchBarProps {
   isin: string;
   onIsinChange: (value: string) => void;
   onSearch: () => void;
-  isLoading: boolean;
   placeholder: string;
 }
 
-export function SearchBar({ isin, onIsinChange, onSearch, isLoading, placeholder }: SearchBarProps) {
+export function SearchBar({ isin, onIsinChange, onSearch, placeholder }: SearchBarProps) {
   // Aggiungiamo uno stato per tracciare se l'input è selezionato
   const [isFocused, setIsFocused] = useState(false);
 
@@ -47,8 +46,8 @@ export function SearchBar({ isin, onIsinChange, onSearch, isLoading, placeholder
           className="w-full min-w-[260px] flex-1 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-slate-300 outline-none transition focus:border-white/30 focus:bg-white/15 focus:ring-2 focus:ring-white/10"
         />
 
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Ricerca in corso...' : 'Cerca Dati'}
+        <Button type="submit">
+          Cerca Dati
         </Button>
       </form>
     </Card>
