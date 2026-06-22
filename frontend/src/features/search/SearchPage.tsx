@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router'; 
 import { useFavorites, useAuth } from '@context';
-import { useEtfSearch } from './hooks/useEtfSearch';
+// import { useEtfSearch } from './hooks/useEtfSearch';
 import { SearchBar } from './SearchBar/SearchBar';
 import { EtfDetailTabs } from './EtfDetailTabs/EtfDetailTabs';
 

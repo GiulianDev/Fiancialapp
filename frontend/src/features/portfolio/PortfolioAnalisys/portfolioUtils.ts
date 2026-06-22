@@ -48,10 +48,10 @@ export function analyzePortfolio(etfData: EtfData[], weights: Record<string, num
     let knownHoldingsSum = 0;
     if (etf.holdings) {
       etf.holdings.forEach((holding) => {
-        knownHoldingsSum += holding.peso_percentuale;
+        knownHoldingsSum += holding.percentuale;
         
         const currentPeso = holdingsMap.get(holding.nome) ?? 0;
-        holdingsMap.set(holding.nome, currentPeso + (holding.peso_percentuale * etfRelativeWeight));
+        holdingsMap.set(holding.nome, currentPeso + (holding.percentuale * etfRelativeWeight));
         
         const contributors = holdingContributorsMap.get(holding.nome) ?? [];
         if (!contributors.includes(etf.isin)) {
@@ -93,7 +93,7 @@ export function analyzePortfolio(etfData: EtfData[], weights: Record<string, num
     totalUnknownSectors += Math.max(0, 100 - knownSectorsSum) * etfRelativeWeight;
   });
 
-  const holdings = Array.from(holdingsMap.entries()).map(([nome, peso_percentuale]) => ({ nome, peso_percentuale })).sort((a, b) => b.peso_percentuale - a.peso_percentuale);
+  const holdings = Array.from(holdingsMap.entries()).map(([nome, percentuale]) => ({ nome, percentuale })).sort((a, b) => b.percentuale - a.percentuale);
   const regions = Array.from(regionsMap.entries()).map(([nome, peso]) => ({ nome, peso })).sort((a, b) => b.peso - a.peso);
   const countries = Array.from(countriesMap.entries()).map(([nome, peso]) => ({ nome, peso })).sort((a, b) => b.peso - a.peso);
   const sectors = Array.from(sectorsMap.entries()).map(([nome, peso]) => ({ nome, peso })).sort((a, b) => b.peso - a.peso);
@@ -141,10 +141,10 @@ function calculatePortfolioCosts(validEtfData: EtfData[], weights: Record<string
 
 /**
  * 3. INDICE DI SOVRAPPOSIZIONE REALE
- * (L'errore era qui: rimosso il "Marlin" dal tipo di peso_percentuale)
+ * (L'errore era qui: rimosso il "Marlin" dal tipo di percentuale)
  */
 function calculateOverlapAnalysis(
-  aggregatedHoldings: Array<{ nome: string; peso_percentuale: number }>,
+  aggregatedHoldings: Array<{ nome: string; percentuale: number }>,
   contributorsMap: Map<string, string[]>
 ): Array<{ nome: string; pesoComplessivo: number; contribuenti: string[] }> {
   
@@ -153,10 +153,10 @@ function calculateOverlapAnalysis(
   aggregatedHoldings.forEach((holding) => {
     const contributors = contributorsMap.get(holding.nome) ?? [];
     
-    if (contributors.length >= 2 && holding.peso_percentuale > 3.0) {
+    if (contributors.length >= 2 && holding.percentuale > 3.0) {
       alerts.push({
         nome: holding.nome,
-        pesoComplessivo: Number(holding.peso_percentuale.toFixed(2)),
+        pesoComplessivo: Number(holding.percentuale.toFixed(2)),
         contribuenti: contributors
       });
     }

@@ -16,21 +16,16 @@ export function EtfOverviewTab({ isin }: OverviewTabProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <motion.div 
-        layout="position" 
-        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 mt-6"
-      >
-        
-        <EtfOverviewChart isin={isin} etfOverviewChartType="holdings" title="Top Partecipazioni" onItemClick={(item) => handleHoldingClick(item.isin, item.nome)}/>
+    <>
+      
+      <EtfOverviewChart isin={isin} etfOverviewChartType="holdings" title="Top Partecipazioni" onItemClick={(item) => handleHoldingClick(item.isin, item.nome)}/>
 
-        <EtfOverviewChart isin={isin} etfOverviewChartType="regions" title="Esposizione regionale"/>
+      <EtfOverviewChart isin={isin} etfOverviewChartType="regions" title="Esposizione regionale"/>
 
-        <EtfOverviewChart isin={isin} etfOverviewChartType="sectors" title="Esposizione settoriale"/>
+      <EtfOverviewChart isin={isin} etfOverviewChartType="sectors" title="Esposizione settoriale"/>
 
-        <EtfOverviewChart isin={isin} etfOverviewChartType="countries" title="Esposizione geografica"/>
+      <EtfOverviewChart isin={isin} etfOverviewChartType="countries" title="Esposizione geografica"/>
 
-      </motion.div>
-    </div>
+    </>
   );
 }

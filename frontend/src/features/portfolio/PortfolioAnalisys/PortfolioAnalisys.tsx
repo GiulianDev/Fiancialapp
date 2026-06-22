@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { EtfCharts } from '../components/EtfCharts/EtfCharts';
 import { Card } from '../../../shared/ui/Card/Card'; 
 import { analyzePortfolio } from './portfolioUtils';
-import { useFetchedEtfData } from '../../../hooks/useFetchedEtfData';
+import { usePortfolioAnalisys } from './usePortfolioAnalisys';
 
 interface PortfolioAnalysisProps {
   selectedIsins: string[];
@@ -14,7 +14,7 @@ interface PortfolioAnalysisProps {
 export function PortfolioAnalisys({ selectedIsins, weights, triggerFetch }: PortfolioAnalysisProps) {
   
   // Passiamo il triggerFetch all'hook
-  const { etfData, loading, error } = useFetchedEtfData( selectedIsins, triggerFetch);
+  const { etfData, loading, error } = usePortfolioAnalisys( selectedIsins, triggerFetch);
 
   const combined = useMemo(() => {
     if (etfData.length === 0) return null;

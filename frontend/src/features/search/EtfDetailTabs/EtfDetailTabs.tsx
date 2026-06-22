@@ -1,15 +1,11 @@
-import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useSearchParams, useNavigate } from 'react-router'; 
+import { useSearchParams } from 'react-router'; 
 import { FavoriteButton } from '@/shared/ui/FavoriteButton/FavoriteButton';
 import { Card, Loading } from '@/shared/ui';
 import { Tabs, type TabItem } from '@/shared/ui/Tabs/Tabs';
-import { BreakdownSection } from '../components/EtfSection/BreakdownSection';
 import { RiskTab } from './RiskTab/RiskTab';
-// import { useEtfSearch } from '../hooks/useEtfSearch';
 import { useEtfDetailTabs } from './useEtfDetailTabs';
 import { EtfOverviewTab } from './EtfOverviewTab/EtfOverviewTab';
-// Importiamo l'hook direttamente nel componente autonomo
 
 interface EtfDetailTabsProps {
   isin: string;
@@ -30,26 +26,13 @@ const ETF_DETAILS_TABS: TabItem[] = [
 
 export function EtfDetailTabs({
   isin,
-  limiteHoldings,
-  limiteCountries,
-  onLoadMoreHoldings,
-  onLoadMoreCountries,
   isFavorite = false,
   onToggleFavorite,
   isUserLoggedIn = false,
 }: EtfDetailTabsProps) {
   
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const activeTab = searchParams.get('tab') || 'overview';
-
-  // Il componente recupera i suoi dati in autonomia
-  // const { 
-  //   data2, 
-  //   isLoading: caricando2, 
-  //   isFetching: fetching2,
-  //   error: errore2
-  // } = useEtfSearch(isin);
 
   const { 
     data: data, 
@@ -61,28 +44,12 @@ export function EtfDetailTabs({
   // Consideriamo in caricamento se React Query sta scaricando O se non abbiamo ancora i dati
   const isLoadingData = fetching || caricando || !data;
 
-  // Parsing dei dizionari eseguiti in modo efficiente con useMemo
-  // const countriesArray = useMemo(() => {
-  //   if (!data?.countries) return [];
-  //   return Object.entries(data.countries).map(([nome, peso]) => ({ nome, peso }));
-  // }, [data?.countries]);
-
-  // const sectorsArray = useMemo(() => {
-  //   if (!data?.sectors) return [];
-  //   return Object.entries(data.sectors).map(([nome, peso]) => ({ nome, peso }));
-  // }, [data?.sectors]);
-
   const handleTabChange = (tabId: string) => {
     setSearchParams((prev) => {
       prev.set('tab', tabId);
       return prev;
     });
   };
-
-  // const handleHoldingClick = (isinToNavigate: string, name: string) => {
-  //   if (!isinToNavigate) return;
-  //   navigate(`/holding/${isinToNavigate}`, { state: { name } });
-  // };
 
   // Gestione dell'errore isolata all'interno del widget dei dettagli
   if (errore) {
@@ -146,7 +113,12 @@ export function EtfDetailTabs({
 
         {/* CONTENUTO DEL TAB: OVERVIEW */}
         {activeTab === 'overview' && (
-          <EtfOverviewTab isin={isin}/>
+          <motion.div 
+            layout="position" 
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 mt-6"
+          >
+            <EtfOverviewTab isin={isin}/>
+          </motion.div>
         )}
 
         {/* CONTENUTO DEL TAB: RISK ANALYSIS */}

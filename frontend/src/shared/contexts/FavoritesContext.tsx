@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-import { useAuth } from '../../shared/contexts/AuthContext';
+import { useAuth } from './AuthContext';
 import * as favoriteDb from '@services/favoriteService';
 import type { Favorite } from '@types';
 

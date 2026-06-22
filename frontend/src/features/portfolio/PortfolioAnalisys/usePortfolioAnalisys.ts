@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import type { EtfData } from '../shared/types/etf';
-import { SEARCH_ETF_API_URL } from '../shared/config/constants';
-import { useAuth } from '../shared/contexts/AuthContext';
+import type { EtfData } from '../../../shared/types/etf';
+import { SEARCH_ETF_API_URL } from '../../../shared/config/constants';
+import { useAuth } from '../../../shared/contexts/AuthContext';
 
 interface UseFetchedEtfDataResult {
   etfData: EtfData[];
@@ -9,7 +9,7 @@ interface UseFetchedEtfDataResult {
   error: string | null;
 }
 
-export function useFetchedEtfData(
+export function usePortfolioAnalisys(
   selectedIsins: string[],
   triggerFetch: boolean = true // <- Di default è true per caricare in automatico, ma puoi pilotarlo
 ): UseFetchedEtfDataResult {
