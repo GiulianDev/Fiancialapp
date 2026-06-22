@@ -1,13 +1,7 @@
-import { useEtfMetric, type RiskMetricType } from "@/features/search/EtfDetailTabs/RiskTab/MetricCard/useEtfMetric";
+import { useEtfMetric } from "@/features/search/EtfDetailTabs/RiskTab/MetricCard/useEtfMetric";
+import type { MetricCardProps } from "./MetricCard.interface";
 
-interface MetricCardProps {
-  isin: string;
-  metricType: RiskMetricType;
-  title: string;
-  description: string;
-  suffix?: string;
-  colorClass?: string | ((val: number) => string);
-}
+
 
 export function MetricCard({ isin, metricType, title, description, suffix = '', colorClass = 'text-gray-100' }: MetricCardProps) {
   // Ogni card lancia la sua fetch separata!

@@ -1,8 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { SEARCH_ETF_API_URL } from '@/shared/config/constants';
-
-// Definiamo i tipi esatti di metriche che ci aspettiamo
-export type RiskMetricType = 'volatilita' | 'sharpe' | 'drawdown' | 'beta';
+import type { RiskMetricType } from './MetricCard.interface';
 
 interface ApiResponse {
   status: string;
