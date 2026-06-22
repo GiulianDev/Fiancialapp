@@ -17,11 +17,14 @@ def _get_lock_for_isin(isin: str):
             _locks_extraetf[isin] = threading.Lock()
         return _locks_extraetf[isin]
 
-def format_exposure(exposure_dict):
-    """Helper per formattare i dizionari di esposizione in array di oggetti."""
+def sanitize_exposure_dict(exposure_dict):
+    """
+    Helper per pulire i dizionari di esposizione mantenendo il formato ORIGINALE della v2 (Dizionario puro).
+    Sostituisce eventuali valori None con 0.0 per evitare il TypeError.
+    """
     if not exposure_dict:
-        return []
-    return [{"nome": k, "peso": float(v)} for k, v in exposure_dict.items()]
+        return {}
+    return {k: float(v) if v is not None else 0.0 for k, v in exposure_dict.items()}
 
 def _get_extraetf_data(isin: str):
     """
@@ -43,7 +46,7 @@ def _get_extraetf_data(isin: str):
         # 2. Controllo post-attesa del lock
         now = time.time()
         if isin_upper in _cache_extraetf and (now - _cache_extraetf[isin_upper]['timestamp'] < 300):
-            print(f"\nDati ExtraETF trovati in cache per {isin_upper} dopo l'attesa.\n")
+            print(f"\nDati ExtraETF trovato in cache per {isin_upper} dopo l'attesa.\n")
             return _cache_extraetf[isin_upper]['data']
             
         # 3. Scaricamento reale
@@ -81,9 +84,11 @@ def _get_extraetf_data(isin: str):
             if isinstance(holdings_raw, list):
                 for h in holdings_raw:
                     if isinstance(h, dict):
+                        # Protezione aggiuntiva sul peso delle singole holdings
+                        peso = h.get("weight")
                         holdings_pulite.append({
                             "nome": h.get("name", "Sconosciuto"),
-                            "peso_percentuale": h.get("weight", 0),
+                            "peso_percentuale": float(peso) if peso is not None else 0.0,
                             "isin": h.get("isin", None)
                         })
             raw_regions = portfolio.get("region_stock_exposure") or portfolio.get("region_bond_exposure") or {}
@@ -95,17 +100,17 @@ def _get_extraetf_data(isin: str):
             if etf_data.get("region_name"): raw_regions = {etf_data.get("region_name"): 100.0}
             holdings_pulite = [{"nome": nome.strip(), "peso_percentuale": 100.0, "isin": isin_upper}]
 
-        # Salviamo in cache il dizionario pulito
+        # Salviamo in cache il dizionario con la struttura identica alla v2
         parsed_data = {
             "isin": isin_upper,
-            "nome": nome.strip(),
             "tipo_asset": asset_class,
+            "nome": nome.strip(),
             "costo_annuo": costo_annuo,
             "totale_holdings": totale_holdings,
             "holdings": holdings_pulite,
-            "regions": format_exposure(raw_regions),
-            "countries": format_exposure(raw_countries),
-            "sectors": format_exposure(raw_sectors)
+            "regions": sanitize_exposure_dict(raw_regions),
+            "countries": sanitize_exposure_dict(raw_countries),
+            "sectors": sanitize_exposure_dict(raw_sectors)
         }
 
         _cache_extraetf[isin_upper] = {'data': parsed_data, 'timestamp': now}
@@ -143,9 +148,17 @@ def get_etf_regions(isin: str):
     return {"status": "success", "isin": data["isin"], "nome": data["nome"], "regions": data["regions"]}
 
 def get_etf_full_data(isin: str):
-    """Restituisce tutto l'oggetto completo in un'unica chiamata."""
+    """Restituisce tutto l'oggetto completo in un'unica chiamata, con le stesse chiavi della fetch_data_from_extraetf_v2."""
     data = _get_extraetf_data(isin)
     return {"status": "success", **data}
+
+
+# def format_exposure(exposure_dict):
+#     if not exposure_dict:
+#         return []
+#     # Converte {"Italia": 10.5, "USA": 40.2} in [{"nome": "Italia", "peso": 10.5}, {"nome": "USA", "peso": 40.2}]
+#     return [{"nome": k, "peso": float(v)} for k, v in exposure_dict.items()]
+
 
 def fetch_data_from_extraetf(isin: str):
     url = f"https://extraetf.com/api-v2/detail/?isin={isin}&extraetf_locale=it"
@@ -301,11 +314,6 @@ def fetch_data_from_extraetf_v2(isin: str):
         "sectors": sectors
     }
 
-# def format_exposure(exposure_dict):
-#     if not exposure_dict:
-#         return []
-#     # Converte {"Italia": 10.5, "USA": 40.2} in [{"nome": "Italia", "peso": 10.5}, {"nome": "USA", "peso": 40.2}]
-#     return [{"nome": k, "peso": float(v)} for k, v in exposure_dict.items()]
 
 def fetch_data_from_extraetf_v3(isin: str):
     url = f"https://extraetf.com/api-v2/detail/?isin={isin}&extraetf_locale=it"
