@@ -1,3 +1,3 @@
 export * from './AuthContext';
-export * from './FavoritesContext';
+export * from '../../features/favorites/FavoritesContext';
 export * from './PortfolioContext';
