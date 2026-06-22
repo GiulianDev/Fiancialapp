@@ -26,8 +26,8 @@ export function SearchPage() {
   // CHIAMATA CONDIVISA: Chiamiamo l'hook anche qui SOLO per dare lo stato isLoading alla SearchBar.
   // React Query capisce che la chiave ['etf', activeIsin] è la stessa usata nel figlio 
   // ed eseguirà UNA SOLA chiamata di rete in parallelo!
-  const { isFetching: fetching, isLoading: caricando } = useEtfSearch(activeIsin);
-  const isLoadingSearchBar = fetching || caricando;
+  // const { isFetching: fetching, isLoading: caricando } = useEtfSearch(activeIsin);
+  // const isLoadingSearchBar = fetching || caricando;
 
   const cercaEtf = () => {
     const querySana = draftIsin.trim().toUpperCase();
@@ -74,7 +74,6 @@ export function SearchPage() {
         isin={draftIsin} 
         onIsinChange={setDraftIsin} 
         onSearch={cercaEtf} 
-        isLoading={isLoadingSearchBar} 
         placeholder="Inserisci l'ISIN dell'ETF (es. IE00BK5BQT80)..." 
       />
 
