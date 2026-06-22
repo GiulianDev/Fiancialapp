@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router';
 import { useFavorites, useAuth } from '@context';
 import { useEtfSearch } from './hooks/useEtfSearch';
 import { SearchBar } from './SearchBar/SearchBar';
-import { EtfDetails } from './EtfDetailTabs/EtfDetailTabs';
+import { EtfDetailTabs } from './EtfDetailTabs/EtfDetailTabs';
 
 export function SearchPage() {
   const { user } = useAuth();
@@ -79,7 +79,7 @@ export function SearchPage() {
       />
 
       {(activeIsin.length >= 12) && (
-        <EtfDetails
+        <EtfDetailTabs
           isin={activeIsin} // Passiamo solo l'identificativo!
           limiteHoldings={limiteHoldings}
           limiteCountries={limiteCountries}

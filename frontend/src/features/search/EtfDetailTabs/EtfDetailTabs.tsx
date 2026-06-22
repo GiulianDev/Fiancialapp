@@ -9,7 +9,7 @@ import { RiskTab } from './RiskTab/RiskTab';
 import { useEtfSearch } from '../hooks/useEtfSearch';
 // Importiamo l'hook direttamente nel componente autonomo
 
-interface EtfDetailsProps {
+interface EtfDetailTabsProps {
   isin: string;
   limiteHoldings: number;
   limiteCountries: number;
@@ -26,7 +26,7 @@ const ETF_DETAILS_TABS: TabItem[] = [
   { id: 'esg', label: '🌱 Sostenibilità ESG', disabled: true }
 ];
 
-export function EtfDetails({
+export function EtfDetailTabs({
   isin,
   limiteHoldings,
   limiteCountries,
@@ -35,7 +35,7 @@ export function EtfDetails({
   isFavorite = false,
   onToggleFavorite,
   isUserLoggedIn = false,
-}: EtfDetailsProps) {
+}: EtfDetailTabsProps) {
   
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
