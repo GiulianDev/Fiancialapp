@@ -17,15 +17,6 @@ def _get_lock_for_isin(isin: str):
             _locks_extraetf[isin] = threading.Lock()
         return _locks_extraetf[isin]
 
-def sanitize_exposure_dict(exposure_dict):
-    """
-    Helper per pulire i dizionari di esposizione mantenendo il formato ORIGINALE della v2 (Dizionario puro).
-    Sostituisce eventuali valori None con 0.0 per evitare il TypeError.
-    """
-    if not exposure_dict:
-        return {}
-    return {k: float(v) if v is not None else 0.0 for k, v in exposure_dict.items()}
-
 def _get_extraetf_data(isin: str):
     """
     Funzione privata: Scarica i dati da ExtraETF, li parsa e li tiene in cache.
@@ -108,9 +99,9 @@ def _get_extraetf_data(isin: str):
             "costo_annuo": costo_annuo,
             "totale_holdings": totale_holdings,
             "holdings": holdings_pulite,
-            "regions": sanitize_exposure_dict(raw_regions),
-            "countries": sanitize_exposure_dict(raw_countries),
-            "sectors": sanitize_exposure_dict(raw_sectors)
+            "regions": format_exposure_to_array(raw_regions),
+            "countries": format_exposure_to_array(raw_countries),
+            "sectors": format_exposure_to_array(raw_sectors)
         }
 
         _cache_extraetf[isin_upper] = {'data': parsed_data, 'timestamp': now}
@@ -128,16 +119,26 @@ def get_etf_base_info(isin: str):
         "nome": data["nome"],
         "tipo_asset": data["tipo_asset"],
         "costo_annuo": data["costo_annuo"],
-        "totale_holdings": data["totale_holdings"]
     }
 
 def get_etf_holdings(isin: str):
     data = _get_extraetf_data(isin)
-    return {"status": "success", "isin": data["isin"], "nome": data["nome"], "totale": data["totale_holdings"], "holdings": data["holdings"]}
+    return {
+        "status": "success", 
+        "isin": data["isin"], 
+        "nome": data["nome"], 
+        "totale": data["totale_holdings"], 
+        "data": data["holdings"]
+    }
 
 def get_etf_countries(isin: str):
     data = _get_extraetf_data(isin)
-    return {"status": "success", "isin": data["isin"], "nome": data["nome"], "countries": data["countries"]}
+    return {
+        "status": "success", 
+        "isin": data["isin"], 
+        "nome": data["nome"], 
+        "data": data["countries"]
+    }
 
 def get_etf_sectors(isin: str):
     data = _get_extraetf_data(isin)
@@ -145,7 +146,12 @@ def get_etf_sectors(isin: str):
 
 def get_etf_regions(isin: str):
     data = _get_extraetf_data(isin)
-    return {"status": "success", "isin": data["isin"], "nome": data["nome"], "regions": data["regions"]}
+    return {
+        "status": "success", 
+        "isin": data["isin"], 
+        "nome": data["nome"], 
+        "data": data["regions"]
+    }
 
 def get_etf_full_data(isin: str):
     """Restituisce tutto l'oggetto completo in un'unica chiamata, con le stesse chiavi della fetch_data_from_extraetf_v2."""
@@ -153,11 +159,25 @@ def get_etf_full_data(isin: str):
     return {"status": "success", **data}
 
 
-# def format_exposure(exposure_dict):
-#     if not exposure_dict:
-#         return []
-#     # Converte {"Italia": 10.5, "USA": 40.2} in [{"nome": "Italia", "peso": 10.5}, {"nome": "USA", "peso": 40.2}]
-#     return [{"nome": k, "peso": float(v)} for k, v in exposure_dict.items()]
+# CONVERSIONE DATI
+def format_exposure_to_array(exposure_dict):
+    """
+    Converte un dizionario di esposizione (es. {"Italia": 10.5}) 
+    in un array di dizionari (es. [{"nome": "Italia", "percentuale": 10.5}]).
+    """
+    if not exposure_dict:
+        return []
+    exposure_dict = sanitize_exposure_dict(exposure_dict)
+    return [{"nome": str(k), "percentuale": float(v)} for k, v in exposure_dict.items()]
+
+def sanitize_exposure_dict(exposure_dict):
+    """
+    Helper per pulire i dizionari di esposizione mantenendo il formato ORIGINALE della v2 (Dizionario puro).
+    Sostituisce eventuali valori None con 0.0 per evitare il TypeError.
+    """
+    if not exposure_dict:
+        return {}
+    return {k: float(v) if v is not None else 0.0 for k, v in exposure_dict.items()}
 
 
 def fetch_data_from_extraetf(isin: str):
