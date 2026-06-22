@@ -3,13 +3,11 @@ import { useFavorites, usePortfolio } from '@context';
 import { FavoritesSelector } from '.';
 import { PortfolioAnalysis } from '.';
 import type { SavedPortfolio } from '@/shared/types';
-// import type { SavedPortfolio } from '.';
 
 export function PortfolioPage() {
   
-  // Il portfolio usa i context globali per caricare i dati dell'utente
-  // e mantenere i salvataggi sincronizzati con Firestore.
-  const { favorites, loading: favsLoading } = useFavorites();
+  // Destrutturato removeFavorite direttamente dal context globale dei preferiti
+  const { favorites, loading: favsLoading, removeFavorite } = useFavorites();
   const { portfolio: savedPortfolio, loading: portfolioLoading, error: portfolioError, savePortfolio } = usePortfolio();
 
   const [analysisData, setAnalysisData] = useState<{ isins: string[]; weights: Record<string, number> } | null>(null);
@@ -65,12 +63,10 @@ export function PortfolioPage() {
   const isGlobalLoading = favsLoading || portfolioLoading;
 
   if (isGlobalLoading && !analysisData) {
-    // Aggiunto w-full qui
     return <div className="text-center p-8 text-white/50 w-full">Sincronizzazione dati in corso...</div>;
   }
 
   return (
-    // Aggiunto w-full e max-w-full per blindare la larghezza
     <div className="flex flex-col gap-6 w-full max-w-full">
       
       {portfolioError && (
@@ -84,10 +80,8 @@ export function PortfolioPage() {
         onTest={handleTest}
         onApplica={handleApplica}
         onInputsChanged={handleInputsChanged}
+        onRemoveFavorite={removeFavorite} // <-- PASSATO IL METODO DEL CONTEXT QUI
       />
-
-
-      
 
       {analysisData && (
         <PortfolioAnalysis 
