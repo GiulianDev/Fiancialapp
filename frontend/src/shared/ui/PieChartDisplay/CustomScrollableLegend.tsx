@@ -1,70 +1,51 @@
+// src/features/portfolio/components/EtfCharts/CustomScrollableLegend.tsx
+
 import type { LegendProps } from 'recharts';
 
 interface CustomScrollableLegendProps extends LegendProps {
+  dataKey: string; // 🎯 Aggiunta per rendere dinamica la lettura del valore
   payload?: Array<{
     value: string; 
     color: string; 
-    payload: Record<string, any>; // 🎯 Modificato per accettare tipi flessibili dal chart
+    payload: Record<string, any>;
   }>;
-  onItemClick?: (item: Record<string, any>) => void; // 🎯 Prop in ingresso
+  onItemClick?: (item: Record<string, any>) => void;
 }
 
-export function CustomScrollableLegend({ payload, onItemClick }: CustomScrollableLegendProps) {
+export function CustomScrollableLegend({ payload, dataKey, onItemClick }: CustomScrollableLegendProps) {
+  
+  // Ordina i payload usando la dataKey dinamica passata dal grafico
   const sortedPayload = payload?.sort((a, b) => {
-    const valA = a.payload.peso_percentuale ?? a.payload.peso ?? 0;
-    const valB = b.payload.peso_percentuale ?? b.payload.peso ?? 0;
+    const valA = a.payload[dataKey] ?? 0;
+    const valB = b.payload[dataKey] ?? 0;
     return valB - valA; 
   });
 
   return (
-    <div 
-      className="custom-scrollbar" 
-      style={{
-        maxHeight: '120px', 
-        overflowY: 'auto',   
-        width: '100%',        
-        paddingTop: '16px',
-        marginTop: '10px', 
-        borderTop: '1px solid rgba(255, 255, 255, 0.1)' 
-      }}
-    >
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+    <div className="custom-scrollbar w-full max-h-[120px] overflow-y-auto pt-4 mt-2.5 border-t border-white/10">
+      <ul className="list-none p-0 m-0">
         {sortedPayload?.map((entry, index) => { 
-          const rawValue = entry.payload.peso_percentuale ?? entry.payload.peso;
+          // Estrapola il valore corretto dinamicamente
+          const rawValue = entry.payload[dataKey];
           const value = typeof rawValue === 'number' ? rawValue : 0;
           const valueDisplay = `${value.toFixed(2)}%`;
           
           return (
             <li 
               key={`legend-item-${index}`} 
-              onClick={() => onItemClick && onItemClick(entry.payload)} // 🎯 Trigger al click
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginBottom: '8px',
-                fontSize: '0.9rem',
-                color: '#e8def8',
-                cursor: onItemClick ? 'pointer' : 'default', // 🎯 Effetto hover
-                transition: 'background-color 0.2s',
-                borderRadius: '4px',
-                padding: '2px 4px', // Leggero padding per l'area di click
-              }}
-              // Aggiungiamo hover state simulato per dare feedback visivo
-              onMouseEnter={(e) => { if (onItemClick) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)' }}
-              onMouseLeave={(e) => { if (onItemClick) e.currentTarget.style.backgroundColor = 'transparent' }}
+              onClick={() => onItemClick && onItemClick(entry.payload)}
+              className={`flex items-center mb-2 text-sm text-gray-300 py-1 px-2 rounded transition-colors duration-200 ${
+                onItemClick ? 'cursor-pointer hover:bg-white/5' : 'cursor-default'
+              }`}
             >
               <span
-                style={{
-                  display: 'inline-block',
-                  width: '12px',
-                  height: '12px',
-                  borderRadius: '3px',
-                  backgroundColor: entry.color,
-                  marginRight: '8px',
-                }}
+                className="inline-block w-3 h-3 rounded-sm mr-2 shrink-0"
+                style={{ backgroundColor: entry.color }} // Recharts inietta il colore dinamicamente qui
               />
-              {entry.value}: <strong>{valueDisplay}</strong>
-          </li>
+              <span className="truncate">
+                {entry.value}: <strong className="font-semibold text-white ml-1">{valueDisplay}</strong>
+              </span>
+            </li>
           );
         })}
       </ul>
