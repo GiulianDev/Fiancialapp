@@ -1,20 +1,85 @@
-from fastapi import APIRouter
 import requests
-from services.extraetf_api import fetch_data_from_extraetf, fetch_data_from_extraetf_v2
+from fastapi import APIRouter
 from services.yfinance_api import get_ticker_from_isin
-from services.risk_calculator import calcola_drawdown, calcola_metriche_rischio, calcola_sharpe, calcola_volatilita, calcola_beta
+from services.extraetf_api import (
+    get_etf_full_data,
+    get_etf_base_info,
+    get_etf_holdings,
+    get_etf_countries,
+    get_etf_sectors,
+    get_etf_regions,
+    fetch_data_from_extraetf_v2
+)
+from services.risk_calculator import (
+  calcola_drawdown, 
+  calcola_metriche_rischio, 
+  calcola_sharpe, 
+  calcola_volatilita, 
+  calcola_beta
+)
 
 router = APIRouter(tags=["ETFs"])
 
+# =============================================================================
+# API endpoint per ottenere i dettagli di un ETF dato il suo ISIN
+# =============================================================================
+
 @router.get("/api/etf/{isin}")
-def get_etf_data_v2(isin: str):
+def get_etf_data_all(isin: str):
+    """Restituisce tutti i dati strutturati (utile se non si usano i microservizi)"""
     try:
-        return fetch_data_from_extraetf_v2(isin.strip().upper())
+        return get_etf_full_data(isin)
     except Exception as e:
-        return {"status": "error", "message": f"Errore interno V2: {str(e)}"}
+        return {"status": "error", "message": f"Errore interno ExtraETF: {str(e)}"}
+
+@router.get("/api/etf/{isin}/info")
+def get_etf_info_endpoint(isin: str):
+    try:
+        return get_etf_base_info(isin)
+    except Exception as e:
+        return {"status": "error", "message": f"Errore: {str(e)}"}
+
+@router.get("/api/etf/{isin}/holdings")
+def get_etf_holdings_endpoint(isin: str):
+    try:
+        return get_etf_holdings(isin)
+    except Exception as e:
+        return {"status": "error", "message": f"Errore: {str(e)}"}
+
+@router.get("/api/etf/{isin}/countries")
+def get_etf_countries_endpoint(isin: str):
+    try:
+        return get_etf_countries(isin)
+    except Exception as e:
+        return {"status": "error", "message": f"Errore: {str(e)}"}
+
+@router.get("/api/etf/{isin}/sectors")
+def get_etf_sectors_endpoint(isin: str):
+    try:
+        return get_etf_sectors(isin)
+    except Exception as e:
+        return {"status": "error", "message": f"Errore: {str(e)}"}
+
+@router.get("/api/etf/{isin}/regions")
+def get_etf_regions_endpoint(isin: str):
+    try:
+        return get_etf_regions(isin)
+    except Exception as e:
+        return {"status": "error", "message": f"Errore: {str(e)}"}
 
 
+# @router.get("/api/etf/{isin}")
+# def get_etf_data_v2(isin: str):
+#     try:
+#         return fetch_data_from_extraetf_v2(isin.strip().upper())
+#     except Exception as e:
+#         return {"status": "error", "message": f"Errore interno V2: {str(e)}"}
+
+
+
+# =============================================================================
 # API endpoint per calcolare le metriche di rischio di un ETF dato il suo ISIN
+# =============================================================================
 
 @router.get("/api/etf/{isin}/risk/drawdown")
 def get_drawdown(isin: str):
@@ -108,10 +173,6 @@ def get_beta(isin: str):
     except Exception as e:
         return {"status": "error", "message": f"Errore nel calcolo del rischio: {str(e)}"}
 
-
-
-
-
 # get all data
 @router.get("/api/etf/{isin}/risk")
 def get_etf_risk_analysis(isin: str):
@@ -136,6 +197,7 @@ def get_etf_risk_analysis(isin: str):
     except Exception as e:
         return {"status": "error", "message": f"Errore nel calcolo del rischio: {str(e)}"}
     
+
 
 # DEBUG ONLY
 @router.get("/api/etf/{isin}/debug-holdings")
