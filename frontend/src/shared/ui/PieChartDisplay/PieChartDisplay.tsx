@@ -1,6 +1,6 @@
 // src/features/portfolio/components/EtfCharts/PieChartDisplay.tsx
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { PieChart, Pie, Tooltip, ResponsiveContainer, Legend, Sector } from 'recharts';
 import { CustomScrollableLegend } from './CustomScrollableLegend';
 
@@ -20,11 +20,14 @@ export function PieChartDisplay({
   dataKey, 
   nameKey,
   title = "Titolo", 
-  subtitle = "Subtitle",
+  subtitle,
   maxItems = 5, 
   residualLabel = 'Altro',
   onItemClick 
 }: PieChartDisplayProps) {
+
+  // 🎯 Solleviamo lo stato qui, così il sottotitolo può leggerlo
+  const [visibleCount, setVisibleCount] = useState(maxItems);
 
   // 1. Elaborazione per la Torta: NESSUN TAGLIO (maxItems), solo calcolo per arrivare a 100%
   const processedData = useMemo(() => {
@@ -91,17 +94,21 @@ export function PieChartDisplay({
     onItemClick(item);
   };
 
+  // 🎯 Calcoli per il sottotitolo
+  const totalItems = data.length;
+  const displayedCount = Math.min(visibleCount, totalItems);
+
   return (
     <div className="w-full flex flex-col">
       <h4 className="text-md font-medium text-gray-300 border-b border-white/10 pb-2 mb-2">{title}</h4>
       
-      {subtitle && (
-        <p className="text-xs text-gray-500 italic mb-3">
-          {subtitle}
-        </p>
-      )} 
+      {/* 🎯 Sottotitolo aggiornato per mostrare n su totale */}
+      <p className="text-xs text-gray-500 italic mb-3">
+        {subtitle && <span className="mr-1">{subtitle} •</span>}
+        Mostrati {displayedCount} su {totalItems} elementi
+      </p>
 
-      <ResponsiveContainer width="99%" height={350}>
+      <ResponsiveContainer width="99%" height={390}>
         <PieChart>
           <Pie  
             data={chartDataWithStyles} 
@@ -111,7 +118,6 @@ export function PieChartDisplay({
             cy="50%"
             outerRadius={100} 
             onClick={handleItemClick}
-            // label={({ value }) => `${Number(value).toFixed(2)}%`}
             labelLine={true}
             shape={(props: any) => {
               const { isResidual } = props.payload;
@@ -138,14 +144,16 @@ export function PieChartDisplay({
             }}
           />
 
-          {/* Passiamo maxItems e residualLabel alla legenda */}
+          {/* Passiamo lo stato e la funzione per aggiornarlo alla legenda */}
           <Legend 
             content={
               <CustomScrollableLegend 
                 dataKey={dataKey} 
                 maxItems={maxItems}
                 residualLabel={residualLabel}
-                onItemClick={handleItemClick} 
+                onItemClick={handleItemClick}
+                visibleCount={visibleCount} 
+                setVisibleCount={setVisibleCount} 
               />
             } 
           />
