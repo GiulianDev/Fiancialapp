@@ -12,19 +12,10 @@ export interface EtfOverviewChartProps {
 export function EtfOverviewChart({ isin, etfOverviewChartType, title, onItemClick}: EtfOverviewChartProps) {
   
   // Ogni card lancia la sua fetch separata!
-  const { data: value, isLoading, error } = useEtfOverviewChart(isin, etfOverviewChartType);
-
-
-    const dataKey = "percentuale";
-    const nameKey = "nome";
-
-    // const sortedData = value?.holdings?.sort((a, b) => (b[dataKey] || 0) - (a[dataKey] || 0))
-
-    const sortedData = value?.[etfOverviewChartType]?.sort((a, b) => (b[dataKey] || 0) - (a[dataKey] || 0))
-
-    console.log(sortedData);
-
-
+  const { data: value, isLoading } = useEtfOverviewChart(isin, etfOverviewChartType);
+  const dataKey = "percentuale";
+  const nameKey = "nome";
+  const sortedData = value?.[etfOverviewChartType]?.sort((a, b) => (b[dataKey] || 0) - (a[dataKey] || 0));
 
   return (
     <div className="w-full">
@@ -37,16 +28,12 @@ export function EtfOverviewChart({ isin, etfOverviewChartType, title, onItemClic
                 <div className="h-[300px] bg-white/5 rounded-full mx-auto w-[300px] mt-6"></div>
               </div>
             ) : sortedData ? (
-              <>
-
-                <PieChartDisplay
-                  data={sortedData}
-                  dataKey={dataKey}
-                  nameKey={nameKey}
-                  onItemClick={onItemClick}
-                />
-              
-              </>
+              <PieChartDisplay
+                data={sortedData}
+                dataKey={dataKey}
+                nameKey={nameKey}
+                onItemClick={onItemClick}
+              />              
             ) : (
               <div className="p-4 text-center text-sm text-gray-500 italic">
                 Nessun dato disponibile per {title.toLowerCase()}
