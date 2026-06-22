@@ -4,6 +4,7 @@ import type { MetricCardProps } from "./MetricCard.interface";
 
 
 export function MetricCard({ isin, metricType, title, description, suffix = '', colorClass = 'text-gray-100' }: MetricCardProps) {
+  
   // Ogni card lancia la sua fetch separata!
   const { data: value, isLoading, error } = useEtfMetric(isin, metricType);
   
