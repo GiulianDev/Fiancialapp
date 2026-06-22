@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import { EtfCharts } from '../components/EtfCharts/EtfCharts';
 import { Card } from '../../../shared/ui/Card/Card'; 
-import { analyzePortfolio } from '../../../utils/portfolioUtils';
+import { analyzePortfolio } from './portfolioUtils';
 import { useFetchedEtfData } from '../../../hooks/useFetchedEtfData';
 
 interface PortfolioAnalysisProps {

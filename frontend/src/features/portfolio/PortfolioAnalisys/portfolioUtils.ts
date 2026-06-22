@@ -1,5 +1,5 @@
-import type { EtfData } from '../shared/types/etf';
-import type { AggregatedResult } from '../shared/types/portfolio';
+import type { EtfData } from '../../../shared/types/etf';
+import type { AggregatedResult } from '../../../shared/types/portfolio';
 
 // Interfaccia estesa per includere i nuovi calcoli finanziari avanzati
 export interface AdvancedPortfolioAnalysis extends AggregatedResult {
