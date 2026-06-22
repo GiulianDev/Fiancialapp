@@ -8,19 +8,6 @@ interface EtfChartsProps {
 }
 
 export function EtfCharts({ combined }: EtfChartsProps) {
-  // const holdingsData = [
-  //   ...combined.holdings.slice(0, 10),
-  //   ...(combined.residualHolding > 0
-  //     ? [{ nome: 'Altre aziende', peso_percentuale: combined.residualHolding }]
-  //     : []),
-  // ];
-
-  // const countriesData = [
-  //   ...combined.countries.slice(0, 10),
-  //   ...(combined.residualCountry > 0
-  //     ? [{ nome: 'Altri paesi', peso: combined.residualCountry }]
-  //     : []),
-  // ];
 
   return (
     <Card className="etf-charts--container">
