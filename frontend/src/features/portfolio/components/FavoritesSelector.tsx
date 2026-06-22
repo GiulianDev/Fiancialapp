@@ -10,6 +10,8 @@ interface FavoritesSelectorProps {
   onTest: (isins: string[], raw: Record<string, string>, num: Record<string, number>, unit: '€' | '$' | '%') => void;
   onApplica: (isins: string[], raw: Record<string, string>, num: Record<string, number>, unit: '€' | '$' | '%') => void;
   onInputsChanged: () => void;
+  // NUOVA PROP per la rimozione
+  onRemoveFavorite: (isin: string) => void; 
 }
 
 export function FavoritesSelector({ 
@@ -18,12 +20,14 @@ export function FavoritesSelector({
   initialData, 
   onTest,
   onApplica,
-  onInputsChanged
+  onInputsChanged,
+  onRemoveFavorite
 }: FavoritesSelectorProps) {
   
   const [selectedIsins, setSelectedIsins] = useState<Set<string>>(new Set());
   const [weights, setWeights] = useState<Record<string, string>>({});
   const [unit, setUnit] = useState<'€' | '$' | '%'>('€');
+  const [copiedIsin, setCopiedIsin] = useState<string | null>(null); // Stato per il feedback di copia
 
   useEffect(() => {
     if (initialData) {
@@ -71,6 +75,31 @@ export function FavoritesSelector({
     }
   };
 
+  // Funzione per copiare l'ISIN
+  const handleCopyIsin = (isin: string) => {
+    navigator.clipboard.writeText(isin);
+    setCopiedIsin(isin);
+    setTimeout(() => {
+      setCopiedIsin(null);
+    }, 2000); // Rimuove il feedback dopo 2 secondi
+  };
+
+  // Funzione sicura per rimuovere dai preferiti (pulisce prima lo stato locale)
+  const handleRemoveClick = (isin: string) => {
+    setSelectedIsins(prev => {
+      const next = new Set(prev);
+      next.delete(isin);
+      return next;
+    });
+    setWeights(prev => {
+      const newWeights = { ...prev };
+      delete newWeights[isin];
+      return newWeights;
+    });
+    triggerChange();
+    onRemoveFavorite(isin);
+  };
+
   const getCleanData = () => {
     const numericWeights: Record<string, number> = {};
     const selectedIsinsArray = Array.from(selectedIsins);
@@ -106,7 +135,6 @@ export function FavoritesSelector({
   const showWarning = unit === '%' && !isMissingValues && totalWeight !== 100;
 
   return (
-    // AGGIUNTO w-full PER FORZARE L'ESPANISIONE AL 100%
     <div className="w-full">
       <Card className="favorites-portfolio__list w-full">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', width: '100%' }}>
@@ -134,7 +162,6 @@ export function FavoritesSelector({
           Seleziona gli ETF e inserisci {unit === '%' ? 'la quota' : "l'importo investito"}:
         </p>
         
-        {/* AGGIUNTO width: 100% */}
         <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0', width: '100%' }}>
           {favorites.map((favorite) => {
             const isSelected = selectedIsins.has(favorite.isin);
@@ -143,7 +170,6 @@ export function FavoritesSelector({
             const isInputInvalid = isSelected && weightValue !== '' && (isNaN(numVal) || numVal <= 0);
 
             return (
-              // AGGIUNTO width: 100% E flex-wrap per sicurezza
               <li key={favorite.isin} style={{ 
                 marginBottom: '12px', 
                 display: 'flex', 
@@ -154,25 +180,57 @@ export function FavoritesSelector({
                 color: 'white',
                 flexWrap: 'wrap'
               }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flex: '1 1 auto', minWidth: '0', height: '100%' }}>
+                
+                {/* BLOCCO SINISTRO: Checkbox e Testo separati */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto', minWidth: '0', height: '100%' }}>
                   <input
                     type="checkbox"
                     checked={isSelected}
                     onChange={() => toggleSelection(favorite.isin)}
-                    className="flex-shrink-0"
+                    className="flex-shrink-0 cursor-pointer"
                   />
                   <span style={{ fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {favorite.name ? `${favorite.name} ` : ''}
-                      <code style={{ 
+                    {favorite.name ? `${favorite.name} ` : ''}
+                    
+                    {/* ISIN cliccabile con tooltip relativo */}
+                    <code 
+                      onClick={() => handleCopyIsin(favorite.isin)}
+                      style={{ 
                         padding: '2px 6px', 
                         borderRadius: '4px', 
                         backgroundColor: 'rgba(255,255,255,0.1)',
                         color: 'rgba(255,255,255,0.9)',
-                        marginLeft: '4px'
-                      }}>{favorite.isin}</code>
+                        marginLeft: '4px',
+                        cursor: 'pointer',
+                        position: 'relative',
+                        transition: 'background-color 0.2s ease'
+                      }}
+                      title="Clicca per copiare l'ISIN"
+                    >
+                      {favorite.isin}
+                      {/* Feedback visivo copiato */}
+                      {copiedIsin === favorite.isin && (
+                        <span style={{ 
+                          position: 'absolute', 
+                          top: '-24px', 
+                          left: '50%', 
+                          transform: 'translateX(-50%)', 
+                          backgroundColor: '#10b981', 
+                          color: 'white', 
+                          fontSize: '0.7rem', 
+                          padding: '2px 6px', 
+                          borderRadius: '4px',
+                          pointerEvents: 'none',
+                          zIndex: 10
+                        }}>
+                          Copiato!
+                        </span>
+                      )}
+                    </code>
                   </span>
-                </label>
+                </div>
                 
+                {/* BLOCCO CENTRALE: Input Pesi */}
                 {isSelected && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                     <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', minWidth: '15px' }}>{unit}</span>
@@ -196,6 +254,40 @@ export function FavoritesSelector({
                     />
                   </div>
                 )}
+
+                {/* BLOCCO DESTRO: Pulsante Rimozione */}
+                <button
+                  onClick={() => handleRemoveClick(favorite.isin)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'rgba(239, 68, 68, 0.7)',
+                    cursor: 'pointer',
+                    padding: '4px',
+                    marginLeft: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '4px',
+                    transition: 'all 0.2s ease',
+                    flexShrink: 0
+                  }}
+                  title="Rimuovi dai preferiti"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#ef4444';
+                    e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'rgba(239, 68, 68, 0.7)';
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                  </svg>
+                </button>
               </li>
             );
           })}
