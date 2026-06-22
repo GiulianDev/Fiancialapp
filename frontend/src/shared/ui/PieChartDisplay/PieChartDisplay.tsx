@@ -26,7 +26,7 @@ export function PieChartDisplay({
   onItemClick 
 }: PieChartDisplayProps) {
 
-  // 1. Elaborazione dei dati (il tuo calcolo per il residuo a 100 è corretto)
+  // 1. Elaborazione per la Torta: NESSUN TAGLIO (maxItems), solo calcolo per arrivare a 100%
   const processedData = useMemo(() => {
     const parseValue = (item: Record<string, any>): number => {
       if (!item || item[dataKey] === undefined || item[dataKey] === null) return 0;
@@ -37,36 +37,25 @@ export function PieChartDisplay({
     };
 
     const totalInputSum = data.reduce((sum, item) => sum + parseValue(item), 0);
-    
     const normalizedInputSum = Number(totalInputSum.toFixed(4));
     const baseResidual = normalizedInputSum < 100 ? (100 - normalizedInputSum) : 0;
 
     const sorted = [...data].sort((a, b) => parseValue(b) - parseValue(a));
 
-    let topItems = sorted;
-    let cutOffResidual = 0;
-
-    if (maxItems && sorted.length > maxItems) {
-      topItems = sorted.slice(0, maxItems);
-      cutOffResidual = sorted.slice(maxItems).reduce((sum, item) => sum + parseValue(item), 0);
-    }
-
-    const finalResidualWeight = baseResidual + cutOffResidual;
-
-    if (finalResidualWeight > 0.01) {
+    if (baseResidual > 0.01) {
       return [
-        ...topItems,
+        ...sorted,
         {
           [nameKey]: residualLabel,
-          [dataKey]: Number(finalResidualWeight.toFixed(2)), 
+          [dataKey]: Number(baseResidual.toFixed(2)), 
         },
       ];
     }
 
-    return topItems;
-  }, [data, dataKey, nameKey, maxItems, residualLabel]);
+    return sorted;
+  }, [data, dataKey, nameKey, residualLabel]);
 
-  // 2. Unione dei Dati con i Colori
+  // 2. Assegnazione Colori per tutti gli spicchi
   const chartDataWithStyles = useMemo(() => {
     const totalItems = processedData.length;
     if (totalItems === 0) return [];
@@ -122,7 +111,6 @@ export function PieChartDisplay({
             cy="50%"
             outerRadius={100} 
             onClick={handleItemClick}
-            /* Aggiunto label per mostrare le percentuali sul grafico */
             // label={({ value }) => `${Number(value).toFixed(2)}%`}
             labelLine={true}
             shape={(props: any) => {
@@ -150,8 +138,17 @@ export function PieChartDisplay({
             }}
           />
 
-          {/* Passiamo il dataKey alla legenda in modo che sappia quale valore stampare */}
-          <Legend content={<CustomScrollableLegend dataKey={dataKey} onItemClick={handleItemClick} />} />
+          {/* Passiamo maxItems e residualLabel alla legenda */}
+          <Legend 
+            content={
+              <CustomScrollableLegend 
+                dataKey={dataKey} 
+                maxItems={maxItems}
+                residualLabel={residualLabel}
+                onItemClick={handleItemClick} 
+              />
+            } 
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>
