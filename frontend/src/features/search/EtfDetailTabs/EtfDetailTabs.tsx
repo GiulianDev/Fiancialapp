@@ -92,6 +92,7 @@ export function EtfDetailTabs({
               <motion.div layout="position">
                 <FavoriteButton 
                   showSkeleton={isLoadingData}
+                  name={data?.nome}
                   isin={isin}
                 />
               </motion.div>

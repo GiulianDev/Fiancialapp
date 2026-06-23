@@ -49,32 +49,52 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user?.uid, refreshFavorites]);
 
-  const addFavorite = useCallback(async (isin: string, name?: string) => {
-    if (!user?.uid) throw new Error('User not authenticated');
-    
-    try {
-      setError(null);
-      await favoriteDb.addFavorite(user.uid, isin, name);
+  // Dentro FavoritesContext.tsx
+
+const addFavorite = useCallback(async (isin: string, name?: string) => {
+  if (!user?.uid) throw new Error('User not authenticated');
+  
+  // 1. OPTIMISTIC UPDATE: Aggiungiamo subito allo stato locale
+  // (Adatta le proprietà dell'oggetto mock in base alla tua interfaccia Favorite)
+  const optimisticFavorite = { isin, name: name || 'Sconosciuto' } as Favorite;
+  setFavorites(prev => {
+    if (prev.some(f => f.isin === isin)) return prev;
+    return [...prev, optimisticFavorite];
+  });
+
+  try {
+    setError(null);
+    await favoriteDb.addFavorite(user.uid, isin, name);
       await refreshFavorites();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error adding favorite';
-      setError(message);
-      throw err;
-    }
+  } catch (err) {
+    // 2. ROLLBACK: Se il server dà errore, rimuoviamo l'elemento
+    setFavorites(prev => prev.filter(f => f.isin !== isin));
+    const message = err instanceof Error ? err.message : 'Error adding favorite';
+    setError(message);
+    throw err;
+  }
   }, [user?.uid, refreshFavorites]);
 
-  const removeFavorite = useCallback(async (isin: string) => {
-    if (!user?.uid) throw new Error('User not authenticated');
-    
-    try {
-      setError(null);
-      await favoriteDb.removeFavorite(user.uid, isin);
+const removeFavorite = useCallback(async (isin: string) => {
+  if (!user?.uid) throw new Error('User not authenticated');
+  
+  // Salviamo lo stato precedente per un eventuale rollback
+  const previousFavorites = [...favorites];
+  
+  // 1. OPTIMISTIC UPDATE: Rimuoviamo subito allo stato locale
+  setFavorites(prev => prev.filter(f => f.isin !== isin));
+
+  try {
+    setError(null);
+    await favoriteDb.removeFavorite(user.uid, isin);
       await refreshFavorites();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error removing favorite';
-      setError(message);
-      throw err;
-    }
+  } catch (err) {
+    // 2. ROLLBACK: Se fallisce, ripristiniamo la lista precedente
+    setFavorites(previousFavorites);
+    const message = err instanceof Error ? err.message : 'Error removing favorite';
+    setError(message);
+    throw err;
+  }
   }, [user?.uid, refreshFavorites]);
 
   const toggleFavorite = useCallback(async (isin: string, name?: string) => {
