@@ -9,7 +9,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import type { Favorite } from '../types/favorite';
+import type { Favorite } from './favorite';
 
 function favoritesCollection(userId: string) {
   return collection(db, 'users', userId, 'favorites');

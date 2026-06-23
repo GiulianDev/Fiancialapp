@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useSearchParams } from 'react-router'; 
-import { FavoriteButton } from '@/shared/ui/FavoriteButton/FavoriteButton';
+import { FavoriteButton } from '@/shared/Favorites/FavoriteButton/FavoriteButton';
 import { Card, Loading } from '@/shared/ui';
 import { Tabs, type TabItem } from '@/shared/ui/Tabs/Tabs';
 import { RiskTab } from './RiskTab/RiskTab';

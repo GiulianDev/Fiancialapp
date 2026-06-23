@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useFavorites, usePortfolio } from '@context';
+import { usePortfolio } from '@context';
 import { FavoritesSelector } from '.';
 import { PortfolioAnalisys } from '.';
 import type { SavedPortfolio } from '@/shared/types';
+import { useFavorites } from '@/shared/Favorites';
 
 export function PortfolioPage() {
   

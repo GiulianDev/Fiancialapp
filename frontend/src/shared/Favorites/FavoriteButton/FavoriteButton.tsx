@@ -1,6 +1,6 @@
 import { type ButtonHTMLAttributes, useState } from 'react';
 import './FavoriteButton.css';
-import { useFavorites } from '@/shared/contexts';
+import { useFavorites } from '../FavoritesContext';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isin: string;
