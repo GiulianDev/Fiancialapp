@@ -7,7 +7,8 @@ import { EtfDetailTabs } from './EtfDetailTabs/EtfDetailTabs';
 
 export function SearchPage() {
   const { user } = useAuth();
-  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+
+  // const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   
   // Leggiamo i parametri dall'URL
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,12 +23,6 @@ export function SearchPage() {
   useEffect(() => {
     setDraftIsin(activeIsin);
   }, [activeIsin]);
-
-  // CHIAMATA CONDIVISA: Chiamiamo l'hook anche qui SOLO per dare lo stato isLoading alla SearchBar.
-  // React Query capisce che la chiave ['etf', activeIsin] è la stessa usata nel figlio 
-  // ed eseguirà UNA SOLA chiamata di rete in parallelo!
-  // const { isFetching: fetching, isLoading: caricando } = useEtfSearch(activeIsin);
-  // const isLoadingSearchBar = fetching || caricando;
 
   const cercaEtf = () => {
     const querySana = draftIsin.trim().toUpperCase();
@@ -60,13 +55,13 @@ export function SearchPage() {
     });
   };
 
-  const toggleFavorite = async (isin: string, name?: string) => {
-    if (isFavorite(isin)) {
-      await removeFavorite(isin);
-    } else {
-      await addFavorite(isin, name);
-    }
-  };
+  // const toggleFavorite = async (isin: string, name?: string) => {
+  //   if (isFavorite(isin)) {
+  //     await removeFavorite(isin);
+  //   } else {
+  //     await addFavorite(isin, name);
+  //   }
+  // };
 
   return (
     <>
@@ -84,9 +79,9 @@ export function SearchPage() {
           limiteCountries={limiteCountries}
           onLoadMoreHoldings={handleLoadMoreHoldings}
           onLoadMoreCountries={handleLoadMoreCountries}
-          isFavorite={isFavorite(activeIsin)}
+          // isFavorite={isFavorite(activeIsin)}
           isUserLoggedIn={Boolean(user)}
-          onToggleFavorite={toggleFavorite}
+          // onToggleFavorite={toggleFavorite}
         />
       )}
     </>

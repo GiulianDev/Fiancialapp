@@ -13,8 +13,6 @@ interface EtfDetailTabsProps {
   limiteCountries: number;
   onLoadMoreHoldings: () => void;
   onLoadMoreCountries: () => void;
-  isFavorite?: boolean;
-  onToggleFavorite: (isin: string, name?: string) => void;
   isUserLoggedIn?: boolean;
 }
 
@@ -26,11 +24,11 @@ const ETF_DETAILS_TABS: TabItem[] = [
 
 export function EtfDetailTabs({
   isin,
-  isFavorite = false,
-  onToggleFavorite,
+  // onToggleFavorite,
   isUserLoggedIn = false,
 }: EtfDetailTabsProps) {
   
+  // Search params
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'overview';
 
@@ -93,9 +91,8 @@ export function EtfDetailTabs({
             {isUserLoggedIn ? (
               <motion.div layout="position">
                 <FavoriteButton 
-                  onToggleFavorite={() => onToggleFavorite(isin, data?.nome)}
                   showSkeleton={isLoadingData}
-                  isFavorite={isFavorite}
+                  isin={isin}
                 />
               </motion.div>
             ) : (
