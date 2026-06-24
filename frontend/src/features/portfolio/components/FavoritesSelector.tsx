@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/Button/Button';
 import { Card } from '@/shared/ui';
-import type { Favorite, SavedPortfolio } from '@types';
+import type { SavedPortfolio } from '@types';
+import type { Favorite } from '@/shared/Favorites';
 
 interface FavoritesSelectorProps {
   favorites: Favorite[];
@@ -10,7 +11,7 @@ interface FavoritesSelectorProps {
   onTest: (isins: string[], raw: Record<string, string>, num: Record<string, number>, unit: '€' | '$' | '%') => void;
   onApplica: (isins: string[], raw: Record<string, string>, num: Record<string, number>, unit: '€' | '$' | '%') => void;
   onInputsChanged: () => void;
-  onRemoveFavorite: (isin: string) => Promise<void> | void; // NUOVA PROP per la rimozione dai preferiti
+  onRemoveFavorite: (isin: string) => Promise<void> | void;
 }
 
 export function FavoritesSelector({ 
@@ -26,7 +27,7 @@ export function FavoritesSelector({
   const [selectedIsins, setSelectedIsins] = useState<Set<string>>(new Set());
   const [weights, setWeights] = useState<Record<string, string>>({});
   const [unit, setUnit] = useState<'€' | '$' | '%'>('€');
-  const [copiedIsin, setCopiedIsin] = useState<string | null>(null); // Stato locale per gestire il feedback di copia dell'ISIN
+  const [copiedIsin, setCopiedIsin] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -36,9 +37,7 @@ export function FavoritesSelector({
     }
   }, [initialData]);
 
-  const triggerChange = () => {
-    onInputsChanged();
-  };
+  const triggerChange = () => onInputsChanged();
 
   const handleUnitChange = (newUnit: '€' | '$' | '%') => {
     setUnit(newUnit);
@@ -74,37 +73,28 @@ export function FavoritesSelector({
     }
   };
 
-  // Funzione per la gestione della copia negli appunti dell'utente
   const handleCopyIsin = (e: React.MouseEvent, isin: string) => {
-    e.stopPropagation(); // Evita qualsiasi interferenza sui click esterni
+    e.stopPropagation();
     navigator.clipboard.writeText(isin)
       .then(() => {
         setCopiedIsin(isin);
-        setTimeout(() => {
-          setCopiedIsin(null);
-        }, 2000); // Il tooltip sparisce automaticamente dopo 2 secondi
+        setTimeout(() => setCopiedIsin(null), 2000);
       })
-      .catch((err) => {
-        console.error("Impossibile copiare l'ISIN negli appunti:", err);
-      });
+      .catch((err) => console.error("Impossibile copiare l'ISIN:", err));
   };
 
-  // Rimozione difensiva: pulisce lo stato locale prima di propagare l'azione al database/context padre
   const handleRemoveClick = (e: React.MouseEvent, isin: string) => {
     e.stopPropagation();
-    
     setSelectedIsins((prev) => {
       const next = new Set(prev);
       next.delete(isin);
       return next;
     });
-
     setWeights((prev) => {
       const newWeights = { ...prev };
       delete newWeights[isin];
       return newWeights;
     });
-
     triggerChange();
     onRemoveFavorite(isin);
   };
@@ -146,32 +136,26 @@ export function FavoritesSelector({
   return (
     <div className="w-full">
       <Card className="favorites-portfolio__list w-full">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', width: '100%' }}>
-          <h3 style={{ margin: 0, color: 'white' }}>Analisi Portafoglio</h3>
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-2.5 w-full">
+          <h3 className="m-0 text-white">Analisi Portafoglio</h3>
           <select 
             value={unit} 
             onChange={(e) => handleUnitChange(e.target.value as '€' | '$' | '%')}
-            style={{ 
-              padding: '4px 8px', 
-              borderRadius: '6px', 
-              border: '1px solid rgba(255,255,255,0.2)', 
-              backgroundColor: 'transparent', 
-              cursor: 'pointer',
-              color: 'white',
-              outline: 'none'
-            }}
+            className="px-2 py-1 rounded-md border border-white/20 bg-transparent cursor-pointer text-white focus:outline-none"
           >
-            <option value="€" style={{ color: 'black' }}>Euro (€)</option>
-            <option value="$" style={{ color: 'black' }}>Dollari ($)</option>
-            <option value="%" style={{ color: 'black' }}>Percentuale (%)</option>
+            <option value="€" className="text-black">Euro (€)</option>
+            <option value="$" className="text-black">Dollari ($)</option>
+            <option value="%" className="text-black">Percentuale (%)</option>
           </select>
         </div>
         
-        <p style={{ color: 'rgba(255,255,255,0.7)', width: '100%' }}>
+        <p className="text-white/70 w-full">
           Seleziona gli ETF e inserisci {unit === '%' ? 'la quota' : "l'importo investito"}:
         </p>
         
-        <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0', width: '100%' }}>
+        {/* LISTA ETF */}
+        <ul className="list-none p-0 my-5 w-full">
           {favorites.map((favorite) => {
             const isSelected = selectedIsins.has(favorite.isin);
             const weightValue = weights[favorite.isin] || '';
@@ -179,117 +163,52 @@ export function FavoritesSelector({
             const isInputInvalid = isSelected && weightValue !== '' && (isNaN(numVal) || numVal <= 0);
 
             return (
-              <li key={favorite.isin} style={{ 
-                marginBottom: '12px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '10px',
-                minHeight: '38px',
-                width: '100%',
-                color: 'white',
-                flexWrap: 'wrap'
-              }}>
-                {/* Rimosso <label> per evitare il click accidentale su tutta la riga */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto', minWidth: '0', height: '100%' }}>
+              <li key={favorite.isin} className="mb-3 flex items-center gap-2.5 min-h-[38px] w-full text-white flex-wrap">
+                <div className="flex items-center gap-2 flex-1 min-w-0 h-full">
                   <input
                     type="checkbox"
                     checked={isSelected}
                     onChange={() => toggleSelection(favorite.isin)}
-                    className="flex-shrink-0 cursor-pointer"
+                    className="shrink-0 cursor-pointer"
                   />
-                  <span style={{ fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {favorite.name ? `${favorite.name} ` : ''}
-                      
-                      {/* ISIN Cliccabile con Tooltip di notifica incorporato */}
-                      <code 
-                        onClick={(e) => handleCopyIsin(e, favorite.isin)}
-                        style={{ 
-                          padding: '2px 6px', 
-                          borderRadius: '4px', 
-                          backgroundColor: 'rgba(255,255,255,0.1)',
-                          color: 'rgba(255,255,255,0.9)',
-                          marginLeft: '4px',
-                          cursor: 'pointer',
-                          position: 'relative',
-                          display: 'inline-block'
-                        }}
-                        title="Clicca per copiare l'ISIN"
-                      >
-                        {favorite.isin}
-                        
-                        {copiedIsin === favorite.isin && (
-                          <span style={{
-                            position: 'absolute',
-                            bottom: '135%',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            backgroundColor: '#10b981',
-                            color: 'white',
-                            fontSize: '0.75rem',
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            whiteSpace: 'nowrap',
-                            boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-                            zIndex: 10,
-                            pointerEvents: 'none'
-                          }}>
-                            Copiato!
-                          </span>
-                        )}
-                      </code>
+                  <span className="text-sm whitespace-nowrap overflow-hidden text-ellipsis">
+                    {favorite.name ? `${favorite.name} ` : ''}
+                    
+                    <code 
+                      onClick={(e) => handleCopyIsin(e, favorite.isin)}
+                      className="px-1.5 py-0.5 rounded bg-white/10 text-white/90 ml-1 cursor-pointer relative inline-block"
+                      title="Clicca per copiare l'ISIN"
+                    >
+                      {favorite.isin}
+                      {copiedIsin === favorite.isin && (
+                        <span className="absolute bottom-[135%] left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded whitespace-nowrap shadow-md z-10 pointer-events-none">
+                          Copiato!
+                        </span>
+                      )}
+                    </code>
                   </span>
                 </div>
                 
                 {isSelected && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                    <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', minWidth: '15px' }}>{unit}</span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span className="text-sm text-white/50 min-w-[15px]">{unit}</span>
                     <input 
                       type="text"
                       inputMode="decimal"
                       placeholder={unit === '%' ? "es. 50" : "es. 1000"} 
                       value={weightValue}
                       onChange={(e) => handleWeightChange(favorite.isin, e.target.value)}
-                      style={{ 
-                        width: '100px', 
-                        padding: '6px 10px', 
-                        borderRadius: '6px', 
-                        border: isInputInvalid ? '1px solid #dc2626' : '1px solid rgba(255,255,255,0.2)',
-                        backgroundColor: 'transparent',
-                        color: 'white',
-                        transition: 'all 0.2s',
-                        outline: 'none'
-                      }}
+                      className={`w-[100px] px-2.5 py-1.5 rounded-md bg-transparent text-white transition-all duration-200 focus:outline-none border ${isInputInvalid ? 'border-red-600' : 'border-white/20'}`}
                       title={unit === '%' ? "Percentuale" : "Importo investito"}
                     />
                   </div>
                 )}
 
-                {/* Pulsante di rimozione dai preferiti (Icona cestino) */}
                 <button
                   type="button"
                   onClick={(e) => handleRemoveClick(e, favorite.isin)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'rgba(239, 68, 68, 0.7)',
-                    cursor: 'pointer',
-                    padding: '6px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: '6px',
-                    transition: 'all 0.2s ease',
-                    flexShrink: 0
-                  }}
+                  className="bg-transparent border-none text-red-500/70 cursor-pointer p-1.5 flex items-center justify-center rounded-md transition-all duration-200 shrink-0 hover:text-red-500 hover:bg-red-500/10"
                   title="Rimuovi dai preferiti"
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = '#ef4444';
-                    e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = 'rgba(239, 68, 68, 0.7)';
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -301,34 +220,25 @@ export function FavoritesSelector({
           })}
         </ul>
 
+        {/* WARNINGS */}
         {isMissingValues && selectedIsins.size > 0 && (
-          <div style={{ fontSize: '0.85rem', color: '#f87171', marginBottom: '12px', fontWeight: '500', width: '100%' }}>
+          <div className="text-[0.85rem] text-red-400 mb-3 font-medium w-full">
             * Inserisci un valore maggiore di 0 per tutti gli ETF selezionati.
           </div>
         )}
 
         {showWarning && (
-          <div style={{
-            padding: '12px',
-            marginBottom: '16px',
-            backgroundColor: 'rgba(245, 158, 11, 0.1)',
-            border: '1px solid rgba(245, 158, 11, 0.2)',
-            borderRadius: '8px',
-            color: '#fbbf24',
-            fontSize: '0.9rem',
-            lineHeight: '1.4',
-            width: '100%'
-          }}>
+          <div className="p-3 mb-4 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400 text-sm leading-snug w-full">
             <strong>⚠️ Nota:</strong> La somma è pari a <strong>{totalWeight}%</strong> invece di 100%. L'analisi riproporzionerà le quote automaticamente.
           </div>
         )}
 
         {/* BUTTONS */}
-        <div style={{ display: 'flex', gap: '12px', marginTop: '8px', width: '100%' }}>
+        <div className="flex gap-3 mt-2 w-full">
           <Button 
             onClick={handleTestClick} 
             disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
-            style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}
+            className="flex-1 bg-white/10 text-white border border-white/20 hover:bg-white/20"
           >
             Test
           </Button>
@@ -336,7 +246,7 @@ export function FavoritesSelector({
           <Button 
             onClick={handleApplicaClick} 
             disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
-            style={{ flex: 1, backgroundColor: '#10b981', color: 'white' }}
+            className="flex-1 bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Salvataggio...' : 'Applica e Salva'}
           </Button>
