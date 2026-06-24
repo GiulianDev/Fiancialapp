@@ -1,4 +1,4 @@
-import type { Country, Region, Sector, Holding } from './etf';
+import type { Country, Region, Sector, Holding } from '../../features/portfolio/Portfolio.interface';
 
 export interface AggregatedResult {
   holdings: Holding[];

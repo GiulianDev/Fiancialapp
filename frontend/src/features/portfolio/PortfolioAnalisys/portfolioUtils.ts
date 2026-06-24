@@ -1,4 +1,4 @@
-import type { EtfData } from '../../../shared/types/etf';
+import type { EtfData } from '../Portfolio.interface';
 import type { AggregatedResult } from '../../../shared/types/portfolio';
 
 // Interfaccia estesa per includere i nuovi calcoli finanziari avanzati
@@ -62,32 +62,32 @@ export function analyzePortfolio(etfData: EtfData[], weights: Record<string, num
     }
     totalUnknownHoldings += Math.max(0, 100 - knownHoldingsSum) * etfRelativeWeight;
 
-    // B. REGIONS
+    // B. REGIONS (Corretto per gestire l'Array di oggetti {nome, percentuale})
     let knownRegionsSum = 0;
     if (etf.regions) {
-      Object.entries(etf.regions).forEach(([region, peso]) => {
-        knownRegionsSum += peso;
-        regionsMap.set(region, (regionsMap.get(region) ?? 0) + (peso * etfRelativeWeight));
+      etf.regions.forEach((region) => {
+        knownRegionsSum += region.percentuale;
+        regionsMap.set(region.nome, (regionsMap.get(region.nome) ?? 0) + (region.percentuale * etfRelativeWeight));
       });
     }
     totalUnknownRegions += Math.max(0, 100 - knownRegionsSum) * etfRelativeWeight;
 
-    // C. COUNTRIES
+    // C. COUNTRIES (Corretto per gestire l'Array di oggetti {nome, percentuale})
     let knownCountriesSum = 0;
     if (etf.countries) {
-      Object.entries(etf.countries).forEach(([country, peso]) => {
-        knownCountriesSum += peso;
-        countriesMap.set(country, (countriesMap.get(country) ?? 0) + (peso * etfRelativeWeight));
+      etf.countries.forEach((country) => {
+        knownCountriesSum += country.percentuale;
+        countriesMap.set(country.nome, (countriesMap.get(country.nome) ?? 0) + (country.percentuale * etfRelativeWeight));
       });
     }
     totalUnknownCountries += Math.max(0, 100 - knownCountriesSum) * etfRelativeWeight;
 
-    // D. SECTORS
+    // D. SECTORS (Corretto per gestire l'Array di oggetti {nome, percentuale})
     let knownSectorsSum = 0;
     if (etf.sectors) {
-      Object.entries(etf.sectors).forEach(([sector, peso]) => {
-        knownSectorsSum += peso;
-        sectorsMap.set(sector, (sectorsMap.get(sector) ?? 0) + (peso * etfRelativeWeight));
+      etf.sectors.forEach((sector) => {
+        knownSectorsSum += sector.percentuale;
+        sectorsMap.set(sector.nome, (sectorsMap.get(sector.nome) ?? 0) + (sector.percentuale * etfRelativeWeight));
       });
     }
     totalUnknownSectors += Math.max(0, 100 - knownSectorsSum) * etfRelativeWeight;
@@ -127,7 +127,7 @@ function calculatePortfolioCosts(validEtfData: EtfData[], weights: Record<string
     const userWeight = weights[etf.isin] ?? 0;
     const etfRelativeWeight = userWeight / totalUserWeight;
     
-    const etfTer = etf.costo_annuo ?? 0.20; // Usa il costo_annuo reale, fallback a 0.20
+    const etfTer = etf.costo_annuo ?? 0.20; 
     totalWeightedTer += etfTer * etfRelativeWeight;
   });
 
@@ -141,7 +141,6 @@ function calculatePortfolioCosts(validEtfData: EtfData[], weights: Record<string
 
 /**
  * 3. INDICE DI SOVRAPPOSIZIONE REALE
- * (L'errore era qui: rimosso il "Marlin" dal tipo di percentuale)
  */
 function calculateOverlapAnalysis(
   aggregatedHoldings: Array<{ nome: string; percentuale: number }>,

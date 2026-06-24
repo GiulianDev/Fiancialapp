@@ -1,22 +1,22 @@
 export interface Holding {
   nome: string;
-  peso_percentuale: number;
+  percentuale: number;
   isin?: string;
 }
 
 export interface Country {
   nome: string;
-  peso: number;
+  percentuale: number;
 }
 
 export interface Region {         
   nome: string;
-  peso: number;
+  percentuale: number;
 }
 
 export interface Sector {         
   nome: string;
-  peso: number;
+  percentuale: number;
 }
 
 export interface EtfData {
@@ -27,7 +27,7 @@ export interface EtfData {
   costo_annuo?: number;
   totale_holdings: number;
   holdings: Holding[];
-  regions: Region; // Record<string, number>;
-  countries: Country; // Record<string, number>;
-  sectors: Sector; // Record<string, number>;
+  regions: Region[]; // Record<string, number>;
+  countries: Country[]; // Record<string, number>;
+  sectors: Sector[]; // Record<string, number>;
 }

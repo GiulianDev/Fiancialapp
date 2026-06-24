@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import type { EtfData } from '../../../shared/types/etf';
+import type { EtfData } from '../Portfolio.interface';
 import { SEARCH_ETF_API_URL } from '../../../shared/config/constants';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 
