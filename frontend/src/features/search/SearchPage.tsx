@@ -10,7 +10,7 @@ export function SearchPage() {
 
   // const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   
-  // Leggiamo i parametri dall'URL
+  // Leggiamo i parametri dall'URL (sincronia immediata con l'Input e la Barra)
   const [searchParams, setSearchParams] = useSearchParams();
   const activeIsin = searchParams.get('isin') || '';
   const limiteHoldings = parseInt(searchParams.get('hLimit') || '5', 10);
@@ -31,7 +31,7 @@ export function SearchPage() {
       console.log('INVALID ISIN');
       return;
     }
-    
+    // etSearchParams modifica l'URL della pagina
     setSearchParams((prev) => {
       prev.set('isin', querySana);
       // Nuova ricerca -> Resettiamo le espansioni cancellando i parametri
