@@ -1,4 +1,3 @@
-// src/components/PortfolioAnalysis.tsx
 import { useMemo } from 'react';
 import { EtfCharts } from '../components/EtfCharts/EtfCharts';
 import { Card } from '../../../shared/ui/Card/Card'; 
@@ -8,13 +7,11 @@ import { usePortfolioAnalisys } from './usePortfolioAnalisys';
 interface PortfolioAnalysisProps {
   selectedIsins: string[];
   weights: Record<string, number>;
-  triggerFetch: boolean; // <-- NUOVA PROP
 }
 
-export function PortfolioAnalisys({ selectedIsins, weights, triggerFetch }: PortfolioAnalysisProps) {
-  
-  // Passiamo il triggerFetch all'hook
-  const { etfData, loading, error } = usePortfolioAnalisys( selectedIsins, triggerFetch);
+export function PortfolioAnalisys({ selectedIsins, weights }: PortfolioAnalysisProps) {
+  // L'hook recupera o estrae dalla cache di React Query in modo reattivo
+  const { etfData, loading, error } = usePortfolioAnalisys(selectedIsins);
 
   const combined = useMemo(() => {
     if (etfData.length === 0) return null;
@@ -26,18 +23,14 @@ export function PortfolioAnalisys({ selectedIsins, weights, triggerFetch }: Port
     }
   }, [etfData, weights]);
 
-  // Se l'utente non ha ancora cliccato nulla, mostriamo un messaggio
-  if (!triggerFetch && etfData.length === 0) {
-    return (
-      <div className="p-4 text-white/50 text-center bg-white/5 border border-white/10 rounded-xl mt-4">
-        Modifica i pesi o gli ISIN e clicca <strong>"Test"</strong> o <strong>"Applica"</strong> per generare l'analisi.
-      </div>
-    );
+  if (loading) {
+    return <div className="p-8 text-center text-white/70 font-medium animate-pulse">Calcolo dell'analisi in corso...</div>;
   }
-
-  // Stati di caricamento
-  if (loading) return <div className="p-4 text-center text-white/70">Calcolo dell'analisi in corso...</div>;
-  if (error) return <div className="p-4 text-red-400">Errore: {error}</div>;
+  
+  if (error) {
+    return <div className="p-4 text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl text-center">Errore: {error}</div>;
+  }
+  
   if (!combined) return null;
 
   if (combined.count === 0) {
@@ -49,7 +42,7 @@ export function PortfolioAnalisys({ selectedIsins, weights, triggerFetch }: Port
   }
 
   return (
-    <div className="portfolio-analysis-results flex flex-col gap-6 mt-4">
+    <div className="portfolio-analysis-results flex flex-col gap-6 mt-4 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <h4 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-2">Efficienza & Costi</h4>
@@ -61,6 +54,7 @@ export function PortfolioAnalisys({ selectedIsins, weights, triggerFetch }: Port
           <h4 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-2">Orientamento Stile</h4>
           <div className="flex items-center gap-2 mt-4">
             <div className="w-full bg-white/10 rounded-full h-4 overflow-hidden flex border border-white/5">
+              {/* Gli inline style per l'attributo width sono usati correttamente qui per il calcolo percentuale dinamico a runtime */}
               <div style={{ width: `${combined.styleAllocation.growth}%` }} className="bg-blue-500/60 h-full backdrop-blur-sm transition-all duration-500" title="Growth"></div>
               <div style={{ width: `${combined.styleAllocation.value}%` }} className="bg-emerald-500/60 h-full backdrop-blur-sm transition-all duration-500" title="Value / Difensivo"></div>
             </div>
@@ -78,7 +72,7 @@ export function PortfolioAnalisys({ selectedIsins, weights, triggerFetch }: Port
           <ul className="text-sm text-white/80 list-disc pl-5 space-y-1">
             {combined.overlapAlerts.map((alert, idx) => (
               <li key={idx}>
-                <span className="text-orange-300 font-semibold">{alert.nome}</span> pesa ben il <strong className="text-white font-bold">{alert.pesoComplessivo}%</strong> del portafoglio (è in {alert.contribuenti.length} ETF).
+                <span className="text-orange-300 font-semibold">{alert.nome}</span> pesa ben il <strong className="text-white font-bold">{alert.pesoComplessivo}%</strong> del portafoglio (è presente in {alert.contribuenti.length} ETF).
               </li>
             ))}
           </ul>
@@ -86,7 +80,6 @@ export function PortfolioAnalisys({ selectedIsins, weights, triggerFetch }: Port
       )}
 
       <EtfCharts combined={combined} />
-      
     </div>
   );
 }

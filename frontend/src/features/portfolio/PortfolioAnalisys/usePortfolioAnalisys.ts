@@ -3,10 +3,7 @@ import type { EtfData } from '../../../shared/types/etf';
 import { SEARCH_ETF_API_URL } from '../../../shared/config/constants';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 
-export function usePortfolioAnalisys(
-  selectedIsins: string[],
-  triggerFetch: boolean = true
-) {
+export function usePortfolioAnalisys(selectedIsins: string[]) {
   const { user } = useAuth();
 
   const { 
@@ -14,16 +11,15 @@ export function usePortfolioAnalisys(
     isLoading, 
     error 
   } = useQuery({
-    // 1. La Query Key: identifica univocamente questa richiesta nella cache
+    // La cache è legata unicamente alla combinazione di ISIN passati
     queryKey: ['portfolio-etfs', selectedIsins],
     
-    // 2. Enabled: la query parte SOLO se queste condizioni sono vere
-    enabled: !!user && selectedIsins.length > 0 && triggerFetch,
+    // Parte in automatico solo se l'utente è loggato e ci sono ISIN da analizzare
+    enabled: !!user && selectedIsins.length > 0,
     
-    // 3. Stale Time: i dati rimangono "freschi" per 5 minuti (niente API call se richiedi gli stessi ISIN)
+    // Mantiene freschi i dati per 5 minuti evitanto chiamate API doppie
     staleTime: 1000 * 60 * 5, 
 
-    // 4. Query Function: la logica di recupero dati
     queryFn: async (): Promise<EtfData[]> => {
       const fetchedData = await Promise.all(
         selectedIsins.map(async (isin) => {

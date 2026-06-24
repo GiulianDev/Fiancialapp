@@ -10,7 +10,6 @@ interface FavoritesSelectorProps {
   initialData: SavedPortfolio | null;
   onTest: (isins: string[], raw: Record<string, string>, num: Record<string, number>, unit: '€' | '$' | '%') => void;
   onApplica: (isins: string[], raw: Record<string, string>, num: Record<string, number>, unit: '€' | '$' | '%') => void;
-  onInputsChanged: () => void;
   onRemoveFavorite: (isin: string) => Promise<void> | void;
 }
 
@@ -20,7 +19,6 @@ export function FavoritesSelector({
   initialData, 
   onTest,
   onApplica,
-  onInputsChanged,
   onRemoveFavorite
 }: FavoritesSelectorProps) {
   
@@ -37,15 +35,11 @@ export function FavoritesSelector({
     }
   }, [initialData]);
 
-  const triggerChange = () => onInputsChanged();
-
   const handleUnitChange = (newUnit: '€' | '$' | '%') => {
     setUnit(newUnit);
-    triggerChange();
   };
 
   const toggleSelection = (isin: string) => {
-    triggerChange();
     setSelectedIsins((prev) => {
       const next = new Set(prev);
       if (next.has(isin)) {
@@ -63,7 +57,6 @@ export function FavoritesSelector({
   };
 
   const handleWeightChange = (isin: string, value: string) => {
-    triggerChange();
     let normalized = value.replace(',', '.');
     if (/^0[0-9]/.test(normalized)) {
       normalized = normalized.replace(/^0+/, '');
@@ -95,7 +88,6 @@ export function FavoritesSelector({
       delete newWeights[isin];
       return newWeights;
     });
-    triggerChange();
     onRemoveFavorite(isin);
   };
 
@@ -173,10 +165,9 @@ export function FavoritesSelector({
                   />
                   <span className="text-sm whitespace-nowrap overflow-hidden text-ellipsis">
                     {favorite.name ? `${favorite.name} ` : ''}
-                    
                     <code 
                       onClick={(e) => handleCopyIsin(e, favorite.isin)}
-                      className="px-1.5 py-0.5 rounded bg-white/10 text-white/90 ml-1 cursor-pointer relative inline-block"
+                      className="px-1.5 py-0.5 rounded bg-white/10 text-white/90 ml-1 cursor-pointer relative inline-block animate-fade-in"
                       title="Clicca per copiare l'ISIN"
                     >
                       {favorite.isin}
@@ -238,7 +229,7 @@ export function FavoritesSelector({
           <Button 
             onClick={handleTestClick} 
             disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
-            className="flex-1 bg-white/10 text-white border border-white/20 hover:bg-white/20"
+            className="flex-1 bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-all duration-200"
           >
             Test
           </Button>
@@ -246,7 +237,7 @@ export function FavoritesSelector({
           <Button 
             onClick={handleApplicaClick} 
             disabled={isLoading || selectedIsins.size === 0 || isMissingValues}
-            className="flex-1 bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             {isLoading ? 'Salvataggio...' : 'Applica e Salva'}
           </Button>
