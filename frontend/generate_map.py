@@ -1,6 +1,6 @@
 import os
 
-def generate_project_map(root_dir="frontend/src"):
+def generate_project_map(root_dir="src"):
     # Files to ignore
     ignored_files = {
         '.git', '.DS_Store', 'node_modules', '__pycache__', 
